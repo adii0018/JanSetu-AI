@@ -2,7 +2,7 @@
 Complaint API routes.
 Handles complaint submission, listing, and tracking.
 """
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from typing import List, Optional
@@ -24,6 +24,7 @@ router = APIRouter(prefix="/api/complaints", tags=["Complaints"])
 @router.post("", response_model=ComplaintResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("10/minute")
 async def submit_complaint(
+    request: Request,
     complaint_data: ComplaintCreate,
     db: AsyncSession = Depends(get_db)
 ):

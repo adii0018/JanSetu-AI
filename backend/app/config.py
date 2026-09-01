@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     
     # API Keys
     nvidia_api_key: Optional[str] = None
+    nvidia_asr_api_key: Optional[str] = None
+    nvidia_tts_api_key: Optional[str] = None
     dashboard_api_key: Optional[str] = None
     
     # CORS

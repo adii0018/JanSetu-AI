@@ -13,7 +13,7 @@ from slowapi.errors import RateLimitExceeded
 import logging
 from app.database import init_db, close_db, AsyncSessionLocal
 from app.seed_data import seed_wards, seed_complaints
-from app.routes import complaints, dashboard, wards
+from app.routes import complaints, dashboard, wards, tts
 from app.config import settings
 
 # Configure logging
@@ -126,6 +126,7 @@ async def health_check():
 app.include_router(complaints.router)
 app.include_router(dashboard.router)
 app.include_router(wards.router)
+app.include_router(tts.router)
 
 
 if __name__ == "__main__":

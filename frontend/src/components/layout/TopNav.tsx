@@ -49,7 +49,7 @@ export function TopNav() {
                 letterSpacing: '-0.02em',
               }}
             >
-              JC
+              JS
             </span>
           </div>
           <div style={{ minWidth: 0 }}>
@@ -63,7 +63,7 @@ export function TopNav() {
                 whiteSpace: 'nowrap',
               }}
             >
-              JanConnect AI
+              JanSetu
             </div>
             <div
               style={{

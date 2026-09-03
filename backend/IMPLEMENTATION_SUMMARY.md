@@ -1,8 +1,8 @@
-# JanConnect AI Backend - Implementation Summary
+# JanSetu Backend - Implementation Summary
 
 ## ✅ Completed Implementation
 
-A complete, production-quality backend for JanConnect AI Digital Public Good platform has been implemented according to your exact specifications.
+A complete, production-quality backend for JanSetu Digital Public Good platform has been implemented according to your exact specifications.
 
 ## 📋 Project Structure
 
@@ -83,7 +83,7 @@ backend/
 
 **Complaint Model:**
 - ✅ id (int, PK)
-- ✅ tracking_id (string, unique, "JC-XXXXX" format)
+- ✅ tracking_id (string, unique, "JS-XXXXX" format)
 - ✅ ward_id (FK → Ward)
 - ✅ raw_text (text)
 - ✅ language (string, default "Hindi + English")
@@ -156,7 +156,7 @@ Sudama Nagar   - infra: 50, budget: 45
 
 **10 Demo Complaints (seeded if complaints table empty):**
 - ✅ All 10 complaints exactly as specified
-- ✅ Tracking IDs generated (JC-XXXXX)
+- ✅ Tracking IDs generated (JS-XXXXX)
 - ✅ Confidence = 90 for all
 - ✅ channel = "text" for all
 - ✅ Categories and urgencies as specified
@@ -408,4 +408,4 @@ The codebase is structured for easy contribution:
 
 ---
 
-**The JanConnect AI backend is complete and ready to empower policymakers with data-driven insights for citizen development complaints!** 🚀
+**The JanSetu backend is complete and ready to empower policymakers with data-driven insights for citizen development complaints!** 🚀

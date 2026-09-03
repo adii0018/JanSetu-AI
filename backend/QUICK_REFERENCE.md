@@ -1,4 +1,4 @@
-# JanConnect AI - Quick Reference Guide
+# JanSetu - Quick Reference Guide
 
 ## 🚀 Quick Start Commands
 
@@ -72,7 +72,7 @@ curl http://localhost:8000/api/wards
 
 ```bash
 # Local PostgreSQL
-DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/janconnect
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/jansetu
 
 # Supabase
 DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5432/postgres
@@ -155,7 +155,7 @@ app/
 ```python
 {
   "id": 1,
-  "tracking_id": "JC-12345",
+  "tracking_id": "JS-12345",
   "ward_id": 1,
   "raw_text": "Complaint text",
   "language": "Hindi + English",
@@ -255,7 +255,7 @@ sc query postgresql-x64-15
 
 # Verify .env DATABASE_URL is correct
 # Test connection
-psql -h localhost -U postgres -d janconnect
+psql -h localhost -U postgres -d jansetu
 ```
 
 ### Import errors
@@ -378,8 +378,8 @@ For new developers:
 ### Deployment Workflow
 ```bash
 1. Update .env for production
-2. docker build -t janconnect .
-3. docker run -d -p 8000:8000 janconnect
+2. docker build -t jansetu .
+3. docker run -d -p 8000:8000 jansetu
 4. Verify: curl http://localhost:8000/
 5. Check logs: docker logs <container-id>
 ```

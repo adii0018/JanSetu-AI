@@ -1,5 +1,5 @@
 """
-NVIDIA Text-to-Speech (TTS) Service for JanConnect AI.
+NVIDIA Text-to-Speech (TTS) Service for JanSetu.
 Uses NVIDIA AI Services to process, format, and synthesize natural spoken audio scripts
 and voice output for civic complaints in Hindi (hi-IN) and English (en-IN).
 """
@@ -48,7 +48,7 @@ class TTSService:
         if self.client:
             try:
                 system_prompt = (
-                    "You are an expert Text-to-Speech (TTS) audio script generator for JanConnect AI citizen portal. "
+                    "You are an expert Text-to-Speech (TTS) audio script generator for JanSetu citizen portal. "
                     "Convert the provided civic complaint or status update into a short, warm, extremely clear spoken statement "
                     f"in {'Hindi (using clean Devanagari or Hinglish)' if 'hi' in language.lower() else 'English'}. "
                     "Remove markdown, technical symbols, or bullet points so it sounds natural when spoken aloud by a speech synthesizer. "

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏛️ JanConnect AI
+# 🏛️ JanSetu
 
 ### AI for Digital Public Infrastructure & Governance
 
@@ -27,7 +27,7 @@
 
 Citizen development requests — roads, water, health, education — reach the government through scattered channels: phone calls, SMS, WhatsApp, in-person visits, in dozens of Indian languages. There's no unified way to understand demand at scale, correlate it with real infrastructure gaps, or decide **where limited public funds should go first**.
 
-**JanConnect AI** is a Digital Public Good that fixes this:
+**JanSetu** is a Digital Public Good that fixes this:
 
 1. 🎙️ **Listens** — citizens report issues by voice, text, or WhatsApp, in their own language. No app to install, no literacy barrier.
 2. 🧠 **Understands** — AI transcribes, translates, categorises, and scores the urgency of each request.
@@ -172,7 +172,7 @@ Designed to be deployable at **zero cost**, so any state or city government can 
 ## 📁 Project Structure
 
 ```
-janconnect-ai/
+jansetu/
 ├── frontend/                       # React Web App (Policymaker Dashboard + Web intake)
 │   ├── src/
 │   │   ├── components/             # Cards, Charts, WardList, ComplaintForm
@@ -230,8 +230,8 @@ It includes a citizen complaint form with a live "AI reasoning" trace, and a pol
 
 ```bash
 # clone the repo
-git clone https://github.com/<your-username>/janconnect-ai.git
-cd janconnect-ai
+git clone https://github.com/<your-username>/jansetu.git
+cd jansetu
 
 # backend
 cd backend

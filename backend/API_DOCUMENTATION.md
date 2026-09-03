@@ -1,6 +1,6 @@
-# JanConnect AI - API Documentation
+# JanSetu - API Documentation
 
-Complete API reference for the JanConnect AI backend.
+Complete API reference for the JanSetu backend.
 
 Base URL: `http://localhost:8000`
 
@@ -41,7 +41,7 @@ Check if the service is running.
 ```json
 {
   "status": "ok",
-  "service": "JanConnect AI Backend"
+  "service": "JanSetu Backend"
 }
 ```
 
@@ -73,7 +73,7 @@ Submit a new citizen complaint.
 ```json
 {
   "id": 1,
-  "tracking_id": "JC-12345",
+  "tracking_id": "JS-12345",
   "ward_id": 1,
   "raw_text": "10 din se paani ki supply nahi aa rahi hai",
   "language": "Hindi + English",
@@ -119,7 +119,7 @@ List complaints with optional filtering and pagination.
 [
   {
     "id": 1,
-    "tracking_id": "JC-12345",
+    "tracking_id": "JS-12345",
     "ward_id": 1,
     "raw_text": "10 din se paani ki supply nahi aa rahi hai",
     "language": "Hindi + English",
@@ -155,13 +155,13 @@ curl "http://localhost:8000/api/complaints?limit=10&offset=20"
 Get a single complaint by tracking ID. Used by citizens to check complaint status.
 
 **Path Parameters:**
-- `tracking_id` (string): Tracking ID (format: JC-XXXXX)
+- `tracking_id` (string): Tracking ID (format: JS-XXXXX)
 
 **Response: 200 OK**
 ```json
 {
   "id": 1,
-  "tracking_id": "JC-12345",
+  "tracking_id": "JS-12345",
   "ward_id": 1,
   "raw_text": "10 din se paani ki supply nahi aa rahi hai",
   "language": "Hindi + English",
@@ -179,7 +179,7 @@ Get a single complaint by tracking ID. Used by citizens to check complaint statu
 
 **Example cURL:**
 ```bash
-curl "http://localhost:8000/api/complaints/JC-12345"
+curl "http://localhost:8000/api/complaints/JS-12345"
 ```
 
 ---
@@ -380,7 +380,7 @@ curl "http://localhost:8000/api/wards"
 ```typescript
 {
   id: number;
-  tracking_id: string;           // Format: JC-XXXXX
+  tracking_id: string;           // Format: JS-XXXXX
   ward_id: number;
   raw_text: string;
   language: string;

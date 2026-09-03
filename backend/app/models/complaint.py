@@ -29,7 +29,7 @@ class Complaint(Base):
     
     Attributes:
         id: Primary key
-        tracking_id: Unique tracking identifier (format: JC-XXXXX)
+        tracking_id: Unique tracking identifier (format: JS-XXXXX)
         ward_id: Foreign key to Ward
         raw_text: Original complaint text from citizen
         language: Language of complaint (e.g., "Hindi + English")

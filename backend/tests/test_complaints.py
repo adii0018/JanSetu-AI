@@ -21,7 +21,7 @@ async def test_submit_complaint(client: AsyncClient):
     # Check response structure
     assert "id" in complaint
     assert "tracking_id" in complaint
-    assert complaint["tracking_id"].startswith("JC-")
+    assert complaint["tracking_id"].startswith("JS-")
     assert complaint["ward_id"] == 1
     assert complaint["raw_text"] == complaint_data["raw_text"]
     assert complaint["category"] in ["Road", "Water Supply", "Health", "Electricity", "Education", "Sanitation", "General / Other"]
@@ -119,7 +119,7 @@ async def test_get_complaint_by_tracking_id(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_get_complaint_invalid_tracking_id(client: AsyncClient):
     """Test getting complaint with invalid tracking ID."""
-    response = await client.get("/api/complaints/JC-99999")
+    response = await client.get("/api/complaints/JS-99999")
     
     assert response.status_code == 404
     assert "not found" in response.json()["detail"].lower()

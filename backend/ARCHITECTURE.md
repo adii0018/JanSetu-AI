@@ -1,4 +1,4 @@
-# JanConnect AI - System Architecture
+# JanSetu - System Architecture
 
 ## High-Level Architecture
 
@@ -86,13 +86,13 @@ NLP Service (nlp_service.py)
   │ • Count urgency words → urgency
   ▼
 Generate Tracking ID
-  │ JC-12345
+  │ JS-12345
   ▼
 Database Insert
   │ INSERT INTO complaints ...
   ▼
 Response to Citizen
-  │ { tracking_id: "JC-12345", category: "Water Supply", ... }
+  │ { tracking_id: "JS-12345", category: "Water Supply", ... }
   ▼
 Citizen receives tracking ID
 ```

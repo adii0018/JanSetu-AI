@@ -1,5 +1,5 @@
 """
-JanConnect AI Backend - Main FastAPI Application
+JanSetu Backend - Main FastAPI Application
 Digital Public Good platform for citizen complaint management and policymaker insights.
 """
 from fastapi import FastAPI, Request, status
@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     Handles startup (database initialization, seeding) and shutdown (cleanup).
     """
     # Startup
-    logger.info("Starting JanConnect AI Backend...")
+    logger.info("Starting JanSetu Backend...")
     
     # Initialize database tables
     await init_db()
@@ -45,19 +45,19 @@ async def lifespan(app: FastAPI):
         await seed_wards(session)
         await seed_complaints(session)
     
-    logger.info("JanConnect AI Backend ready!")
+    logger.info("JanSetu Backend ready!")
     
     yield
     
     # Shutdown
-    logger.info("Shutting down JanConnect AI Backend...")
+    logger.info("Shutting down JanSetu Backend...")
     await close_db()
     logger.info("Database connections closed")
 
 
 # Create FastAPI application
 app = FastAPI(
-    title="JanConnect AI",
+    title="JanSetu",
     description="Digital Public Good platform for citizen complaint management",
     version="1.0.0",
     lifespan=lifespan,
@@ -119,7 +119,7 @@ async def health_check():
     """
     return {
         "status": "ok",
-        "service": "JanConnect AI Backend"
+        "service": "JanSetu Backend"
     }
 
 # Include routers

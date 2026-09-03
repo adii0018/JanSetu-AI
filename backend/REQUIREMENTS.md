@@ -1,7 +1,7 @@
-# JanConnect AI - Backend Requirements
+# JanSetu - Backend Requirements
 
 ## Overview
-JanConnect AI is a Digital Public Good platform that collects citizen development complaints through multiple channels (voice, text, WhatsApp), classifies them using AI, and provides policymakers with investment priority insights.
+JanSetu is a Digital Public Good platform that collects citizen development complaints through multiple channels (voice, text, WhatsApp), classifies them using AI, and provides policymakers with investment priority insights.
 
 ## Functional Requirements
 

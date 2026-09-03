@@ -1,6 +1,6 @@
-# JanConnect AI - Deployment Guide
+# JanSetu - Deployment Guide
 
-Complete guide for deploying JanConnect AI backend to production.
+Complete guide for deploying JanSetu backend to production.
 
 ## 📋 Pre-Deployment Checklist
 
@@ -74,7 +74,7 @@ Complete guide for deploying JanConnect AI backend to production.
    
    Update `.env`:
    ```env
-   DATABASE_URL=postgresql+asyncpg://postgres:SECURE_PASSWORD@db:5432/janconnect
+   DATABASE_URL=postgresql+asyncpg://postgres:SECURE_PASSWORD@db:5432/jansetu
    NVIDIA_API_KEY=your_production_key
    ENVIRONMENT=production
    DEBUG=false
@@ -89,7 +89,7 @@ Complete guide for deploying JanConnect AI backend to production.
        image: postgres:15-alpine
        restart: always
        environment:
-         POSTGRES_DB: janconnect
+         POSTGRES_DB: jansetu
          POSTGRES_USER: postgres
          POSTGRES_PASSWORD: ${DB_PASSWORD}  # Use secrets
        volumes:
@@ -103,7 +103,7 @@ Complete guide for deploying JanConnect AI backend to production.
        ports:
          - "8000:8000"
        environment:
-         DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@db:5432/janconnect
+         DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@db:5432/jansetu
          ENVIRONMENT: production
          DEBUG: "false"
        depends_on:
@@ -134,11 +134,11 @@ Complete guide for deploying JanConnect AI backend to production.
    sudo apt install nginx
    ```
    
-   Create `/etc/nginx/sites-available/janconnect`:
+   Create `/etc/nginx/sites-available/jansetu`:
    ```nginx
    server {
        listen 80;
-       server_name api.janconnect.in;
+       server_name api.jansetu.in;
    
        location / {
            proxy_pass http://localhost:8000;
@@ -152,7 +152,7 @@ Complete guide for deploying JanConnect AI backend to production.
    
    Enable site:
    ```bash
-   sudo ln -s /etc/nginx/sites-available/janconnect /etc/nginx/sites-enabled/
+   sudo ln -s /etc/nginx/sites-available/jansetu /etc/nginx/sites-enabled/
    sudo nginx -t
    sudo systemctl restart nginx
    ```
@@ -160,7 +160,7 @@ Complete guide for deploying JanConnect AI backend to production.
 8. **Set Up SSL with Let's Encrypt**
    ```bash
    sudo apt install certbot python3-certbot-nginx
-   sudo certbot --nginx -d api.janconnect.in
+   sudo certbot --nginx -d api.jansetu.in
    ```
 
 ---
@@ -173,13 +173,13 @@ Complete guide for deploying JanConnect AI backend to production.
 
 2. **Create PostgreSQL Database**
    - Dashboard → New → PostgreSQL
-   - Name: janconnect-db
+   - Name: jansetu-db
    - Copy Internal Database URL
 
 3. **Create Web Service**
    - Dashboard → New → Web Service
    - Connect your Git repository
-   - Name: janconnect-backend
+   - Name: jansetu-backend
    - Environment: Docker
    - Instance Type: Starter ($7/month)
 
@@ -193,7 +193,7 @@ Complete guide for deploying JanConnect AI backend to production.
 
 5. **Deploy**
    - Render will auto-deploy on git push
-   - Access at: https://janconnect-backend.onrender.com
+   - Access at: https://jansetu-backend.onrender.com
 
 #### **Railway.app**
 
@@ -225,7 +225,7 @@ Complete guide for deploying JanConnect AI backend to production.
 2. **Login and Create App**
    ```bash
    heroku login
-   heroku create janconnect-backend
+   heroku create jansetu-backend
    ```
 
 3. **Add PostgreSQL**
@@ -331,7 +331,7 @@ DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5
 # 4. Instance: db.t3.micro (free tier) or larger
 # 5. Enable automated backups
 # 6. Copy endpoint
-DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@[ENDPOINT]:5432/janconnect
+DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@[ENDPOINT]:5432/jansetu
 ```
 
 #### **Google Cloud SQL**
@@ -340,7 +340,7 @@ DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@[ENDPOINT]:5432/janconnect
 # 2. Choose PostgreSQL
 # 3. Set instance ID, password
 # 4. Enable Cloud SQL Proxy for secure connection
-DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@/janconnect?host=/cloudsql/[CONNECTION_NAME]
+DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@/jansetu?host=/cloudsql/[CONNECTION_NAME]
 ```
 
 ---
@@ -354,9 +354,9 @@ Edit `app/main.py`:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://janconnect.in",
-        "https://www.janconnect.in",
-        "https://app.janconnect.in"
+        "https://jansetu.in",
+        "https://www.jansetu.in",
+        "https://app.jansetu.in"
     ],  # Restrict to your frontend domains
     allow_credentials=True,
     allow_methods=["GET", "POST"],  # Only needed methods
@@ -393,13 +393,13 @@ async def submit_complaint(...):
 ```bash
 # Store DATABASE_URL
 aws secretsmanager create-secret \
-    --name janconnect/database-url \
+    --name jansetu/database-url \
     --secret-string "postgresql+asyncpg://..."
 
 # Retrieve in app
 import boto3
 client = boto3.client('secretsmanager')
-secret = client.get_secret_value(SecretId='janconnect/database-url')
+secret = client.get_secret_value(SecretId='jansetu/database-url')
 DATABASE_URL = secret['SecretString']
 ```
 
@@ -409,8 +409,8 @@ In Nginx:
 ```nginx
 server {
     listen 443 ssl http2;
-    ssl_certificate /etc/letsencrypt/live/api.janconnect.in/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/api.janconnect.in/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/api.jansetu.in/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.jansetu.in/privkey.pem;
     
     # Redirect HTTP to HTTPS
     if ($scheme != "https") {
@@ -449,7 +449,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/var/log/janconnect/app.log'),
+        logging.FileHandler('/var/log/jansetu/app.log'),
         logging.StreamHandler()
     ]
 )
@@ -519,7 +519,7 @@ jobs:
 # Always test migrations on staging first!
 
 # 1. Backup database
-pg_dump -h <host> -U postgres janconnect > backup_$(date +%Y%m%d).sql
+pg_dump -h <host> -U postgres jansetu > backup_$(date +%Y%m%d).sql
 
 # 2. Run migration
 alembic upgrade head
@@ -544,7 +544,7 @@ git checkout <previous-commit>
 docker-compose up -d --build
 
 # Database
-psql -h <host> -U postgres janconnect < backup_YYYYMMDD.sql
+psql -h <host> -U postgres jansetu < backup_YYYYMMDD.sql
 alembic downgrade <previous-version>
 ```
 
@@ -594,10 +594,10 @@ async def summary(db: AsyncSession = Depends(get_db)):
 
 ```bash
 # 1. Health check
-curl https://api.janconnect.in/
+curl https://api.jansetu.in/
 
 # 2. Test API
-curl -X POST https://api.janconnect.in/api/complaints \
+curl -X POST https://api.jansetu.in/api/complaints \
   -H "Content-Type: application/json" \
   -d '{"ward_id":1,"raw_text":"Test","language":"English","channel":"text"}'
 
@@ -605,13 +605,13 @@ curl -X POST https://api.janconnect.in/api/complaints \
 docker-compose logs -f backend
 
 # 4. Monitor database
-psql -h <host> -U postgres janconnect -c "SELECT COUNT(*) FROM complaints;"
+psql -h <host> -U postgres jansetu -c "SELECT COUNT(*) FROM complaints;"
 
 # 5. Check SSL
-curl -I https://api.janconnect.in/
+curl -I https://api.jansetu.in/
 
 # 6. Test performance
-ab -n 100 -c 10 https://api.janconnect.in/
+ab -n 100 -c 10 https://api.jansetu.in/
 ```
 
 ---

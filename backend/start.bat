@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo JanConnect AI Backend - Quick Start
+echo JanSetu Backend - Quick Start
 echo ========================================
 echo.
 
@@ -41,7 +41,7 @@ alembic upgrade head
 echo.
 
 REM Start server
-echo Starting JanConnect AI Backend...
+echo Starting JanSetu Backend...
 echo.
 echo API Documentation: http://localhost:8000/docs
 echo Health Check: http://localhost:8000/

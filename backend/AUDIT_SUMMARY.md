@@ -1,4 +1,4 @@
-# JanConnect AI Backend - Security Audit Summary
+# JanSetu Backend - Security Audit Summary
 
 ## Security
 

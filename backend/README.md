@@ -1,4 +1,4 @@
-# JanConnect AI - Backend
+# JanSetu - Backend
 
 Digital Public Good platform for citizen complaint management and policymaker investment insights.
 
@@ -85,7 +85,7 @@ Edit `.env`:
 
 ```env
 # Local PostgreSQL
-DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/janconnect
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/jansetu
 
 # OR Supabase PostgreSQL
 # DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
@@ -126,7 +126,7 @@ The server will start at `http://localhost:8000`
 1. Install PostgreSQL 14+
 2. Create database:
    ```sql
-   CREATE DATABASE janconnect;
+   CREATE DATABASE jansetu;
    ```
 3. Update `DATABASE_URL` in `.env`
 
@@ -196,7 +196,7 @@ Automatically seeded on first startup for testing/demos.
 ### Build Image
 
 ```bash
-docker build -t janconnect-backend .
+docker build -t jansetu-backend .
 ```
 
 ### Run Container
@@ -205,8 +205,8 @@ docker build -t janconnect-backend .
 docker run -d \
   -p 8000:8000 \
   -e DATABASE_URL="postgresql+asyncpg://..." \
-  --name janconnect-backend \
-  janconnect-backend
+  --name jansetu-backend \
+  jansetu-backend
 ```
 
 ### Docker Compose (with PostgreSQL)
@@ -220,7 +220,7 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: janconnect
+      POSTGRES_DB: jansetu
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     volumes:
@@ -233,7 +233,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/janconnect
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/jansetu
       ENVIRONMENT: production
       DEBUG: false
     depends_on:

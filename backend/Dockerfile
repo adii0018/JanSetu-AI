@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for JanConnect AI Backend
+# Multi-stage Dockerfile for JanSetu Backend
 
 # Build stage
 FROM python:3.11-slim as builder

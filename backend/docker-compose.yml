@@ -4,11 +4,11 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:15-alpine
-    container_name: janconnect-db
+    container_name: jansetu-db
     environment:
-      POSTGRES_DB: janconnect
+      POSTGRES_DB: jansetu
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: janconnect2026
+      POSTGRES_PASSWORD: jansetu2026
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -22,11 +22,11 @@ services:
   # FastAPI Backend
   backend:
     build: .
-    container_name: janconnect-backend
+    container_name: jansetu-backend
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:janconnect2026@db:5432/janconnect
+      DATABASE_URL: postgresql+asyncpg://postgres:jansetu2026@db:5432/jansetu
       ENVIRONMENT: development
       DEBUG: "true"
     depends_on:

@@ -150,7 +150,7 @@ async def get_complaint_by_tracking_id(
     Get a single complaint by its tracking ID.
     
     Used by citizens to check the status of their complaint.
-    Tracking IDs are in format JC-XXXXX (e.g., JC-12345).
+    Tracking IDs are in format JS-XXXXX (e.g., JS-12345).
     
     Args:
         tracking_id: Complaint tracking ID

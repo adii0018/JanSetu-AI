@@ -1,5 +1,5 @@
 """
-Configuration module for JanConnect AI backend.
+Configuration module for JanSetu backend.
 Loads settings from environment variables using pydantic-settings.
 """
 from pydantic_settings import BaseSettings

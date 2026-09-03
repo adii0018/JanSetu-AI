@@ -1,4 +1,4 @@
-# JanConnect AI - Backend Design Document
+# JanSetu - Backend Design Document
 
 ## Architecture Overview
 
@@ -81,7 +81,7 @@ Development: `http://localhost:8000`
 ### Endpoints
 
 #### Health Check
-- **GET /** → `{"status": "ok", "service": "JanConnect AI Backend"}`
+- **GET /** → `{"status": "ok", "service": "JanSetu Backend"}`
 
 #### Complaints
 - **POST /api/complaints** - Submit new complaint
@@ -233,7 +233,7 @@ backend/
 ### Environment Variables (.env)
 ```bash
 # Database
-DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/janconnect
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/jansetu
 
 # API Keys (for future AI integration)
 NVIDIA_API_KEY=your_nvidia_nim_api_key_here

@@ -1,1 +1,1 @@
-"""Test package for JanConnect AI backend."""
+"""Test package for JanSetu backend."""

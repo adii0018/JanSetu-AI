@@ -38,9 +38,9 @@ SEED_COMPLAINTS = [
 
 
 def generate_tracking_id() -> str:
-    """Generate unique tracking ID in format JC-XXXXX."""
+    """Generate unique tracking ID in format JS-XXXXX."""
     digits = ''.join(random.choices(string.digits, k=5))
-    return f"JC-{digits}"
+    return f"JS-{digits}"
 
 
 async def seed_wards(db: AsyncSession) -> None:

@@ -1,5 +1,5 @@
 """
-TTS (Text-to-Speech) endpoints for JanConnect AI.
+TTS (Text-to-Speech) endpoints for JanSetu.
 Allows converting complaints and official responses into spoken voice scripts using NVIDIA TTS AI.
 """
 from fastapi import APIRouter, HTTPException, status

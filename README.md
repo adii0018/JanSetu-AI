@@ -4,7 +4,7 @@
 
 ### AI for Digital Public Infrastructure & Governance
 
-**Turning scattered citizen voices into ranked, explainable, data-backed public investment decisions.**
+**Turning scattered citizen voices into ranked, explainable, data-backed public investment decisions..**
 
 [![Status](https://img.shields.io/badge/status-prototype-orange)](#)
 [![License](https://img.shields.io/badge/license-MIT-blue)](#-license)

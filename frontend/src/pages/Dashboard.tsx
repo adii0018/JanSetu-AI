@@ -17,6 +17,8 @@ import {
   getWards,
   resetDemo,
   getMapData,
+  getSemanticClusters,
+  getGeoClusters,
 } from '../services/api';
 import type {
   DashboardSummary,
@@ -25,7 +27,10 @@ import type {
   Complaint,
   Ward,
   MapWard,
+  SemanticClustersResponse,
+  GeoClustersResponse,
 } from '../services/types';
+import { SemanticClusterCard } from '../components/dashboard/SemanticClusterCard';
 
 type LoadState<T> = { data: T | null; loading: boolean; error: string | null };
 function init<T>(): LoadState<T> { return { data: null, loading: true, error: null }; }
@@ -41,6 +46,8 @@ export function Dashboard() {
   const [complaints, setComplaints] = useState<LoadState<Complaint[]>>(init());
   const [wards, setWards] = useState<LoadState<Ward[]>>(init());
   const [mapData, setMapData] = useState<LoadState<MapWard[]>>(init());
+  const [semanticClusters, setSemanticClusters] = useState<LoadState<SemanticClustersResponse>>(init());
+  const [geoClusters, setGeoClusters] = useState<LoadState<GeoClustersResponse>>(init());
 
   const fetchAll = useCallback(async () => {
     setSummary((s) => ({ ...s, loading: true, error: null }));
@@ -49,6 +56,8 @@ export function Dashboard() {
     setComplaints((s) => ({ ...s, loading: true, error: null }));
     setWards((s) => ({ ...s, loading: true, error: null }));
     setMapData((s) => ({ ...s, loading: true, error: null }));
+    setSemanticClusters((s) => ({ ...s, loading: true, error: null }));
+    setGeoClusters((s) => ({ ...s, loading: true, error: null }));
 
     await Promise.allSettled([
       getDashboardSummary()
@@ -69,6 +78,12 @@ export function Dashboard() {
       getMapData()
         .then((data) => setMapData({ data, loading: false, error: null }))
         .catch((e) => setMapData({ data: null, loading: false, error: e.message })),
+      getSemanticClusters()
+        .then((data) => setSemanticClusters({ data, loading: false, error: null }))
+        .catch((e) => setSemanticClusters({ data: null, loading: false, error: e.message })),
+      getGeoClusters()
+        .then((data) => setGeoClusters({ data, loading: false, error: null }))
+        .catch((e) => setGeoClusters({ data: null, loading: false, error: e.message })),
     ]);
   }, []);
 
@@ -241,10 +256,19 @@ export function Dashboard() {
           </div>
         </div>
 
+        {/* Semantic AI Auto-Grouped Clusters — full width */}
+        <div style={{ marginTop: '1.75rem' }}>
+          <SemanticClusterCard
+            clusters={semanticClusters.data?.clusters ?? []}
+            loading={semanticClusters.loading}
+          />
+        </div>
+
         {/* Hotspot Map — full width */}
         <div style={{ marginTop: '1.75rem' }}>
           <HotspotMap
             data={mapData.data ?? []}
+            geoClusters={geoClusters.data?.clusters ?? []}
             loading={mapData.loading}
             error={mapData.error}
             onRetry={fetchAll}

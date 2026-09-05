@@ -1,15 +1,9 @@
 import React from 'react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
+  BarChart, Bar, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, Cell,
 } from 'recharts';
 import type { CategoryCount } from '../../services/types';
-import { Skeleton } from '../ui/ErrorState';
 import { ErrorState } from '../ui/ErrorState';
 
 interface CategoryChartProps {
@@ -20,17 +14,17 @@ interface CategoryChartProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  'Water Supply': '#2B3A67',
-  Road: '#D64545',
-  Health: '#1F8A70',
-  Electricity: '#E8A33D',
-  Education: '#6B48C8',
-  Sanitation: '#C67F1E',
-  'General / Other': '#726C60',
+  'Water Supply': '#2E6B3E',
+  'Road':          '#C0392B',
+  'Health':        '#1F8A70',
+  'Electricity':   '#C67F1E',
+  'Education':     '#5856D6',
+  'Sanitation':    '#6FBF73',
+  'General / Other': '#8A9E8D',
 };
 
-function getColor(category: string) {
-  return CATEGORY_COLORS[category] ?? '#2B3A67';
+function getColor(cat: string) {
+  return CATEGORY_COLORS[cat] ?? '#2E6B3E';
 }
 
 const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: CategoryCount }[] }) => {
@@ -39,16 +33,17 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
   return (
     <div
       style={{
-        background: 'var(--panel)',
-        border: '1px solid var(--line)',
-        borderRadius: 8,
-        padding: '0.5rem 0.875rem',
+        background: '#fff',
+        border: '1px solid var(--border)',
+        borderRadius: 12,
+        padding: '0.625rem 1rem',
         fontFamily: 'var(--font-body)',
         fontSize: '0.8125rem',
+        boxShadow: 'var(--shadow-sm)',
       }}
     >
       <strong style={{ color: 'var(--ink)' }}>{category}</strong>
-      <div style={{ color: 'var(--muted)' }}>{count} complaints</div>
+      <div style={{ color: 'var(--ink-soft)', marginTop: 2 }}>{count} complaints</div>
     </div>
   );
 };
@@ -56,33 +51,48 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
 export function CategoryChart({ data, loading, error, onRetry }: CategoryChartProps) {
   return (
     <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.125rem' }}>
-        Requests by category
-      </h2>
+      <div>
+        <div className="eyebrow" style={{ marginBottom: '0.4rem' }}>Breakdown</div>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>
+          Requests by category
+        </h2>
+      </div>
 
-      {loading && <Skeleton height={200} />}
+      {loading && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {[80, 55, 65, 40, 70].map((w, i) => (
+            <div key={i} className="skeleton" style={{ height: 14, width: `${w}%`, borderRadius: 6 }} />
+          ))}
+        </div>
+      )}
+
       {error && <ErrorState message={error} onRetry={onRetry} compact />}
 
       {!loading && !error && data.length === 0 && (
-        <p style={{ color: 'var(--muted)', textAlign: 'center', padding: '2rem 0', fontSize: '0.875rem' }}>
+        <p style={{ color: 'var(--ink-soft)', textAlign: 'center', padding: '1.5rem 0', fontSize: '0.875rem' }}>
           No category data yet.
         </p>
       )}
 
       {!loading && !error && data.length > 0 && (
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={190}>
           <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
-            <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--muted)', fontFamily: 'var(--font-body)' }} tickLine={false} axisLine={false} />
-            <YAxis
-              type="category"
-              dataKey="category"
-              width={100}
-              tick={{ fontSize: 11, fill: 'var(--muted)', fontFamily: 'var(--font-body)' }}
+            <XAxis
+              type="number"
+              tick={{ fontSize: 11, fill: 'var(--ink-soft)', fontFamily: 'var(--font-body)' }}
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--indigo-light)' }} />
-            <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={18}>
+            <YAxis
+              type="category"
+              dataKey="category"
+              width={96}
+              tick={{ fontSize: 11, fill: 'var(--ink-soft)', fontFamily: 'var(--font-body)' }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--leaf-pale)' }} />
+            <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={16}>
               {data.map((entry) => (
                 <Cell key={entry.category} fill={getColor(entry.category)} />
               ))}

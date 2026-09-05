@@ -1,4 +1,5 @@
 import React from 'react';
+import { playTick } from '../../utils/sounds';
 
 const LANGUAGES = ['Hindi + English', 'Hindi', 'English', 'Marathi', 'Gujarati', 'Tamil'];
 
@@ -21,15 +22,18 @@ export function LanguageChips({ value, onChange }: LanguageChipsProps) {
             key={lang}
             role="radio"
             aria-checked={isActive}
-            onClick={() => onChange(lang)}
+            onClick={() => {
+              playTick();
+              onChange(lang);
+            }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               padding: '0.3rem 0.875rem',
-              borderRadius: 9999,
-              border: `1.5px solid ${isActive ? 'var(--indigo)' : 'var(--line)'}`,
-              background: isActive ? 'var(--indigo-light)' : 'transparent',
-              color: isActive ? 'var(--indigo)' : 'var(--muted)',
+              borderRadius: 'var(--radius-pill)',
+              border: `1.5px solid ${isActive ? 'var(--moss)' : 'var(--border)'}`,
+              background: isActive ? 'var(--leaf-pale)' : '#fff',
+              color: isActive ? 'var(--moss)' : 'var(--ink-soft)',
               fontFamily: 'var(--font-body)',
               fontWeight: isActive ? 600 : 400,
               fontSize: '0.8125rem',

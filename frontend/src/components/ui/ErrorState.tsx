@@ -15,15 +15,22 @@ export function ErrorState({ message = 'Something went wrong.', onRetry, compact
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
-          color: 'var(--coral)',
+          color: '#C0392B',
           fontSize: '0.875rem',
           fontFamily: 'var(--font-body)',
+          padding: '0.5rem 0.75rem',
+          background: '#FDECEA',
+          borderRadius: 10,
         }}
       >
         <AlertCircle size={15} aria-hidden="true" />
-        <span>{message}</span>
+        <span style={{ flex: 1 }}>{message}</span>
         {onRetry && (
-          <button className="btn-ghost" onClick={onRetry} style={{ padding: '0.25rem 0.5rem', fontSize: '0.8125rem' }}>
+          <button
+            className="btn-ghost"
+            onClick={onRetry}
+            style={{ padding: '0.2rem 0.625rem', fontSize: '0.78rem', borderRadius: 'var(--radius-pill)' }}
+          >
             Retry
           </button>
         )}
@@ -38,15 +45,26 @@ export function ErrorState({ message = 'Something went wrong.', onRetry, compact
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '0.75rem',
-        padding: '2rem',
+        gap: '0.875rem',
+        padding: '2.5rem',
         textAlign: 'center',
-        color: 'var(--muted)',
         fontFamily: 'var(--font-body)',
       }}
     >
-      <AlertCircle size={32} color="var(--coral)" aria-hidden="true" />
-      <p style={{ fontWeight: 500, color: 'var(--ink)' }}>{message}</p>
+      <div
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: '50%',
+          background: '#FDECEA',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <AlertCircle size={24} color="#C0392B" aria-hidden="true" />
+      </div>
+      <p style={{ fontWeight: 500, color: 'var(--ink)', margin: 0 }}>{message}</p>
       {onRetry && (
         <button className="btn-ghost" onClick={onRetry}>
           <RefreshCw size={14} aria-hidden="true" />
@@ -58,11 +76,9 @@ export function ErrorState({ message = 'Something went wrong.', onRetry, compact
 }
 
 // ── Skeleton Loader ───────────────────────────────────────────
-
 interface SkeletonProps {
   height?: number | string;
   width?: number | string;
-  className?: string;
   style?: React.CSSProperties;
 }
 
@@ -70,17 +86,8 @@ export function Skeleton({ height = 20, width = '100%', style }: SkeletonProps) 
   return (
     <div
       aria-hidden="true"
-      style={{
-        height,
-        width,
-        background: 'linear-gradient(90deg, var(--line) 25%, var(--indigo-light) 50%, var(--line) 75%)',
-        backgroundSize: '200% 100%',
-        animation: 'skeleton-shimmer 1.4s ease infinite',
-        borderRadius: 'var(--control-radius)',
-        ...style,
-      }}
+      className="skeleton"
+      style={{ height, width, ...style }}
     />
   );
 }
-
-

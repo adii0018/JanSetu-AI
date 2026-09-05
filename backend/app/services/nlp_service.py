@@ -8,20 +8,39 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Category keyword mappings for rule-based classification
+# Comprehensive Multilingual Category keyword mappings (Hindi, Hinglish, Marathi, Gujarati, Tamil, English)
 CATEGORY_KEYWORDS = {
-    "Water Supply": ["water", "paani", "pani", "supply", "tanker", "pipeline", "peene"],
-    "Road": ["road", "sadak", "gaddha", "pothole", "street", "traffic", "gadde"],
-    "Health": ["health", "hospital", "clinic", "doctor", "bimari", "beemar", "ambulance", "dawai"],
-    "Electricity": ["electricity", "bijli", "light", "transformer", "power", "current"],
-    "Education": ["school", "shiksha", "teacher", "padhai", "college", "admission"],
-    "Sanitation": ["garbage", "kachra", "safai", "sewage", "drain", "gutter", "toilet", "gandagi"],
+    "Water Supply": [
+        "water", "paani", "pani", "supply", "tanker", "pipeline", "peene", "jal", "tap",
+        "पानी", "जल", "नल", "टैंकर", "पाणी", "પાણી", "નળ", "தண்ணீர்", "தண்ணி", "குடிநீர்"
+    ],
+    "Road": [
+        "road", "sadak", "gaddha", "pothole", "street", "traffic", "gadde", "rasta", "bridge",
+        "सड़क", "गड्ढा", "रास्ता", "गड्ढे", "रस्ता", "ખાળો", "રસ્તો", "சாலை", "தெரு", "ரோடு"
+    ],
+    "Health": [
+        "health", "hospital", "clinic", "doctor", "bimari", "beemar", "ambulance", "dawai", "dawa",
+        "अस्पताल", "डॉक्टर", "दवा", "बीमारी", "आरोग्य", "દવા", "હોસ્પિટલ", "மருத்துவமனை", "டாக்டர்", "மருந்து"
+    ],
+    "Electricity": [
+        "electricity", "bijli", "light", "transformer", "power", "current", "wire", "pole",
+        "बिजली", "लाइट", "ट्रांसफॉर्मर", "वीज", "વીજળી", "લાઇટ", "மின்சாரம்", "கரண்ட்", "லைட்"
+    ],
+    "Education": [
+        "school", "shiksha", "teacher", "padhai", "college", "admission", "student", "books",
+        "स्कूल", "शिक्षक", "पढ़ाई", "शिक्षा", "शाळा", "શાળા", "શિક્ષણ", "பள்ளி", "ஆசிரியர்", "படிப்பு"
+    ],
+    "Sanitation": [
+        "garbage", "kachra", "safai", "sewage", "drain", "gutter", "toilet", "gandagi", "nalla",
+        "कचरा", "सफाई", "नाली", "गटर", "गंदगी", "કચરો", "સફાઈ", "ગટર", "குப்பை", "சாக்கடை", "சுத்தம்"
+    ],
 }
 
-# Urgency indicator words
+# Multilingual Urgency indicator words
 URGENCY_WORDS = [
     "urgent", "emergency", "bahut", "kaafi", "din se", "hafto se", "weeks",
-    "months", "bachche", "children", "zaroori", "turant", "problem", "pareshani"
+    "months", "bachche", "children", "zaroori", "turant", "problem", "pareshani",
+    "तुरंत", "जरूरी", "गंभीर", "खराब", "खूप", "तात्काळ", "ઝડપી", "અતિ", "અવશ્ય", "அவசரம்", "உடனடியாக", "ஆபத்து"
 ]
 
 

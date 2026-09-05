@@ -43,7 +43,7 @@ async def synthesize_tts(request: TTSRequest):
         )
 
     try:
-        result = tts_service.synthesize_speech(
+        result = await tts_service.synthesize_speech(
             text=request.text,
             language=request.language or "hi-IN",
             voice=request.voice or "female",
@@ -64,7 +64,7 @@ async def get_tts_status():
     return {
         "status": "operational",
         "nvidia_tts_enabled": has_key,
-        "supported_languages": ["hi-IN", "en-IN", "en-US"],
+        "supported_languages": ["hi-IN", "mr-IN", "gu-IN", "ta-IN", "en-IN"],
         "supported_voices": ["female", "male"],
         "engine": "NVIDIA_TTS_Engine" if has_key else "Web_Speech_Fallback"
     }

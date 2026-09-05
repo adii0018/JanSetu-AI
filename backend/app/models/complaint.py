@@ -2,7 +2,7 @@
 Complaint ORM model.
 Represents citizen complaints with AI classification and tracking.
 """
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, CheckConstraint, Enum
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, CheckConstraint, Enum, Float
 from sqlalchemy.sql import func
 from app.database import Base
 import enum
@@ -52,6 +52,7 @@ class Complaint(Base):
     confidence = Column(Integer, nullable=False)
     urgency = Column(Integer, nullable=False)
     status = Column(Enum(ComplaintStatus), nullable=False, default=ComplaintStatus.SUBMITTED)
+    upvote_count = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
     
     __table_args__ = (

@@ -9,10 +9,11 @@ import type {
   ResetDemoResponse,
   TTSRequest,
   TTSResponse,
+  MapWard,
 } from './types';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
-const DASHBOARD_API_KEY = import.meta.env.VITE_DASHBOARD_API_KEY ?? '';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const DASHBOARD_API_KEY = import.meta.env.VITE_DASHBOARD_API_KEY || 'jansetu_dev_key_2026';
 
 // Public client — no auth header
 const publicClient = axios.create({
@@ -61,3 +62,11 @@ export const resetDemo = (): Promise<ResetDemoResponse> =>
 // ── Text-To-Speech (TTS) ──────────────────────────────────────
 export const synthesizeTTS = (body: TTSRequest): Promise<TTSResponse> =>
   publicClient.post<TTSResponse>('/api/v1/tts/synthesize', body).then((r) => r.data);
+
+// ── Upvote ───────────────────────────────────────────────────
+export const upvoteComplaint = (trackingId: string): Promise<Complaint> =>
+  publicClient.post<Complaint>(`/api/complaints/${trackingId}/upvote`).then((r) => r.data);
+
+// ── Map Data ─────────────────────────────────────────────────
+export const getMapData = (): Promise<MapWard[]> =>
+  publicClient.get<MapWard[]>('/api/complaints/map-data').then((r) => r.data);

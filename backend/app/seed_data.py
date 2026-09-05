@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 # Fixed ward data (always seeded first)
 WARD_DATA = [
-    {"name": "Rajwada", "infra_index": 35, "budget_index": 30},
-    {"name": "Vijay Nagar", "infra_index": 80, "budget_index": 75},
-    {"name": "Bhawarkuan", "infra_index": 55, "budget_index": 50},
-    {"name": "Palasia", "infra_index": 60, "budget_index": 55},
-    {"name": "Rau", "infra_index": 25, "budget_index": 20},
-    {"name": "Sudama Nagar", "infra_index": 50, "budget_index": 45},
+    {"name": "Rajwada", "infra_index": 35, "budget_index": 30, "lat": 22.7196, "lng": 75.8577},
+    {"name": "Vijay Nagar", "infra_index": 80, "budget_index": 75, "lat": 22.7535, "lng": 75.8867},
+    {"name": "Bhawarkuan", "infra_index": 55, "budget_index": 50, "lat": 22.7021, "lng": 75.8681},
+    {"name": "Palasia", "infra_index": 60, "budget_index": 55, "lat": 22.7278, "lng": 75.8703},
+    {"name": "Rau", "infra_index": 25, "budget_index": 20, "lat": 22.6428, "lng": 75.8098},
+    {"name": "Sudama Nagar", "infra_index": 50, "budget_index": 45, "lat": 22.6894, "lng": 75.8442},
 ]
 
 # Demo complaint data (seeded if complaints table is empty)

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Type, Mic, MessageCircle } from 'lucide-react';
 import { Badge } from '../ui/Badge';
+import { playTick } from '../../utils/sounds';
 
 export type InputMode = 'text' | 'voice' | 'whatsapp';
 
@@ -25,10 +26,10 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
       style={{
         display: 'flex',
         gap: 4,
-        background: 'var(--paper)',
-        border: '1px solid var(--line)',
-        borderRadius: 'var(--control-radius)',
-        padding: 3,
+        background: 'var(--leaf-pale)',
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-pill)',
+        padding: 4,
       }}
     >
       {modes.map(({ id, label, Icon }) => {
@@ -38,7 +39,10 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
             key={id}
             role="radio"
             aria-checked={isActive}
-            onClick={() => onChange(id)}
+            onClick={() => {
+              playTick();
+              onChange(id);
+            }}
             style={{
               flex: 1,
               display: 'flex',
@@ -47,13 +51,13 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
               gap: '0.375rem',
               padding: '0.5rem 0.75rem',
               border: 'none',
-              borderRadius: 6,
+              borderRadius: 'var(--radius-pill)',
               fontFamily: 'var(--font-body)',
               fontWeight: 600,
               fontSize: '0.8125rem',
               cursor: 'pointer',
-              background: isActive ? 'var(--indigo)' : 'transparent',
-              color: isActive ? '#fff' : 'var(--muted)',
+              background: isActive ? 'var(--deep-moss)' : 'transparent',
+              color: isActive ? '#fff' : 'var(--ink-soft)',
               transition: 'background 150ms ease, color 150ms ease',
               position: 'relative',
             }}
@@ -62,7 +66,7 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
             {label}
             {id === 'whatsapp' && isActive && (
               <span style={{ marginLeft: 4 }}>
-                <Badge variant="saffron" size="sm">Coming soon</Badge>
+                <Badge variant="muted" size="sm">Coming soon</Badge>
               </span>
             )}
           </button>

@@ -36,6 +36,7 @@ class ComplaintResponse(BaseModel):
     confidence: int
     urgency: int
     status: str
+    upvote_count: int = 0
     created_at: datetime
     
     model_config = {"from_attributes": True}
@@ -53,6 +54,22 @@ class WardResponse(BaseModel):
     """Schema for ward response."""
     id: int
     name: str
+    infra_index: int
+    budget_index: int
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    
+    model_config = {"from_attributes": True}
+
+
+class WardMapData(BaseModel):
+    """Schema for ward map data with complaint stats."""
+    id: int
+    name: str
+    lat: float
+    lng: float
+    complaint_count: int
+    avg_urgency: float
     infra_index: int
     budget_index: int
     

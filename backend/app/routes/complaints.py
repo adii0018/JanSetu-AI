@@ -10,11 +10,12 @@ import logging
 from app.database import get_db
 from app.models.complaint import Complaint
 from app.models.ward import Ward
-from app.schemas.complaint import ComplaintCreate, ComplaintResponse
+from app.schemas.complaint import ComplaintCreate, ComplaintResponse, WardMapData
 from app.services.nlp_service import classify_complaint
 from app.seed_data import generate_tracking_id
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from sqlalchemy import func as sqlfunc
 
 logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
@@ -141,6 +142,46 @@ async def list_complaints(
     return complaints
 
 
+@router.get("/map-data", response_model=List[WardMapData])
+async def get_map_data(
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Get ward-level complaint heatmap data for the interactive map.
+    Returns complaint count and average urgency per ward with coordinates.
+    Must be registered BEFORE /{tracking_id} to avoid routing conflicts.
+    """
+    ward_stats = await db.execute(
+        select(
+            Ward.id,
+            Ward.name,
+            Ward.lat,
+            Ward.lng,
+            Ward.infra_index,
+            Ward.budget_index,
+            sqlfunc.count(Complaint.id).label("complaint_count"),
+            sqlfunc.coalesce(sqlfunc.avg(Complaint.urgency), 0).label("avg_urgency"),
+        )
+        .outerjoin(Complaint, Ward.id == Complaint.ward_id)
+        .where(Ward.lat.isnot(None))
+        .group_by(Ward.id, Ward.name, Ward.lat, Ward.lng, Ward.infra_index, Ward.budget_index)
+    )
+    rows = ward_stats.all()
+    return [
+        WardMapData(
+            id=row.id,
+            name=row.name,
+            lat=row.lat,
+            lng=row.lng,
+            complaint_count=row.complaint_count,
+            avg_urgency=round(float(row.avg_urgency), 1),
+            infra_index=row.infra_index,
+            budget_index=row.budget_index,
+        )
+        for row in rows
+    ]
+
+
 @router.get("/{tracking_id}", response_model=ComplaintResponse)
 async def get_complaint_by_tracking_id(
     tracking_id: str,
@@ -174,3 +215,42 @@ async def get_complaint_by_tracking_id(
         )
     
     return complaint
+
+
+@router.post("/{tracking_id}/upvote", response_model=ComplaintResponse)
+async def upvote_complaint(
+    tracking_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Upvote a complaint — signals "I have the same problem".
+    Citizens can support existing complaints to increase their priority visibility.
+    
+    Args:
+        tracking_id: Complaint tracking ID
+        db: Database session
+    
+    Returns:
+        ComplaintResponse: Updated complaint with new upvote_count
+    
+    Raises:
+        HTTPException: 404 if tracking ID not found
+    """
+    result = await db.execute(
+        select(Complaint).where(Complaint.tracking_id == tracking_id)
+    )
+    complaint = result.scalar_one_or_none()
+    
+    if not complaint:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": "Complaint not found", "detail": f"Complaint with tracking ID '{tracking_id}' does not exist"}
+        )
+    
+    complaint.upvote_count = (complaint.upvote_count or 0) + 1
+    await db.commit()
+    await db.refresh(complaint)
+    
+    logger.info(f"Complaint {tracking_id} upvoted. Total upvotes: {complaint.upvote_count}")
+    return complaint
+

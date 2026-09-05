@@ -128,7 +128,7 @@ export function AiConsole({ state }: AiConsoleProps) {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: 'var(--teal)',
+              background: 'var(--leaf)',
               animation: 'pulse-dot 1.5s ease-in-out infinite',
             }}
           />
@@ -234,7 +234,7 @@ export function AiConsole({ state }: AiConsoleProps) {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <Badge variant="indigo">{result.category}</Badge>
+            <Badge variant="ok">{result.category}</Badge>
             <Badge variant={urgencyVariant(result.urgency)}>
               Urgency {result.urgency}/100
             </Badge>

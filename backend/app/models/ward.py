@@ -2,7 +2,7 @@
 Ward ORM model.
 Represents administrative wards with infrastructure and budget indices.
 """
-from sqlalchemy import Column, Integer, String, CheckConstraint
+from sqlalchemy import Column, Integer, String, Float, CheckConstraint
 from app.database import Base
 
 
@@ -22,6 +22,8 @@ class Ward(Base):
     name = Column(String(100), unique=True, nullable=False, index=True)
     infra_index = Column(Integer, nullable=False)
     budget_index = Column(Integer, nullable=False)
+    lat = Column(Float, nullable=True)
+    lng = Column(Float, nullable=True)
     
     __table_args__ = (
         CheckConstraint('infra_index >= 0 AND infra_index <= 100', name='check_infra_index_range'),

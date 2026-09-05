@@ -9,6 +9,14 @@ interface TTSReaderProps {
   label?: string;
 }
 
+export const SUPPORTED_LANGS = [
+  { code: 'hi-IN', label: 'Hindi (हिन्दी)' },
+  { code: 'mr-IN', label: 'Marathi (मराठी)' },
+  { code: 'gu-IN', label: 'Gujarati (ગુજરાતી)' },
+  { code: 'ta-IN', label: 'Tamil (தமிழ்)' },
+  { code: 'en-IN', label: 'English' },
+];
+
 export const TTSReader: React.FC<TTSReaderProps> = ({
   text,
   defaultLang = 'hi-IN',
@@ -17,7 +25,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [language, setLanguage] = useState<'hi-IN' | 'en-IN'>(defaultLang);
+  const [language, setLanguage] = useState<string>(defaultLang);
   const [speed, setSpeed] = useState<number>(1.0);
   const [spokenText, setSpokenText] = useState<string | null>(null);
   const [isNvidiaEngine, setIsNvidiaEngine] = useState<boolean>(true);
@@ -106,7 +114,9 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 
   const toggleLanguage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const nextLang = language === 'hi-IN' ? 'en-IN' : 'hi-IN';
+    const codes = SUPPORTED_LANGS.map(l => l.code);
+    const currIndex = codes.indexOf(language);
+    const nextLang = codes[(currIndex + 1) % codes.length];
     setLanguage(nextLang);
     setSpokenText(null); // Reset cache for new language
     if (isPlaying) {
@@ -192,7 +202,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
             title="Toggle Language"
           >
             <Globe className="w-3 h-3 text-emerald-400" />
-            <span>{language === 'hi-IN' ? 'Hindi (हिन्दी)' : 'English'}</span>
+            <span>{SUPPORTED_LANGS.find((l) => l.code === language)?.label || 'Hindi (हिन्दी)'}</span>
           </button>
 
           {/* Speed Selector Button */}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-type BadgeVariant = 'indigo' | 'saffron' | 'teal' | 'coral' | 'muted';
+type BadgeVariant = 'moss' | 'urgent' | 'medium' | 'ok' | 'muted';
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -10,26 +10,25 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, React.CSSProperties> = {
-  indigo: { background: 'var(--indigo-light)', color: 'var(--indigo)' },
-  saffron: { background: 'var(--saffron-light)', color: 'var(--saffron-deep)' },
-  teal: { background: 'var(--teal-light)', color: 'var(--teal)' },
-  coral: { background: 'var(--coral-light)', color: 'var(--coral)' },
-  muted: { background: 'var(--line)', color: 'var(--muted)' },
+  moss:   { background: 'var(--leaf-pale)', color: 'var(--moss)' },
+  urgent: { background: '#FDECEA', color: '#C0392B' },
+  medium: { background: '#FEF3E2', color: '#C67F1E' },
+  ok:     { background: 'var(--leaf-pale)', color: 'var(--moss)' },
+  muted:  { background: 'rgba(91,107,93,0.1)', color: 'var(--ink-soft)' },
 };
 
-export function Badge({ children, variant = 'indigo', size = 'sm', className }: BadgeProps) {
+export function Badge({ children, variant = 'moss', size = 'sm', className }: BadgeProps) {
   return (
     <span
       className={className}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        padding: size === 'sm' ? '0.2rem 0.6rem' : '0.3rem 0.75rem',
-        borderRadius: 20,
-        fontSize: size === 'sm' ? '0.75rem' : '0.8125rem',
+        padding: size === 'sm' ? '0.2rem 0.65rem' : '0.3rem 0.875rem',
+        borderRadius: 'var(--radius-pill)',
+        fontSize: size === 'sm' ? '0.72rem' : '0.8125rem',
         fontWeight: 600,
         fontFamily: 'var(--font-body)',
-        letterSpacing: '0.01em',
         whiteSpace: 'nowrap',
         ...variantStyles[variant],
       }}
@@ -40,7 +39,7 @@ export function Badge({ children, variant = 'indigo', size = 'sm', className }: 
 }
 
 export function urgencyVariant(urgency: number): BadgeVariant {
-  if (urgency >= 70) return 'coral';
-  if (urgency >= 50) return 'saffron';
-  return 'teal';
+  if (urgency >= 70) return 'urgent';
+  if (urgency >= 50) return 'medium';
+  return 'ok';
 }

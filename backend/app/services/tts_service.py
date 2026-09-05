@@ -5,7 +5,7 @@ and voice output for civic complaints in Hindi (hi-IN) and English (en-IN).
 """
 import logging
 from typing import Dict, Any, Optional
-from openai import OpenAI
+from openai import AsyncOpenAI
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -20,15 +20,16 @@ class TTSService:
         
         if self.api_key:
             try:
-                self.client = OpenAI(
+                self.client = AsyncOpenAI(
                     base_url='https://integrate.api.nvidia.com/v1',
-                    api_key=self.api_key
+                    api_key=self.api_key,
+                    timeout=4.0
                 )
-                logger.info("NVIDIA TTS Client initialized successfully.")
+                logger.info("NVIDIA TTS Async Client initialized successfully.")
             except Exception as e:
                 logger.error(f"Failed to initialize NVIDIA TTS client: {e}")
 
-    def synthesize_speech(self, text: str, language: str = "hi-IN", voice: str = "female", speed: float = 1.0) -> Dict[str, Any]:
+    async def synthesize_speech(self, text: str, language: str = "hi-IN", voice: str = "female", speed: float = 1.0) -> Dict[str, Any]:
         """
         Process input text using NVIDIA AI for Text-To-Speech audio synthesis.
         Formats the input into spoken phonetically optimized text for Hindi/English TTS speech engines.
@@ -55,14 +56,15 @@ class TTSService:
                     "Keep it under 3 sentences."
                 )
 
-                response = self.client.chat.completions.create(
+                response = await self.client.chat.completions.create(
                     model="meta/llama-3.2-11b-vision-instruct",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": f"Text to convert into speech script: {text}"}
                     ],
                     max_tokens=150,
-                    temperature=0.3
+                    temperature=0.3,
+                    timeout=4.0
                 )
                 
                 if response.choices and response.choices[0].message.content:

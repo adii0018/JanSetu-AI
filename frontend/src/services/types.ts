@@ -5,6 +5,8 @@ export interface Ward {
   name: string;
   infra_index: number;
   budget_index: number;
+  lat?: number;
+  lng?: number;
 }
 
 export type Channel = 'text' | 'voice' | 'whatsapp';
@@ -21,7 +23,19 @@ export interface Complaint {
   confidence: number;
   urgency: number;
   status: ComplaintStatus;
+  upvote_count: number;
   created_at: string;
+}
+
+export interface MapWard {
+  id: number;
+  name: string;
+  lat: number;
+  lng: number;
+  complaint_count: number;
+  avg_urgency: number;
+  infra_index: number;
+  budget_index: number;
 }
 
 export interface SubmitComplaintBody {

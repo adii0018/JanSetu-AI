@@ -8,20 +8,48 @@ from typing import Optional
 from app.models.complaint import ComplaintChannel, ComplaintStatus
 
 
+from typing import Optional, Union, Any
+
 class ComplaintCreate(BaseModel):
     """Schema for creating a new complaint."""
-    ward_id: int = Field(..., gt=0, description="ID of the ward where complaint originates")
-    raw_text: str = Field(..., min_length=10, max_length=2000, description="Complaint text from citizen")
+    ward_id: Optional[Any] = Field(default=0, description="ID of the ward (0 or None = AI auto-detects from text)")
+    raw_text: str = Field(..., min_length=3, max_length=2000, description="Complaint text from citizen")
     language: str = Field(default="Hindi + English", min_length=1, max_length=50, description="Language of complaint")
-    channel: ComplaintChannel = Field(default=ComplaintChannel.TEXT, description="Submission channel")
+    channel: Any = Field(default=ComplaintChannel.TEXT, description="Submission channel (text, voice, whatsapp)")
     
-    @field_validator('raw_text', 'language')
+    @field_validator('ward_id', mode='before')
     @classmethod
-    def validate_not_empty(cls, v: str) -> str:
-        """Ensure string fields are not just whitespace."""
-        if not v or not v.strip():
+    def parse_ward_id(cls, v: Any) -> Optional[int]:
+        """Safely convert ward_id to int or 0."""
+        if v is None or v == "" or v == "0":
+            return 0
+        try:
+            val = int(v)
+            return val if val >= 0 else 0
+        except (ValueError, TypeError):
+            return 0
+
+    @field_validator('channel', mode='before')
+    @classmethod
+    def parse_channel(cls, v: Any) -> ComplaintChannel:
+        """Safely parse channel case-insensitively."""
+        if isinstance(v, ComplaintChannel):
+            return v
+        if isinstance(v, str):
+            clean_v = v.strip().lower()
+            if clean_v in ("voice", "audio"):
+                return ComplaintChannel.VOICE
+            elif clean_v in ("whatsapp", "wa"):
+                return ComplaintChannel.WHATSAPP
+        return ComplaintChannel.TEXT
+
+    @field_validator('raw_text', 'language', mode='before')
+    @classmethod
+    def validate_not_empty(cls, v: Any) -> str:
+        """Ensure string fields are not empty or whitespace only."""
+        if not v or not str(v).strip():
             raise ValueError('Field cannot be empty or whitespace only')
-        return v.strip()
+        return str(v).strip()
 
 
 class ComplaintResponse(BaseModel):

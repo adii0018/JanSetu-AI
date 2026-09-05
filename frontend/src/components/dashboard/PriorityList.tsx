@@ -23,10 +23,13 @@ function PriorityRowItem({ row, index }: { row: PriorityRow; index: number }) {
     return () => clearTimeout(t);
   }, [index]);
 
-  const total = row.demand_score + row.infra_gap + row.budget_gap;
-  const demandW = total > 0 ? (row.demand_score / total) * 100 : 0;
-  const infraW  = total > 0 ? (row.infra_gap / total) * 100 : 0;
-  const budgetW = total > 0 ? (row.budget_gap / total) * 100 : 0;
+  const wDemand = row.demand_score * 0.45;
+  const wInfra  = row.infra_gap * 0.30;
+  const wBudget = row.budget_gap * 0.25;
+  const totalW = wDemand + wInfra + wBudget || 1;
+  const demandW = (wDemand / totalW) * 100;
+  const infraW  = (wInfra / totalW) * 100;
+  const budgetW = (wBudget / totalW) * 100;
 
   const isTop = index === 0;
 

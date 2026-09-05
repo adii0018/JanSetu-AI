@@ -12,28 +12,63 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Fixed ward data (always seeded first)
+# Fixed ward data (Pan-India major cities and wards)
 WARD_DATA = [
-    {"name": "Rajwada", "infra_index": 35, "budget_index": 30, "lat": 22.7196, "lng": 75.8577},
-    {"name": "Vijay Nagar", "infra_index": 80, "budget_index": 75, "lat": 22.7535, "lng": 75.8867},
-    {"name": "Bhawarkuan", "infra_index": 55, "budget_index": 50, "lat": 22.7021, "lng": 75.8681},
-    {"name": "Palasia", "infra_index": 60, "budget_index": 55, "lat": 22.7278, "lng": 75.8703},
-    {"name": "Rau", "infra_index": 25, "budget_index": 20, "lat": 22.6428, "lng": 75.8098},
-    {"name": "Sudama Nagar", "infra_index": 50, "budget_index": 45, "lat": 22.6894, "lng": 75.8442},
+    # Madhya Pradesh
+    {"name": "Indore - Rajwada", "infra_index": 35, "budget_index": 30, "lat": 22.7196, "lng": 75.8577},
+    {"name": "Indore - Vijay Nagar", "infra_index": 80, "budget_index": 75, "lat": 22.7535, "lng": 75.8867},
+    {"name": "Indore - Bhawarkuan", "infra_index": 55, "budget_index": 50, "lat": 22.7021, "lng": 75.8681},
+    {"name": "Indore - Palasia", "infra_index": 60, "budget_index": 55, "lat": 22.7278, "lng": 75.8703},
+    {"name": "Indore - Rau", "infra_index": 25, "budget_index": 20, "lat": 22.6428, "lng": 75.8098},
+    {"name": "Bhopal - MP Nagar", "infra_index": 65, "budget_index": 60, "lat": 23.2332, "lng": 77.4343},
+    
+    # Delhi NCR
+    {"name": "Delhi - Connaught Place", "infra_index": 85, "budget_index": 80, "lat": 28.6315, "lng": 77.2167},
+    {"name": "Delhi - Rohini Sector 7", "infra_index": 45, "budget_index": 40, "lat": 28.7495, "lng": 77.0565},
+    {"name": "Delhi - Dwarka Sector 10", "infra_index": 70, "budget_index": 65, "lat": 28.5921, "lng": 77.0460},
+    {"name": "Noida - Sector 62", "infra_index": 75, "budget_index": 70, "lat": 28.6280, "lng": 77.3649},
+    
+    # Maharashtra
+    {"name": "Mumbai - Andheri West", "infra_index": 60, "budget_index": 55, "lat": 19.1136, "lng": 72.8697},
+    {"name": "Mumbai - Bandra West", "infra_index": 80, "budget_index": 75, "lat": 19.0596, "lng": 72.8295},
+    {"name": "Mumbai - Dadar Central", "infra_index": 50, "budget_index": 45, "lat": 19.0178, "lng": 72.8478},
+    {"name": "Pune - Kothrud", "infra_index": 65, "budget_index": 60, "lat": 18.5074, "lng": 73.8077},
+    
+    # Karnataka
+    {"name": "Bengaluru - Koramangala", "infra_index": 70, "budget_index": 65, "lat": 12.9352, "lng": 77.6245},
+    {"name": "Bengaluru - Indiranagar", "infra_index": 75, "budget_index": 70, "lat": 12.9784, "lng": 77.6408},
+    {"name": "Bengaluru - Whitefield", "infra_index": 50, "budget_index": 45, "lat": 12.9698, "lng": 77.7499},
+    
+    # Uttar Pradesh
+    {"name": "Lucknow - Hazratganj", "infra_index": 60, "budget_index": 50, "lat": 26.8467, "lng": 80.9462},
+    {"name": "Varanasi - Cantt Area", "infra_index": 40, "budget_index": 35, "lat": 25.3176, "lng": 82.9739},
+    
+    # Rajasthan
+    {"name": "Jaipur - Pink City", "infra_index": 55, "budget_index": 50, "lat": 26.9220, "lng": 75.8267},
+    
+    # Gujarat
+    {"name": "Ahmedabad - Navrangpura", "infra_index": 70, "budget_index": 65, "lat": 23.0368, "lng": 72.5611},
+    
+    # Telangana & Andhra Pradesh
+    {"name": "Hyderabad - Hitech City", "infra_index": 85, "budget_index": 80, "lat": 17.4435, "lng": 78.3772},
+    
+    # Tamil Nadu
+    {"name": "Chennai - T. Nagar", "infra_index": 65, "budget_index": 60, "lat": 13.0418, "lng": 80.2341},
+    
+    # West Bengal
+    {"name": "Kolkata - Salt Lake Sector V", "infra_index": 75, "budget_index": 70, "lat": 22.5867, "lng": 88.4171},
 ]
 
 # Demo complaint data (seeded if complaints table is empty)
 SEED_COMPLAINTS = [
-    {"ward": "Rajwada", "text": "10 din se paani ki supply nahi aa rahi, bahut pareshani ho rahi hai", "category": "Water Supply", "urgency": 88},
-    {"ward": "Rajwada", "text": "Sadak par bade gaddhe hain, accident ho sakta hai", "category": "Road", "urgency": 70},
-    {"ward": "Rau", "text": "Naye area mein street light nahi lagi, raat ko andhera rehta hai", "category": "Electricity", "urgency": 55},
-    {"ward": "Rau", "text": "Government school mein teacher hi nahi aate, bachchon ki padhai kharab ho rahi hai", "category": "Education", "urgency": 75},
-    {"ward": "Bhawarkuan", "text": "Drain overflow ho raha hai, safai nahi ho rahi hafto se", "category": "Sanitation", "urgency": 65},
-    {"ward": "Sudama Nagar", "text": "Transformer kharab hai, power cut roz ho raha hai", "category": "Electricity", "urgency": 60},
-    {"ward": "Palasia", "text": "Hospital mein ambulance available nahi thi emergency mein", "category": "Health", "urgency": 90},
-    {"ward": "Vijay Nagar", "text": "Road repair ka kaam adha chhod diya gaya hai", "category": "Road", "urgency": 40},
-    {"ward": "Rajwada", "text": "Public toilet ki halat bahut kharab hai, safai zaroori hai", "category": "Sanitation", "urgency": 50},
-    {"ward": "Rau", "text": "Paani ka pipeline leak ho raha hai kai hafto se", "category": "Water Supply", "urgency": 72},
+    {"ward": "Indore - Rajwada", "text": "10 din se paani ki supply nahi aa rahi, bahut pareshani ho rahi hai", "category": "Water Supply", "urgency": 88},
+    {"ward": "Indore - Rajwada", "text": "water issu in indore, no drinking water in tap for 3 days", "category": "Water Supply", "urgency": 85},
+    {"ward": "Delhi - Connaught Place", "text": "Drainage overflow near CP Metro station Gate 2, severe smell and sanitation issue", "category": "Sanitation", "urgency": 75},
+    {"ward": "Mumbai - Andheri West", "text": "Potholes on Link Road causing major traffic jam and accidents in rainy season", "category": "Road", "urgency": 80},
+    {"ward": "Bengaluru - Whitefield", "text": "Street lights not working on ITPL main road for 1 week, unsafe for commuters at night", "category": "Electricity", "urgency": 65},
+    {"ward": "Lucknow - Hazratganj", "text": "Garbage dumping near market area, municipal van not coming regularly", "category": "Sanitation", "urgency": 60},
+    {"ward": "Hyderabad - Hitech City", "text": "Water pipeline leakage near Cyber Towers causing water wastage", "category": "Water Supply", "urgency": 70},
+    {"ward": "Jaipur - Pink City", "text": "Traffic signal broken near Badi Chaupar causing chaos", "category": "Road", "urgency": 55},
 ]
 
 

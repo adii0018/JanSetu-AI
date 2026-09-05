@@ -11,7 +11,7 @@ from app.database import get_db
 from app.models.complaint import Complaint
 from app.models.ward import Ward
 from app.schemas.complaint import ComplaintCreate, ComplaintResponse, WardMapData
-from app.services.nlp_service import classify_complaint
+from app.services.nlp_service import classify_complaint, extract_ward_name_from_text, PAN_INDIA_CITY_META
 from app.seed_data import generate_tracking_id
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -32,36 +32,55 @@ async def submit_complaint(
     """
     Submit a new citizen complaint.
     
-    Rate limited to 10 requests per minute per IP address to prevent spam.
-    
-    Process:
-    1. Validates that ward_id exists
-    2. Classifies complaint text using NLP service
-    3. Generates unique tracking ID
-    4. Saves complaint to database
-    
-    Args:
-        complaint_data: Complaint submission data
-        db: Database session
-    
-    Returns:
-        ComplaintResponse: Created complaint with tracking ID, category, confidence, urgency
-        
-    Raises:
-        HTTPException: 404 if ward_id doesn't exist
-        HTTPException: 429 if rate limit exceeded
-        HTTPException: 500 if tracking ID generation fails after retries
+    If ward_id is missing or 0, AI NLP NER automatically detects the city/ward from raw_text!
     """
-    # Validate ward exists
-    ward_result = await db.execute(
-        select(Ward).where(Ward.id == complaint_data.ward_id)
-    )
-    ward = ward_result.scalar_one_or_none()
-    if not ward:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "Ward not found", "detail": f"Ward with id {complaint_data.ward_id} does not exist"}
+    target_ward_id = complaint_data.ward_id
+
+    # If ward_id is missing or 0 (AI Auto-Detect mode), extract location entity from raw_text
+    if not target_ward_id or target_ward_id == 0:
+        detected_name = extract_ward_name_from_text(complaint_data.raw_text)
+        if detected_name:
+            detected_result = await db.execute(
+                select(Ward).where(Ward.name == detected_name)
+            )
+            ward = detected_result.scalar_one_or_none()
+            if ward:
+                target_ward_id = ward.id
+            else:
+                meta = PAN_INDIA_CITY_META.get(detected_name, {"infra_index": 50, "budget_index": 50, "lat": 20.5937, "lng": 78.9629})
+                new_ward = Ward(
+                    name=detected_name,
+                    infra_index=meta.get("infra_index", 50),
+                    budget_index=meta.get("budget_index", 50),
+                    lat=meta.get("lat", 20.5937),
+                    lng=meta.get("lng", 78.9629),
+                )
+                db.add(new_ward)
+                await db.flush()
+                target_ward_id = new_ward.id
+                logger.info(f"Dynamically created new Pan-India ward: '{detected_name}' (ID: {target_ward_id})")
+
+    if not target_ward_id or target_ward_id == 0:
+        # Fallback to first available ward in database
+        fallback_result = await db.execute(select(Ward).limit(1))
+        ward = fallback_result.scalar_one_or_none()
+        if ward:
+            target_ward_id = ward.id
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"error": "Ward not found", "detail": "No wards available in database"}
+            )
+    else:
+        ward_result = await db.execute(
+            select(Ward).where(Ward.id == target_ward_id)
         )
+        ward = ward_result.scalar_one_or_none()
+        if not ward:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"error": "Ward not found", "detail": f"Ward with id {target_ward_id} does not exist"}
+            )
     
     # Classify complaint using NLP service
     classification = classify_complaint(complaint_data.raw_text)
@@ -86,7 +105,7 @@ async def submit_complaint(
     # Create complaint
     complaint = Complaint(
         tracking_id=tracking_id,
-        ward_id=complaint_data.ward_id,
+        ward_id=target_ward_id,
         raw_text=complaint_data.raw_text,
         language=complaint_data.language,
         channel=complaint_data.channel,

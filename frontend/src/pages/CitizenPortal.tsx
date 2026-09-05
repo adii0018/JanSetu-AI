@@ -163,7 +163,7 @@ export function CitizenPortal() {
             className={`citizen-panel ${activeTab === 'track' ? 'panel-visible' : 'panel-hidden'}`}
             style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
           >
-            <div style={{ position: 'sticky', top: 80 }}>
+            <div>
               <AiConsole state={consoleState} />
             </div>
             <TrackComplaint />

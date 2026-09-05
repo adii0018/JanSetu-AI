@@ -1,7 +1,10 @@
 import React from 'react';
 import { playTick } from '../../utils/sounds';
 
-const LANGUAGES = ['Hindi + English', 'Hindi', 'English', 'Marathi', 'Gujarati', 'Tamil'];
+const LANGUAGES = [
+  'Hindi + English', 'Hindi', 'English', 'Marathi', 'Gujarati', 
+  'Tamil', 'Telugu', 'Bengali', 'Kannada', 'Malayalam', 'Punjabi'
+];
 
 interface LanguageChipsProps {
   value: string;

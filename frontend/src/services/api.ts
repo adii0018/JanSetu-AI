@@ -10,6 +10,8 @@ import type {
   TTSRequest,
   TTSResponse,
   MapWard,
+  SemanticClustersResponse,
+  GeoClustersResponse,
 } from './types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -70,3 +72,10 @@ export const upvoteComplaint = (trackingId: string): Promise<Complaint> =>
 // ── Map Data ─────────────────────────────────────────────────
 export const getMapData = (): Promise<MapWard[]> =>
   publicClient.get<MapWard[]>('/api/complaints/map-data').then((r) => r.data);
+
+// ── ML Semantic & Geo Clusters ───────────────────────────────
+export const getSemanticClusters = (): Promise<SemanticClustersResponse> =>
+  publicClient.get<SemanticClustersResponse>('/api/v1/ml/semantic-clusters').then((r) => r.data);
+
+export const getGeoClusters = (): Promise<GeoClustersResponse> =>
+  publicClient.get<GeoClustersResponse>('/api/v1/ml/geo-clusters').then((r) => r.data);

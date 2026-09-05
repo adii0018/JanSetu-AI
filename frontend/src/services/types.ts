@@ -89,3 +89,45 @@ export interface TTSResponse {
   engine: string;
   nvidia_active: boolean;
 }
+
+export interface SemanticCluster {
+  cluster_id: string;
+  category: string;
+  location: string;
+  cluster_name: string;
+  count: number;
+  demand_multiplier: number;
+  avg_urgency: number;
+  sample_texts: string[];
+  complaint_ids: string[];
+  merged_by_ai: boolean;
+}
+
+export interface SemanticClustersResponse {
+  status: string;
+  algorithm: string;
+  total_complaints_analyzed: number;
+  total_semantic_clusters: number;
+  clusters: SemanticCluster[];
+}
+
+export interface GeoCluster {
+  hotspot_id: string;
+  name: string;
+  ward_names: string[];
+  total_wards: number;
+  center_lat: number;
+  center_lng: number;
+  total_complaints: number;
+  avg_urgency: number;
+  hotspot_level: string;
+  ml_algorithm: string;
+}
+
+export interface GeoClustersResponse {
+  status: string;
+  algorithm: string;
+  total_wards_analyzed: number;
+  total_hotspots_detected: number;
+  clusters: GeoCluster[];
+}

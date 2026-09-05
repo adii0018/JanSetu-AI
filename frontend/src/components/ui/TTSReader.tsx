@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Loader2, Sparkles, Globe, FastForward } from 'lucide-react';
 import { synthesizeTTS } from '../../services/api';
+import { playClick, playTick } from '../../utils/sounds';
 
 interface TTSReaderProps {
   text: string;
-  defaultLang?: 'hi-IN' | 'en-IN';
+  defaultLang?: string;
   compact?: boolean;
   label?: string;
 }
@@ -14,6 +15,11 @@ export const SUPPORTED_LANGS = [
   { code: 'mr-IN', label: 'Marathi (मराठी)' },
   { code: 'gu-IN', label: 'Gujarati (ગુજરાતી)' },
   { code: 'ta-IN', label: 'Tamil (தமிழ்)' },
+  { code: 'te-IN', label: 'Telugu (తెలుగు)' },
+  { code: 'bn-IN', label: 'Bengali (বাংলা)' },
+  { code: 'kn-IN', label: 'Kannada (ಕನ್ನಡ)' },
+  { code: 'ml-IN', label: 'Malayalam (മലയാളം)' },
+  { code: 'pa-IN', label: 'Punjabi (ਪੰਜਾਬੀ)' },
   { code: 'en-IN', label: 'English' },
 ];
 
@@ -42,6 +48,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 
   const handlePlayTTS = async () => {
     if (!text || !text.trim()) return;
+    playClick();
 
     if (isPlaying) {
       if (window.speechSynthesis) {
@@ -86,7 +93,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
       utterance.rate = speed;
       utterance.pitch = 1.0;
 
-      // Select matching voice for Hindi/English if available
+      // Select matching voice for Indian languages if available
       const voices = window.speechSynthesis.getVoices();
       const matchedVoice = voices.find(
         (v) => v.lang.toLowerCase().includes(language.toLowerCase().slice(0, 2))
@@ -114,7 +121,8 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 
   const toggleLanguage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const codes = SUPPORTED_LANGS.map(l => l.code);
+    playTick();
+    const codes = SUPPORTED_LANGS.map((l) => l.code);
     const currIndex = codes.indexOf(language);
     const nextLang = codes[(currIndex + 1) % codes.length];
     setLanguage(nextLang);
@@ -127,6 +135,7 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
 
   const cycleSpeed = (e: React.MouseEvent) => {
     e.stopPropagation();
+    playTick();
     const speeds = [0.8, 1.0, 1.25, 1.5];
     const currentIndex = speeds.indexOf(speed);
     const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
@@ -137,33 +146,45 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
     }
   };
 
+  const activeLangLabel = SUPPORTED_LANGS.find((l) => l.code === language)?.label || 'Hindi (हिन्दी)';
+
   if (compact) {
     return (
       <button
         onClick={handlePlayTTS}
         disabled={isLoading}
-        title={isPlaying ? 'Stop Audio' : `Listen via NVIDIA TTS (${language === 'hi-IN' ? 'Hindi' : 'English'})`}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all shadow-sm ${
-          isPlaying
-            ? 'bg-emerald-600 text-white animate-pulse'
-            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
-        }`}
+        title={isPlaying ? 'Stop Audio' : `Listen via Voice Reader (${activeLangLabel})`}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+          padding: '0.3rem 0.75rem',
+          borderRadius: 'var(--radius-pill)',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          fontFamily: 'var(--font-body)',
+          cursor: 'pointer',
+          background: isPlaying ? 'var(--deep-moss)' : 'var(--leaf-pale)',
+          color: isPlaying ? '#fff' : 'var(--moss)',
+          border: '1px solid var(--leaf-light)',
+          transition: 'all 180ms ease',
+        }}
       >
         {isLoading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+          <Loader2 size={13} style={{ animation: 'spin 0.8s linear infinite' }} />
         ) : isPlaying ? (
           <>
-            <VolumeX className="w-3.5 h-3.5 text-white" />
+            <VolumeX size={13} />
             <span>Stop</span>
-            <span className="flex gap-0.5 items-end h-3 ml-1">
-              <span className="w-0.5 h-2.5 bg-white animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-0.5 h-3 bg-white animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-0.5 h-1.5 bg-white animate-bounce" style={{ animationDelay: '300ms' }} />
+            <span style={{ display: 'flex', gap: 2, alignItems: 'flex-end', height: 12, marginLeft: 4 }}>
+              <span style={{ width: 2, height: 10, background: '#fff', animation: 'bounce 0.8s infinite 0ms' }} />
+              <span style={{ width: 2, height: 12, background: '#fff', animation: 'bounce 0.8s infinite 150ms' }} />
+              <span style={{ width: 2, height: 6, background: '#fff', animation: 'bounce 0.8s infinite 300ms' }} />
             </span>
           </>
         ) : (
           <>
-            <Volume2 className="w-3.5 h-3.5" />
+            <Volume2 size={13} />
             <span>{label}</span>
           </>
         )}
@@ -172,99 +193,185 @@ export const TTSReader: React.FC<TTSReaderProps> = ({
   }
 
   return (
-    <div className="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-xl p-3.5 text-white shadow-lg space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <Volume2 className="w-4 h-4" />
+    <div
+      style={{
+        background: 'rgba(18, 36, 22, 0.75)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(111, 191, 115, 0.25)',
+        borderRadius: 16,
+        padding: '1rem 1.125rem',
+        color: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.875rem',
+        fontFamily: 'var(--font-body)',
+      }}
+    >
+      {/* Top Controls Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div
+            style={{
+              padding: '0.35rem',
+              borderRadius: 8,
+              background: 'rgba(111, 191, 115, 0.15)',
+              color: 'var(--leaf)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Volume2 size={16} />
           </div>
           <div>
-            <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-              <span>NVIDIA Voice Reader</span>
+            <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+              <span>AI Voice Reader</span>
               {isNvidiaEngine && (
-                <span className="inline-flex items-center gap-0.5 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
-                  <Sparkles className="w-2.5 h-2.5" /> NVIDIA AI
+                <span
+                  style={{
+                    fontSize: '0.65rem',
+                    background: 'rgba(111, 191, 115, 0.2)',
+                    color: '#6FBF73',
+                    padding: '0.1rem 0.4rem',
+                    borderRadius: 4,
+                    border: '1px solid rgba(111, 191, 115, 0.3)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    fontWeight: 600,
+                  }}
+                >
+                  <Sparkles size={10} /> Smart Voice
                 </span>
               )}
-            </h4>
-            <p className="text-[11px] text-slate-400">
-              Listen to AI complaint summary in natural spoken audio
-            </p>
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)' }}>
+              Spoken audio feedback in citizen's native language
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
           {/* Language Selector Button */}
           <button
             type="button"
             onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300 transition-colors border border-slate-700"
-            title="Toggle Language"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.25rem 0.65rem',
+              borderRadius: 'var(--radius-pill)',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: '#fff',
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'background 150ms ease',
+            }}
+            title="Switch Spoken Language"
           >
-            <Globe className="w-3 h-3 text-emerald-400" />
-            <span>{SUPPORTED_LANGS.find((l) => l.code === language)?.label || 'Hindi (हिन्दी)'}</span>
+            <Globe size={12} color="var(--leaf)" />
+            <span>{activeLangLabel}</span>
           </button>
 
           {/* Speed Selector Button */}
           <button
             type="button"
             onClick={cycleSpeed}
-            className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300 transition-colors border border-slate-700"
-            title="Speech Speed"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              padding: '0.25rem 0.6rem',
+              borderRadius: 'var(--radius-pill)',
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: '#fff',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background 150ms ease',
+            }}
+            title="Speech Speed Multiplier"
           >
-            <FastForward className="w-3 h-3 text-cyan-400" />
+            <FastForward size={12} color="var(--leaf-light)" />
             <span>{speed}x</span>
           </button>
         </div>
       </div>
 
       {/* Main Play Action Bar */}
-      <div className="flex items-center gap-3 bg-slate-950/80 p-2.5 rounded-lg border border-slate-800/80">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={handlePlayTTS}
           disabled={isLoading}
-          className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-xs transition-all shadow-md ${
-            isPlaying
-              ? 'bg-red-600 hover:bg-red-700 text-white'
-              : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-          }`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            padding: '0.6rem 1.25rem',
+            borderRadius: 'var(--radius-pill)',
+            fontWeight: 600,
+            fontSize: '0.8125rem',
+            fontFamily: 'var(--font-body)',
+            cursor: 'pointer',
+            border: 'none',
+            background: isPlaying ? '#C0392B' : 'var(--moss)',
+            color: '#fff',
+            boxShadow: isPlaying ? '0 4px 14px rgba(192,57,43,0.35)' : '0 4px 14px rgba(46,107,62,0.35)',
+            transition: 'all 200ms ease',
+          }}
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Processing Script...</span>
+              <Loader2 size={15} style={{ animation: 'spin 0.8s linear infinite' }} />
+              <span>Processing Script…</span>
             </>
           ) : isPlaying ? (
             <>
-              <VolumeX className="w-4 h-4" />
+              <VolumeX size={15} />
               <span>Stop Playing</span>
             </>
           ) : (
             <>
-              <Volume2 className="w-4 h-4" />
+              <Volume2 size={15} />
               <span>Play Audio Announcement</span>
             </>
           )}
         </button>
 
         {isPlaying && (
-          <div className="flex items-center gap-1.5 flex-1 pl-2">
-            <span className="text-[11px] text-emerald-400 font-mono animate-pulse">
-              Playing Spoken Audio...
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: 140 }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--leaf)', fontFamily: 'var(--font-mono)', animation: 'pulse 1.5s infinite' }}>
+              Playing audio…
             </span>
-            <div className="flex gap-1 items-end h-4 ml-auto pr-2">
-              <span className="w-1 bg-emerald-400 rounded-full animate-bounce h-3" style={{ animationDelay: '0ms' }} />
-              <span className="w-1 bg-emerald-400 rounded-full animate-bounce h-4" style={{ animationDelay: '150ms' }} />
-              <span className="w-1 bg-emerald-400 rounded-full animate-bounce h-2" style={{ animationDelay: '300ms' }} />
-              <span className="w-1 bg-emerald-400 rounded-full animate-bounce h-3.5" style={{ animationDelay: '450ms' }} />
+            <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 14, marginLeft: 'auto' }}>
+              <span style={{ width: 3, height: 12, background: 'var(--leaf)', borderRadius: 2, animation: 'bounce 0.8s infinite 0ms' }} />
+              <span style={{ width: 3, height: 14, background: 'var(--leaf)', borderRadius: 2, animation: 'bounce 0.8s infinite 150ms' }} />
+              <span style={{ width: 3, height: 8, background: 'var(--leaf)', borderRadius: 2, animation: 'bounce 0.8s infinite 300ms' }} />
+              <span style={{ width: 3, height: 11, background: 'var(--leaf)', borderRadius: 2, animation: 'bounce 0.8s infinite 450ms' }} />
             </div>
           </div>
         )}
       </div>
 
       {spokenText && (
-        <div className="text-[11px] text-slate-300 italic bg-slate-950/40 p-2 rounded border border-slate-800/50">
+        <div
+          style={{
+            fontSize: '0.8125rem',
+            color: 'var(--leaf-pale)',
+            fontStyle: 'italic',
+            background: 'rgba(0, 0, 0, 0.35)',
+            padding: '0.65rem 0.875rem',
+            borderRadius: 10,
+            borderLeft: '3px solid var(--leaf)',
+            lineHeight: 1.5,
+          }}
+        >
           "{spokenText}"
         </div>
       )}

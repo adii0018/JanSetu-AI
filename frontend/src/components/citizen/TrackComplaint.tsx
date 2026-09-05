@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Search, ThumbsUp, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, ThumbsUp, CheckCircle, AlertCircle, Loader2, Copy, Check } from 'lucide-react';
 import { getComplaintByTrackingId, upvoteComplaint } from '../../services/api';
 import type { Complaint } from '../../services/types';
+import { playClick, playTick } from '../../utils/sounds';
 
 const CATEGORY_EMOJI: Record<string, string> = {
   'Water Supply': '💧',
@@ -14,10 +15,10 @@ const CATEGORY_EMOJI: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  submitted: 'var(--indigo)',
-  under_review: 'var(--saffron-deep)',
-  approved: 'var(--teal)',
-  resolved: 'var(--teal)',
+  submitted: 'var(--moss)',
+  under_review: '#D97706',
+  approved: 'var(--deep-moss)',
+  resolved: 'var(--deep-moss)',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -35,11 +36,21 @@ export function TrackComplaint() {
   const [error, setError] = useState<string | null>(null);
   const [upvoted, setUpvoted] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(0);
+  const [idCopied, setIdCopied] = useState(false);
+
+  const handleCopyId = () => {
+    if (!complaint?.tracking_id) return;
+    playClick();
+    navigator.clipboard.writeText(complaint.tracking_id);
+    setIdCopied(true);
+    setTimeout(() => setIdCopied(false), 2000);
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     const id = trackingId.trim().toUpperCase();
     if (!id) return;
+    playClick();
 
     setLoading(true);
     setError(null);
@@ -59,6 +70,7 @@ export function TrackComplaint() {
 
   const handleUpvote = async () => {
     if (!complaint || upvoted) return;
+    playTick();
     setUpvoting(true);
     try {
       const updated = await upvoteComplaint(complaint.tracking_id);
@@ -77,24 +89,29 @@ export function TrackComplaint() {
     <div
       className="card"
       style={{
-        background: 'linear-gradient(135deg, var(--indigo-light) 0%, #fff 100%)',
-        border: '1px solid var(--line)',
+        background: '#fff',
+        border: '1px solid var(--border)',
+        borderRadius: 20,
       }}
     >
       <div style={{ marginBottom: '1rem' }}>
+        <div className="eyebrow" style={{ marginBottom: '0.25rem' }}>
+          <span className="eyebrow-dot" />
+          <span>Status Tracker</span>
+        </div>
         <h2
           style={{
             fontFamily: 'var(--font-display)',
-            fontWeight: 700,
-            fontSize: '1.05rem',
-            marginBottom: '0.25rem',
+            fontWeight: 600,
+            fontSize: '1.25rem',
             color: 'var(--ink)',
+            marginTop: 0,
           }}
         >
-          🔍 Track &amp; Support a Complaint
+          Track &amp; Support a Complaint
         </h2>
-        <p style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>
-          Enter a complaint ID to check status, or upvote if you have the same problem.
+        <p style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', margin: 0, marginTop: '0.25rem' }}>
+          Enter a tracking ID (e.g. JS-12345) to check status, or upvote if you have the same issue.
         </p>
       </div>
 
@@ -109,9 +126,9 @@ export function TrackComplaint() {
             placeholder="e.g. JS-12345"
             style={{
               width: '100%',
-              padding: '0.6rem 0.875rem 0.6rem 2.5rem',
-              border: '1px solid var(--line)',
-              borderRadius: 'var(--control-radius)',
+              padding: '0.65rem 0.875rem 0.65rem 2.5rem',
+              border: '1.5px solid var(--border)',
+              borderRadius: 'var(--radius-pill)',
               fontFamily: 'var(--font-body)',
               fontSize: '0.9375rem',
               color: 'var(--ink)',
@@ -120,11 +137,11 @@ export function TrackComplaint() {
               transition: 'border-color 150ms ease, box-shadow 150ms ease',
             }}
             onFocus={(e) => {
-              e.target.style.borderColor = 'var(--indigo)';
-              e.target.style.boxShadow = '0 0 0 3px var(--indigo-light)';
+              e.target.style.borderColor = 'var(--moss)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(111,191,115,0.25)';
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = 'var(--line)';
+              e.target.style.borderColor = 'var(--border)';
               e.target.style.boxShadow = 'none';
             }}
           />
@@ -132,10 +149,10 @@ export function TrackComplaint() {
             size={16}
             style={{
               position: 'absolute',
-              left: '0.75rem',
+              left: '0.875rem',
               top: '50%',
               transform: 'translateY(-50%)',
-              color: 'var(--muted)',
+              color: 'var(--ink-soft)',
               pointerEvents: 'none',
             }}
           />
@@ -144,7 +161,7 @@ export function TrackComplaint() {
           type="submit"
           className="btn-primary"
           disabled={loading || !trackingId.trim()}
-          style={{ flexShrink: 0, padding: '0.6rem 1.125rem' }}
+          style={{ flexShrink: 0, padding: '0.65rem 1.25rem', borderRadius: 'var(--radius-pill)' }}
         >
           {loading ? <Loader2 size={15} style={{ animation: 'spin 0.8s linear infinite' }} /> : 'Track'}
         </button>
@@ -158,9 +175,10 @@ export function TrackComplaint() {
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.75rem 1rem',
-            background: 'var(--coral-light)',
-            borderRadius: 'var(--control-radius)',
-            color: 'var(--coral)',
+            background: '#FDF2F2',
+            border: '1px solid #F87171',
+            borderRadius: 14,
+            color: '#B91C1C',
             fontSize: '0.85rem',
             fontFamily: 'var(--font-body)',
             animation: 'fade-slide-up 200ms ease',
@@ -175,30 +193,49 @@ export function TrackComplaint() {
       {complaint && !error && (
         <div
           style={{
-            background: '#fff',
-            border: '1px solid var(--line)',
-            borderRadius: 'var(--control-radius)',
-            padding: '1rem',
+            background: 'var(--leaf-pale)',
+            border: '1.5px solid var(--leaf-light)',
+            borderRadius: 16,
+            padding: '1.125rem',
             animation: 'fade-slide-up 250ms ease',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
           }}
         >
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '1.35rem' }}>{emoji}</span>
               <div>
                 <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontWeight: 700,
+                    fontWeight: 600,
                     fontSize: '0.9375rem',
                     color: 'var(--ink)',
                   }}
                 >
                   {complaint.category}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                  ID: <strong style={{ color: 'var(--indigo)' }}>{complaint.tracking_id}</strong>
+                <div style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: 2 }}>
+                  ID: <strong style={{ color: 'var(--moss)' }}>{complaint.tracking_id}</strong>
+                  <button
+                    type="button"
+                    onClick={handleCopyId}
+                    title="Copy tracking ID"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 2,
+                      cursor: 'pointer',
+                      color: idCopied ? 'var(--moss)' : 'var(--ink-soft)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {idCopied ? <Check size={13} /> : <Copy size={13} />}
+                  </button>
                 </div>
               </div>
             </div>
@@ -208,13 +245,13 @@ export function TrackComplaint() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                padding: '0.2rem 0.65rem',
-                borderRadius: 20,
+                padding: '0.25rem 0.65rem',
+                borderRadius: 'var(--radius-pill)',
                 fontSize: '0.72rem',
                 fontWeight: 600,
                 fontFamily: 'var(--font-body)',
                 color: '#fff',
-                background: STATUS_COLORS[complaint.status] ?? 'var(--muted)',
+                background: STATUS_COLORS[complaint.status] ?? 'var(--moss)',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -228,11 +265,11 @@ export function TrackComplaint() {
               fontSize: '0.875rem',
               color: 'var(--ink)',
               lineHeight: 1.55,
-              marginBottom: '0.75rem',
-              padding: '0.625rem 0.875rem',
-              background: 'var(--paper)',
-              borderRadius: 6,
-              borderLeft: '3px solid var(--indigo)',
+              padding: '0.75rem 0.875rem',
+              background: '#fff',
+              borderRadius: 10,
+              borderLeft: '4px solid var(--moss)',
+              margin: 0,
             }}
           >
             {complaint.raw_text}
@@ -244,12 +281,11 @@ export function TrackComplaint() {
               display: 'flex',
               gap: '1rem',
               fontSize: '0.78rem',
-              color: 'var(--muted)',
-              marginBottom: '0.875rem',
+              color: 'var(--ink-soft)',
               flexWrap: 'wrap',
             }}
           >
-            <span>⚡ Urgency: <strong style={{ color: complaint.urgency >= 75 ? 'var(--coral)' : 'var(--ink)' }}>{complaint.urgency}/100</strong></span>
+            <span>⚡ Urgency: <strong style={{ color: complaint.urgency >= 75 ? '#C0392B' : 'var(--ink)' }}>{complaint.urgency}/100</strong></span>
             <span>🗣️ {complaint.language}</span>
             <span>📅 {new Date(complaint.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
           </div>
@@ -263,11 +299,11 @@ export function TrackComplaint() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              padding: '0.55rem 1.125rem',
-              borderRadius: 'var(--control-radius)',
-              border: `2px solid ${upvoted ? 'var(--teal)' : 'var(--indigo)'}`,
-              background: upvoted ? 'var(--teal-light)' : 'var(--indigo-light)',
-              color: upvoted ? 'var(--teal)' : 'var(--indigo)',
+              padding: '0.6rem 1.125rem',
+              borderRadius: 'var(--radius-pill)',
+              border: `1.5px solid ${upvoted ? 'var(--deep-moss)' : 'var(--moss)'}`,
+              background: upvoted ? 'var(--deep-moss)' : '#fff',
+              color: upvoted ? '#fff' : 'var(--moss)',
               fontFamily: 'var(--font-body)',
               fontWeight: 600,
               fontSize: '0.875rem',

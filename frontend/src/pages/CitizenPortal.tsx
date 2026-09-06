@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Mic, Cpu, Send, ShieldCheck, MapPin } from 'lucide-react';
+import { Sparkles, Mic, Cpu, Send, ShieldCheck, MapPin, CheckCircle2, Clock, TrendingUp, Bot, Zap, Award, Users, MessageCircle, FileSpreadsheet, ArrowRight, Star } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { ComplaintForm } from '../components/citizen/ComplaintForm';
 import { AiConsole } from '../components/citizen/AiConsole';
@@ -9,6 +9,7 @@ import { HotspotMap } from '../components/dashboard/HotspotMap';
 import { getMapData, getGeoClusters } from '../services/api';
 import type { MapWard, GeoClustersResponse } from '../services/types';
 import type { ConsoleState } from '../components/citizen/AiConsole';
+import { playClick } from '../utils/sounds';
 
 const INITIAL_CONSOLE: ConsoleState = {
   phase: 'idle',
@@ -346,6 +347,30 @@ export function CitizenPortal() {
         </div>
       </div>
 
+      {/* ── NEW FEATURE 1: Live Impact Telemetry Counter Strip ───────────── */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(18,53,36,0.08)', padding: '1.25rem 0' }}>
+        <PageContainer>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+            {[
+              { val: '1,420+', label: 'Complaints Resolved', Icon: CheckCircle2, color: '#16A34A' },
+              { val: '4.2 Hrs', label: 'Avg Resolution Speed', Icon: Clock, color: '#2563EB' },
+              { val: '28 States', label: 'Pan-India Ward Coverage', Icon: MapPin, color: '#D97706' },
+              { val: '98.4%', label: 'Verified Citizen Rating', Icon: Award, color: '#9333EA' },
+            ].map((stat, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.5rem 1rem' }}>
+                <div style={{ width: 42, height: 42, borderRadius: 12, background: `color-mix(in srgb, ${stat.color} 12%, #FFFFFF)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <stat.Icon size={20} color={stat.color} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 850, fontSize: '1.25rem', color: '#123524', lineHeight: 1.1 }}>{stat.val}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, marginTop: 2 }}>{stat.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </PageContainer>
+      </div>
+
       {/* ── Mobile tab switcher ────────────────────────────────── */}
       <div
         className="mobile-tabs"
@@ -364,7 +389,7 @@ export function CitizenPortal() {
       </div>
 
       {/* ── Main content ──────────────────────────────────────── */}
-      <PageContainer>
+      <PageContainer style={{ marginTop: '2.5rem' }}>
         <div
           className="citizen-grid"
           style={{
@@ -391,8 +416,108 @@ export function CitizenPortal() {
           </div>
         </div>
 
+        {/* ── NEW FEATURE 2: How JanSetu AI Works (Interactive 4-Step Pipeline) ───── */}
+        <div style={{ marginTop: '4rem', background: '#FFFFFF', borderRadius: 28, border: '1px solid rgba(18, 53, 36, 0.1)', padding: '2.5rem 2rem', boxShadow: '0 10px 35px rgba(0,0,0,0.03)' }}>
+          <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 2.5rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#25D366', background: 'rgba(37, 211, 102, 0.12)', border: '1px solid rgba(37, 211, 102, 0.3)', padding: '0.25rem 0.75rem', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              HOW IT WORKS
+            </span>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.85rem', fontWeight: 800, color: '#123524', marginTop: '0.65rem' }}>
+              3-Step Automated Civic Pipeline
+            </h2>
+            <p style={{ fontSize: '0.9rem', color: '#64748B', marginTop: 4 }}>
+              From citizen voice dictation to municipal officer dispatch in real time
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+            {[
+              {
+                step: '01',
+                title: 'Multilingual Voice & Text Intake',
+                desc: 'Parses 22 Indian languages, voice notes, and photos seamlessly with instant transcription.',
+                Icon: Mic,
+                color: '#10B981',
+                imgSrc: '/images/pipeline/step1.jpg',
+                badgeText: '22 Dialects Voice AI',
+              },
+              {
+                step: '02',
+                title: 'NVIDIA AI & LLM Entity Parsing',
+                desc: 'Extracts exact problem category, urgency score (0-100), and GPS ward geolocation.',
+                Icon: Cpu,
+                color: '#8B5CF6',
+                imgSrc: '/images/pipeline/step2.jpg',
+                badgeText: 'NVIDIA NeMo LLM',
+              },
+              {
+                step: '03',
+                title: 'ViaSocket Multi-System Sync',
+                desc: 'Syncs live tickets instantly to Google Sheets database & Municipal Officer Dashboard.',
+                Icon: FileSpreadsheet,
+                color: '#F59E0B',
+                imgSrc: '/images/pipeline/step3.jpg',
+                badgeText: 'ViaSocket Webhook Relay',
+              },
+            ].map((card) => (
+              <div
+                key={card.step}
+                style={{
+                  background: '#FFFFFF',
+                  borderRadius: 22,
+                  padding: '1.25rem',
+                  border: '1px solid rgba(18, 53, 36, 0.1)',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
+                  position: 'relative',
+                  transition: 'all 220ms ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  overflow: 'hidden',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)';
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 32px rgba(18, 53, 36, 0.12)';
+                  (e.currentTarget as HTMLDivElement).style.borderColor = card.color;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = 'none';
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 15px rgba(0,0,0,0.02)';
+                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(18, 53, 36, 0.1)';
+                }}
+              >
+                <div>
+                  {/* Image container */}
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: 14, overflow: 'hidden', marginBottom: '1.1rem', background: '#F1F5F9', border: '1px solid rgba(0,0,0,0.06)' }}>
+                    <img
+                      src={card.imgSrc}
+                      alt={card.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                    <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(18, 53, 36, 0.85)', backdropFilter: 'blur(6px)', padding: '2px 8px', borderRadius: 100, fontSize: '0.68rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.02em' }}>
+                      {card.badgeText}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `color-mix(in srgb, ${card.color} 15%, #FFFFFF)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <card.Icon size={18} color={card.color} />
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 900, color: 'rgba(18, 53, 36, 0.2)' }}>{card.step}</span>
+                  </div>
+
+                  <h4 style={{ fontWeight: 800, fontSize: '0.94rem', color: '#123524', marginBottom: 5, lineHeight: 1.35 }}>{card.title}</h4>
+                  <p style={{ fontSize: '0.8rem', color: '#64748B', lineHeight: 1.5 }}>{card.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+
         {/* ── Pan-India Ward Hotspot Map Section on Landing Page ───── */}
-        <div style={{ marginTop: '3rem' }}>
+        <div style={{ marginTop: '3.5rem' }}>
           <HotspotMap
             data={mapData.data ?? []}
             geoClusters={geoClusters.data?.clusters ?? []}
@@ -409,7 +534,7 @@ export function CitizenPortal() {
           100% { transform: translate3d(-50%, 0, 0); }
         }
         @keyframes waveFlowRight {
-          0% { transform: translate3d(-50%, 0, 0); }
+          0% { transform: translate3d(0, 0, 0); }
           100% { transform: translate3d(0, 0, 0); }
         }
         @media (max-width: 720px) {

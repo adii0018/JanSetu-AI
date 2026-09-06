@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Loader2, ChevronDown, Mic, MicOff, MessageCircle, Sparkles, Edit3, Volume2 } from 'lucide-react';
+import { Loader2, ChevronDown, Mic, MicOff, MessageCircle, Sparkles, Edit3, Send, Bot, User as UserIcon, CheckCircle2, Volume2, Globe } from 'lucide-react';
 import { LanguageChips } from './LanguageChips';
 import { getWards, submitComplaint } from '../../services/api';
 import type { Ward, Complaint, Channel } from '../../services/types';
@@ -14,30 +14,17 @@ interface ComplaintFormProps {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '0.75rem 1rem',
-  border: '1.5px solid var(--border)',
-  borderRadius: 'var(--radius-control)',
+  padding: '0.85rem 1.1rem',
+  border: '1.5px solid rgba(18, 53, 36, 0.12)',
+  borderRadius: 20,
   fontFamily: 'var(--font-body)',
   fontSize: '0.9375rem',
   color: 'var(--ink)',
-  background: '#fff',
+  background: '#FFFFFF',
   appearance: 'none',
   outline: 'none',
-  transition: 'border-color 160ms ease, box-shadow 160ms ease',
+  transition: 'all 200ms ease',
 };
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontFamily: 'var(--font-body)',
-  fontWeight: 600,
-  fontSize: '0.8125rem',
-  color: 'var(--ink)',
-  marginBottom: '0.5rem',
-};
-
-function SkeletonLine({ width = '100%', height = 42 }: { width?: string; height?: number }) {
-  return <div className="skeleton" style={{ height, width, borderRadius: 10 }} />;
-}
 
 export function ComplaintForm({ onConsoleUpdate }: ComplaintFormProps) {
   const { user } = useAuth();
@@ -52,7 +39,6 @@ export function ComplaintForm({ onConsoleUpdate }: ComplaintFormProps) {
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(true);
   const [recognitionInstance, setRecognitionInstance] = useState<any>(null);
-  const [showManualWard, setShowManualWard] = useState(false);
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -154,179 +140,195 @@ export function ComplaintForm({ onConsoleUpdate }: ComplaintFormProps) {
 
   return (
     <div
-      className="card intake-card-wrapper"
       style={{
-        background: 'var(--surface-card)',
-        borderRadius: 'var(--radius-card)',
-        padding: '1.75rem',
-        border: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-card)',
+        background: '#FFFFFF',
+        borderRadius: 28,
+        border: '1px solid rgba(18, 53, 36, 0.12)',
+        boxShadow: '0 16px 45px rgba(18, 53, 36, 0.08), 0 2px 10px rgba(0, 0, 0, 0.02)',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Top Accent Bar */}
+      {/* ── Top Chat Header Bar ───────────────────────────────── */}
       <div
-        aria-hidden="true"
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 4,
-          background: 'linear-gradient(90deg, var(--navy-deep) 0%, var(--navy) 50%, var(--saffron) 100%)',
+          background: 'linear-gradient(135deg, #123524 0%, #1F3A24 50%, #2E6B3E 100%)',
+          padding: '1.25rem 1.6rem',
+          color: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.85rem',
         }}
-      />
-
-      <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
-        
-        {/* Header Feature Badges & Title */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '0.85rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          {/* AI Avatar with Pulse Indicator */}
+          <div style={{ position: 'relative' }}>
             <div
               style={{
                 width: 44,
                 height: 44,
                 borderRadius: 14,
-                background: 'var(--navy-deep)',
+                background: 'linear-gradient(135deg, #25D366 0%, #6FBF73 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: 'var(--shadow-primary)',
-                flexShrink: 0,
+                boxShadow: '0 4px 14px rgba(37, 211, 102, 0.4)',
               }}
             >
-              <Sparkles size={22} color="#FFFFFF" />
+              <Bot size={24} color="#123524" />
             </div>
-
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: 'var(--navy-deep)', letterSpacing: '-0.02em' }}>
-                  Unified Multi-Modal Intake
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.625rem',
-                    fontWeight: 700,
-                    background: 'var(--saffron-pale)',
-                    color: 'var(--saffron-deep)',
-                    border: '1px solid var(--saffron-light)',
-                    padding: '0.15rem 0.5rem',
-                    borderRadius: 10,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--saffron)', animation: 'pulse 1.5s infinite' }} />
-                  AI Engine Live
-                </span>
-              </div>
-              <div style={{ fontSize: '0.78125rem', color: 'var(--ink-soft)', marginTop: 2, fontWeight: 500 }}>
-                Multilingual Voice, Text & WhatsApp Intake across 28 States & 8 UTs
-              </div>
-            </div>
-          </div>
-
-          {/* Intake Channel Badges */}
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.7rem', fontWeight: 600, background: 'var(--chip-bg)', color: 'var(--navy-deep)', border: '1px solid var(--border)', padding: '0.3rem 0.65rem', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <Edit3 size={11} color="var(--navy-deep)" /> TEXT
-            </span>
-            <span style={{ fontSize: '0.7rem', fontWeight: 600, background: 'var(--saffron-pale)', color: 'var(--saffron-deep)', border: '1px solid var(--saffron-light)', padding: '0.3rem 0.65rem', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <Mic size={11} color="var(--saffron-deep)" /> VOICE
-            </span>
-            <span style={{ fontSize: '0.7rem', fontWeight: 600, background: 'var(--navy-tint)', color: 'var(--navy-deep)', border: '1px solid var(--border)', padding: '0.3rem 0.65rem', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <MessageCircle size={11} color="var(--navy-deep)" /> WHATSAPP BOT
-            </span>
-          </div>
-        </div>
-
-        {/* 1. Language Chips */}
-        <div>
-          <label style={labelStyle}>Preferred Language</label>
-          <LanguageChips value={language} onChange={setLanguage} />
-        </div>
-
-        {/* 2. Multi-Modal Problem Description Box */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <label htmlFor="complaint-text" style={{ ...labelStyle, marginBottom: 0 }}>
-              Describe the problem (Type or Speak)
-            </label>
-
-            {/* Mic Toggle Button (Saffron Accent, 0 6px 16px rgba(240,134,46,0.35)) */}
-            <button
-              type="button"
-              onClick={toggleListening}
+            <span
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                padding: '0.45rem 1.05rem',
-                borderRadius: 'var(--radius-pill)',
-                background: isListening ? '#DC2626' : 'var(--saffron)',
-                border: 'none',
-                color: '#FFFFFF',
-                fontWeight: 600,
-                fontSize: '0.8125rem',
+                position: 'absolute',
+                bottom: -2,
+                right: -2,
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                background: '#25D366',
+                border: '2px solid #123524',
+                boxShadow: '0 0 8px #25D366',
+              }}
+            />
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '1.15rem', color: '#FFFFFF', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              JanSetu AI Civic Assistant
+              <span
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  background: 'rgba(37, 211, 102, 0.25)',
+                  color: '#C9EAC7',
+                  border: '1px solid rgba(37, 211, 102, 0.4)',
+                  padding: '0.12rem 0.55rem',
+                  borderRadius: 100,
+                  textTransform: 'uppercase',
+                }}
+              >
+                LIVE CHAT
+              </span>
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'rgba(201, 234, 199, 0.88)', marginTop: 2 }}>
+              Speak or type in your language — AI automatically categorizes & routes your issue.
+            </div>
+          </div>
+        </div>
+
+        {/* Top Channel Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF', padding: '0.3rem 0.7rem', borderRadius: 100, border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>
+            💬 Multilingual Chat
+          </span>
+        </div>
+      </div>
+
+      {/* ── Chat Body & Conversation Thread ─────────────────────────── */}
+      <div style={{ padding: '1.5rem 1.6rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', background: '#F8FAFC' }}>
+        
+        {/* AI Assistant Opening Message Bubble */}
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+          <div
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #123524 0%, #2E6B3E 100%)',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(18, 53, 36, 0.2)',
+            }}
+          >
+            <Sparkles size={17} color="#25D366" />
+          </div>
+
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '4px 20px 20px 20px',
+              padding: '1rem 1.25rem',
+              border: '1px solid rgba(18, 53, 36, 0.1)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
+              maxWidth: '90%',
+            }}
+          >
+            <div style={{ fontWeight: 750, fontSize: '0.85rem', color: '#123524', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+              JanSetu AI
+              <span style={{ fontSize: '0.7rem', fontWeight: 500, color: '#64748B' }}>• Just now</span>
+            </div>
+            <div style={{ fontSize: '0.9rem', color: '#334155', lineHeight: 1.55 }}>
+              Namaste! Main aapka civic AI assistant hoon. Apni samasya <b>voice me bole</b> ya <b>hindi/english me type kare</b>. Niche sample chips par tap karke bhi start kar sakte hain!
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Sample Prompts as Interactive Chat Chips */}
+        <div style={{ marginLeft: '2.75rem', display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+          {[
+            '💧 10 din se paani nahi aa raha',
+            '🛣️ Potholes near school causing accidents',
+            '⚡ Electric wire sparking on main road',
+            '🧹 Drainage overflow near market area',
+          ].map((sample, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                playClick();
+                const cleanSample = sample.replace(/^[^a-zA-Z0-9\u0900-\u097F]+/, '').trim();
+                setText(cleanSample);
+                setUsedVoice(false);
+              }}
+              style={{
+                fontSize: '0.78rem',
+                padding: '0.35rem 0.85rem',
+                borderRadius: 100,
+                background: '#FFFFFF',
+                border: '1px solid rgba(18, 53, 36, 0.15)',
+                color: '#123524',
                 cursor: 'pointer',
-                boxShadow: isListening
-                  ? '0 0 0 3px rgba(220, 38, 38, 0.25), 0 4px 14px rgba(220, 38, 38, 0.4)'
-                  : 'var(--shadow-secondary)',
-                transition: 'all 200ms ease',
+                fontWeight: 600,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                transition: 'all 160ms ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = isListening ? '#B91C1C' : 'var(--saffron-deep)';
+                e.currentTarget.style.background = '#F0FFF4';
+                e.currentTarget.style.borderColor = '#25D366';
                 e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isListening ? '#DC2626' : 'var(--saffron)';
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = '#FFFFFF';
+                e.currentTarget.style.borderColor = 'rgba(18, 53, 36, 0.15)';
+                e.currentTarget.style.transform = 'none';
               }}
             >
-              {isListening ? (
-                <>
-                  <span
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      background: '#FFFFFF',
-                      boxShadow: '0 0 0 2px rgba(255,255,255,0.4)',
-                      animation: 'pulse 1s infinite',
-                    }}
-                  />
-                  <MicOff size={14} />
-                  <span>Stop Recording</span>
-                </>
-              ) : (
-                <>
-                  <Mic size={14} color="#FFFFFF" />
-                  <span>Dictate with Voice</span>
-                </>
-              )}
+              {sample}
             </button>
-          </div>
+          ))}
+        </div>
 
-          {/* Real-time Listening Waveform Visualizer */}
-          {isListening && (
+        {/* Real-time Listening Waveform Visualizer Bubble */}
+        {isListening && (
+          <div style={{ marginLeft: '2.75rem' }}>
             <div
               style={{
-                padding: '0.625rem 1rem',
-                background: 'var(--saffron-pale)',
-                border: '1px solid var(--saffron-light)',
-                borderRadius: 14,
-                marginBottom: '0.625rem',
+                padding: '0.75rem 1.1rem',
+                background: '#FEF2F2',
+                border: '1px solid #FECACA',
+                borderRadius: 18,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--saffron-deep)', fontWeight: 600 }}>
-                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--saffron)', animation: 'pulse 0.8s infinite' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', fontSize: '0.85rem', color: '#DC2626', fontWeight: 700 }}>
+                <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#DC2626', boxShadow: '0 0 10px #DC2626', animation: 'pulse 0.8s infinite' }} />
                 🔴 Listening… speak naturally in your language
               </div>
 
@@ -335,186 +337,176 @@ export function ComplaintForm({ onConsoleUpdate }: ComplaintFormProps) {
                   <span
                     key={idx}
                     style={{
-                      width: 3,
-                      height: 16 * h,
+                      width: 3.5,
+                      height: 18 * h,
                       borderRadius: 2,
-                      background: 'var(--saffron-deep)',
+                      background: '#DC2626',
                       animation: `pulse 0.6s infinite ease-in-out alternate ${idx * 0.1}s`,
                     }}
                   />
                 ))}
               </div>
             </div>
-          )}
-
-          {/* Quick-Fill Sample Chips */}
-          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.65rem' }}>
-            {[
-              '💧 10 din se paani nahi aa raha',
-              '🛣️ Potholes near school causing accidents',
-              '⚡ Electric wire sparking on main road',
-              '🧹 Drainage overflow near market area',
-            ].map((sample, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => {
-                  playClick();
-                  const cleanSample = sample.replace(/^[^a-zA-Z0-9\u0900-\u097F]+/, '').trim();
-                  setText(cleanSample);
-                  setUsedVoice(false);
-                }}
-                style={{
-                  fontSize: '0.75rem',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: 'var(--radius-pill)',
-                  background: 'var(--chip-bg)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--ink)',
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                  transition: 'all 160ms ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--saffron-pale)'; e.currentTarget.style.borderColor = 'var(--saffron-light)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--chip-bg)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-              >
-                {sample}
-              </button>
-            ))}
           </div>
+        )}
 
-          <textarea
-            id="complaint-text"
-            rows={5}
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-              setUsedVoice(false);
-            }}
-            placeholder="Type your complaint here, or tap the 'Dictate with Voice' button to speak in Hindi/Hinglish/English…"
-            required
-            minLength={10}
-            maxLength={2000}
-            style={{ ...inputStyle, resize: 'vertical', minHeight: 125, borderRadius: 16 }}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--navy-deep)'; e.target.style.boxShadow = '0 0 0 3px rgba(22,41,79,0.15)'; }}
-            onBlur={(e)  => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none'; }}
-          />
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78125rem', color: 'var(--ink-soft)', marginTop: '0.35rem', fontWeight: 500 }}>
-            <span>{usedVoice ? '🎙️ Speech transcribed into text' : '✍️ Text input active'}</span>
-            <span>{text.length}/2000</span>
+        {/* Language Selection Chips Bar */}
+        <div style={{ marginLeft: '2.75rem' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Globe size={13} color="#25D366" /> Preferred Language:
           </div>
+          <LanguageChips value={language} onChange={setLanguage} />
         </div>
 
-        {/* 3. Secondary Panel: WhatsApp Bot Intake Banner (#F0F3FA) */}
-        <div
-          style={{
-            padding: '1rem 1.25rem',
-            background: 'var(--navy-tint)',
-            borderRadius: 16,
-            border: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '0.75rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--navy-deep)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-primary)', flexShrink: 0 }}>
-              <MessageCircle size={18} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, color: 'var(--navy-deep)', fontSize: '0.875rem' }}>
-                Prefer WhatsApp? Chat with Bot (+91 88000 01915)
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', fontWeight: 500 }}>
-                Send voice notes or messages directly on WhatsApp — zero app download required.
-              </div>
-            </div>
-          </div>
-
-          <a
-            href="https://wa.me/918800001915?text=Hi%20JanSetu%20I%20want%20to%20file%20a%20complaint"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => playClick()}
+        {/* ── Interactive Horizontal Chat Input Bar ──────────────────── */}
+        <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+          <div
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              padding: '0.45rem 0.95rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'var(--navy-deep)',
-              color: '#FFFFFF',
-              fontSize: '0.78125rem',
-              fontWeight: 600,
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              boxShadow: 'var(--shadow-primary)',
-              transition: 'all 160ms ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--navy)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--navy-deep)';
-              e.currentTarget.style.transform = 'translateY(0)';
+              background: '#FFFFFF',
+              borderRadius: 24,
+              border: `2px solid ${isListening ? '#DC2626' : text.length > 0 ? '#123524' : 'rgba(18, 53, 36, 0.18)'}`,
+              padding: '0.65rem 0.85rem 0.65rem 1.1rem',
+              boxShadow: text.length > 0 ? '0 8px 24px rgba(18, 53, 36, 0.12)' : '0 4px 16px rgba(0, 0, 0, 0.04)',
+              transition: 'all 200ms ease',
             }}
           >
-            Launch WhatsApp →
-          </a>
-        </div>
+            <textarea
+              id="complaint-text"
+              rows={3}
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value);
+                setUsedVoice(false);
+              }}
+              placeholder="Type your complaint here, or tap the Mic button to speak in Hindi/English/local language…"
+              required
+              minLength={10}
+              maxLength={2000}
+              style={{
+                width: '100%',
+                border: 'none',
+                background: 'transparent',
+                outline: 'none',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.9375rem',
+                color: '#1E293B',
+                resize: 'none',
+              }}
+            />
 
-        {/* Primary CTA Submit Button (Navy Deep, Pill, 0 10px 26px rgba(22,41,79,0.3)) */}
-        <button
-          type="submit"
-          className="btn-primary"
-          disabled={!isReady}
-          style={{
-            width: '100%',
-            padding: '0.95rem',
-            fontSize: '1rem',
-            fontWeight: 600,
-            borderRadius: 'var(--radius-pill)',
-            background: isReady ? 'var(--navy-deep)' : 'var(--chip-bg)',
-            color: isReady ? '#FFFFFF' : 'var(--ink-soft)',
-            boxShadow: isReady ? 'var(--shadow-primary)' : 'none',
-            cursor: isReady ? 'pointer' : 'not-allowed',
-            marginTop: '0.25rem',
-            transition: 'all 200ms ease',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem',
-          }}
-          onMouseEnter={(e) => {
-            if (isReady) {
-              e.currentTarget.style.background = 'var(--navy)';
-              e.currentTarget.style.boxShadow = '0 14px 32px rgba(22, 41, 79, 0.4)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (isReady) {
-              e.currentTarget.style.background = 'var(--navy-deep)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-primary)';
-            }
-          }}
-        >
-          {submitting ? (
-            <>
-              <Loader2 size={18} aria-hidden="true" style={{ animation: 'spin 0.8s linear infinite' }} />
-              <span>Analyzing & Submitting Complaint…</span>
-            </>
-          ) : (
-            <>
-              <Sparkles size={18} color={isReady ? 'var(--saffron)' : 'var(--ink-soft)'} />
-              <span>Submit Complaint →</span>
-            </>
-          )}
-        </button>
-      </form>
+            {/* Input Action Controls Toolbar */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '0.5rem', marginTop: '0.35rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                {/* Voice Mic Button */}
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.4rem 0.9rem',
+                    borderRadius: 100,
+                    background: isListening ? '#DC2626' : 'linear-gradient(135deg, #F0862E 0%, #D97706 100%)',
+                    border: 'none',
+                    color: '#FFFFFF',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                    boxShadow: isListening ? '0 0 0 3px rgba(220, 38, 38, 0.25)' : '0 3px 12px rgba(240, 134, 46, 0.35)',
+                    transition: 'all 180ms ease',
+                  }}
+                >
+                  {isListening ? (
+                    <>
+                      <MicOff size={13} /> Stop Dictating
+                    </>
+                  ) : (
+                    <>
+                      <Mic size={13} /> Dictate Voice
+                    </>
+                  )}
+                </button>
+
+                <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 500 }}>
+                  {usedVoice ? '🎙️ Speech Transcribed' : '✍️ Text Input'}
+                </span>
+              </div>
+
+              {/* Chat Send Button */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 600 }}>{text.length}/2000</span>
+
+                <button
+                  type="submit"
+                  disabled={!isReady}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.45rem',
+                    padding: '0.55rem 1.25rem',
+                    borderRadius: 100,
+                    background: isReady ? 'linear-gradient(135deg, #123524 0%, #2E6B3E 100%)' : '#E2E8F0',
+                    color: isReady ? '#FFFFFF' : '#94A3B8',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: '0.84rem',
+                    cursor: isReady ? 'pointer' : 'not-allowed',
+                    boxShadow: isReady ? '0 4px 16px rgba(18, 53, 36, 0.3)' : 'none',
+                    transition: 'all 200ms ease',
+                  }}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 size={15} style={{ animation: 'spin 0.8s linear infinite' }} /> Submitting…
+                    </>
+                  ) : (
+                    <>
+                      Send <Send size={14} />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* WhatsApp Bot Quick Banner underneath */}
+          <div
+            style={{
+              padding: '0.75rem 1.1rem',
+              background: '#F0FDF4',
+              borderRadius: 18,
+              border: '1px solid #DCFCE7',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <MessageCircle size={18} color="#25D366" />
+              <span style={{ fontSize: '0.8125rem', color: '#14532D', fontWeight: 600 }}>
+                WhatsApp Bot Available: <b>+91 88000 01915</b>
+              </span>
+            </div>
+            <a
+              href="https://wa.me/918800001915?text=Hi%20JanSetu%20I%20want%20to%20file%20a%20complaint"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: '0.78rem',
+                fontWeight: 750,
+                color: '#25D366',
+                textDecoration: 'none',
+              }}
+            >
+              Open WhatsApp →
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

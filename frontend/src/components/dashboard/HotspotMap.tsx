@@ -1,7 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { MapWard, GeoCluster } from '../../services/types';
 import { ErrorState, Skeleton } from '../ui/ErrorState';
-import { Layers, Compass, Zap, Flame, MapPin, Activity, ShieldAlert, Sparkles } from 'lucide-react';
+import {
+  Layers,
+  Compass,
+  Zap,
+  Flame,
+  MapPin,
+  Sparkles,
+  Search,
+  Moon,
+  Sun,
+  Globe,
+  X,
+  Filter,
+  CheckCircle2,
+  AlertTriangle,
+  RotateCcw,
+} from 'lucide-react';
 import { playTick } from '../../utils/sounds';
 
 interface HotspotMapProps {
@@ -16,13 +32,35 @@ const CITY_PRESETS: { label: string; city: string; center?: [number, number]; zo
   { label: 'All India 🇮🇳', city: 'ALL' },
   { label: 'Indore', city: 'Indore', center: [22.7196, 75.8577], zoom: 12 },
   { label: 'Delhi NCR', city: 'Delhi', center: [28.6315, 77.2167], zoom: 11 },
-  { label: 'Mumbai', city: 'Mumbai', center: [19.0760, 72.8777], zoom: 11 },
+  { label: 'Mumbai', city: 'Mumbai', center: [19.076, 72.8777], zoom: 11 },
   { label: 'Bengaluru', city: 'Bengaluru', center: [12.9716, 77.5946], zoom: 11 },
   { label: 'Lucknow', city: 'Lucknow', center: [26.8467, 80.9462], zoom: 12 },
-  { label: 'Hyderabad', city: 'Hyderabad', center: [17.3850, 78.4867], zoom: 12 },
+  { label: 'Hyderabad', city: 'Hyderabad', center: [17.385, 78.4867], zoom: 12 },
   { label: 'Jaipur', city: 'Jaipur', center: [26.9124, 75.7873], zoom: 12 },
   { label: 'Kolkata', city: 'Kolkata', center: [22.5726, 88.3639], zoom: 12 },
+  { label: 'Pune', city: 'Pune', center: [18.5204, 73.8567], zoom: 12 },
+  { label: 'Ahmedabad', city: 'Ahmedabad', center: [23.0225, 72.5714], zoom: 12 },
 ];
+
+type MapStyleKey = 'voyager' | 'dark' | 'satellite';
+
+const TILE_LAYERS: Record<MapStyleKey, { url: string; subdomains: string; maxZoom: number }> = {
+  voyager: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  },
+  dark: {
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: '',
+    maxZoom: 18,
+  },
+};
 
 function urgencyColor(urgency: number): string {
   if (urgency >= 75) return '#EF4444'; // Critical - Crimson Red
@@ -34,17 +72,46 @@ function bubbleRadius(count: number, maxCount: number): number {
   if (maxCount === 0) return 14;
   const min = 14;
   const max = 38;
-  return min + ((count / maxCount) * (max - min));
+  return min + (count / maxCount) * (max - min);
 }
 
 export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: HotspotMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletMap = useRef<any>(null);
+  const tileLayerRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+
   const [selectedCity, setSelectedCity] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [urgencyFilter, setUrgencyFilter] = useState<'ALL' | 'CRITICAL' | 'MEDIUM' | 'LOW'>('ALL');
+  const [mapStyle, setMapStyle] = useState<MapStyleKey>('voyager');
+  const [selectedWardDetails, setSelectedWardDetails] = useState<MapWard | null>(null);
 
   const criticalCount = data.filter((w) => w.avg_urgency >= 75).length;
-  const totalComplaints = data.reduce((acc, w) => acc + w.complaint_count, 0);
+  const mediumCount = data.filter((w) => w.avg_urgency >= 50 && w.avg_urgency < 75).length;
+  const lowCount = data.filter((w) => w.avg_urgency < 50).length;
 
+  // Filtered wards based on search and urgency chip
+  const filteredWards = data.filter((ward) => {
+    const matchesSearch = searchQuery === '' || ward.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesUrgency =
+      urgencyFilter === 'ALL' ||
+      (urgencyFilter === 'CRITICAL' && ward.avg_urgency >= 75) ||
+      (urgencyFilter === 'MEDIUM' && ward.avg_urgency >= 50 && ward.avg_urgency < 75) ||
+      (urgencyFilter === 'LOW' && ward.avg_urgency < 50);
+
+    return matchesSearch && matchesUrgency;
+  });
+
+  // Handle Tile Layer Switch dynamically
+  useEffect(() => {
+    if (tileLayerRef.current && leafletMap.current) {
+      const config = TILE_LAYERS[mapStyle];
+      tileLayerRef.current.setUrl(config.url);
+    }
+  }, [mapStyle]);
+
+  // Main Leaflet Map Initialization and Layer updates
   useEffect(() => {
     if (loading || error || data.length === 0) return;
 
@@ -65,9 +132,10 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
       if (leafletMap.current) {
         leafletMap.current.remove();
         leafletMap.current = null;
+        markersRef.current = [];
       }
 
-      // Initialize map instance with slick options
+      // Initialize map instance
       const map = L.map(mapRef.current, {
         zoomControl: false,
         scrollWheelZoom: false,
@@ -76,20 +144,22 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
 
       leafletMap.current = map;
 
-      // Custom sleek Zoom Control at top-left
+      // Zoom Control
       L.control.zoom({ position: 'topleft' }).addTo(map);
 
-      // Premium CartoDB Voyager Tile Layer for ultra-clean map aesthetics
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd',
+      // Tile Layer
+      const config = TILE_LAYERS[mapStyle];
+      const tileLayer = L.tileLayer(config.url, {
+        maxZoom: config.maxZoom,
+        subdomains: config.subdomains,
       }).addTo(map);
+      tileLayerRef.current = tileLayer;
 
-      // Render DBSCAN AI Hotspot Density Overlays if available
+      // Render DBSCAN AI Hotspot Density Overlays
       geoClusters.forEach((cluster) => {
         if (cluster.center_lat && cluster.center_lng) {
           L.circle([cluster.center_lat, cluster.center_lng], {
-            radius: 4000, // 4 km DBSCAN radius
+            radius: 4000,
             color: '#EF4444',
             fillColor: '#EF4444',
             fillOpacity: 0.15,
@@ -104,11 +174,11 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
         }
       });
 
-      // Render Ward Circle Markers with neon glow & animated pulse
+      // Render Filtered Ward Markers
       const maxCount = Math.max(...data.map((w) => w.complaint_count), 1);
       const latLngList: [number, number][] = [];
 
-      data.forEach((ward) => {
+      filteredWards.forEach((ward) => {
         if (ward.lat && ward.lng) {
           latLngList.push([ward.lat, ward.lng]);
           const radius = bubbleRadius(ward.complaint_count, maxCount);
@@ -160,7 +230,6 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
                 </div>
               </div>
 
-              {/* Progress bar meter */}
               <div style="width:100%;height:6px;background:#E2E8F0;border-radius:10px;overflow:hidden;margin-bottom:10px">
                 <div style="width:${ward.avg_urgency}%;height:100%;background:${color};border-radius:10px"></div>
               </div>
@@ -173,9 +242,15 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
             { maxWidth: 260 }
           );
 
-          circle.addTo(map);
+          circle.on('click', () => {
+            playTick();
+            setSelectedWardDetails(ward);
+          });
 
-          // Ward name label overlay with frosted glass tag
+          circle.addTo(map);
+          markersRef.current.push(circle);
+
+          // Ward name label overlay
           L.tooltip({
             permanent: true,
             direction: 'top',
@@ -190,13 +265,12 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
         }
       });
 
-      // Fit bounds to cover all wards across India smoothly
+      // Fit bounds to cover visible wards smoothly
       if (latLngList.length > 0) {
         const bounds = L.latLngBounds(latLngList);
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
       }
 
-      // Fix tile loading delay timing issue
       setTimeout(() => {
         if (leafletMap.current) {
           leafletMap.current.invalidateSize();
@@ -211,9 +285,9 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
         leafletMap.current = null;
       }
     };
-  }, [data, geoClusters, loading, error]);
+  }, [data, geoClusters, loading, error, urgencyFilter, searchQuery]);
 
-  // Handle City Region Quick Fly
+  // Handle City Select Fly
   const handleCitySelect = (cityObj: (typeof CITY_PRESETS)[0]) => {
     playTick();
     setSelectedCity(cityObj.city);
@@ -232,10 +306,27 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
     }
   };
 
+  // Reset Map View
+  const handleResetMap = () => {
+    playTick();
+    setSearchQuery('');
+    setUrgencyFilter('ALL');
+    setSelectedCity('ALL');
+    setSelectedWardDetails(null);
+    if (leafletMap.current && data.length > 0) {
+      const L = (window as any).L;
+      const validWards = data.filter((w) => w.lat && w.lng);
+      if (validWards.length > 0 && L) {
+        const bounds = L.latLngBounds(validWards.map((w) => [w.lat, w.lng]));
+        leafletMap.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+      }
+    }
+  };
+
   return (
     <div
       style={{
-        borderRadius: 22,
+        borderRadius: 24,
         overflow: 'hidden',
         background: '#FFFFFF',
         border: '1px solid rgba(18, 53, 36, 0.12)',
@@ -270,16 +361,16 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
               </div>
               <div>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.2rem', color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em' }}>
-                  Pan-India Civic Demand & DBSCAN Hotspot Map
+                  Pan-India Civic Demand & Hotspot Radar
                 </h2>
                 <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.75)', margin: '2px 0 0', fontWeight: 500 }}>
-                  Real-time spatial clustering engine · Bubble size = demand magnitude · Glow = urgency level
+                  Real-time spatial clustering engine · Bubble size = complaint volume · Glow = urgency level
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Micro Telemetry Chips inside Header */}
+          {/* Micro Telemetry Chips */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
             <div
               style={{
@@ -295,7 +386,7 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
                 color: '#FFFFFF',
               }}
             >
-              <MapPin size={13} color="#6FBF73" /> {data.length} Wards Mapped
+              <MapPin size={13} color="#6FBF73" /> {filteredWards.length} Wards
             </div>
 
             <div
@@ -312,7 +403,7 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
                 color: '#FCA5A5',
               }}
             >
-              <Flame size={13} color="#EF4444" /> {criticalCount} Critical Hotspots
+              <Flame size={13} color="#EF4444" /> {criticalCount} Critical
             </div>
 
             {geoClusters.length > 0 && (
@@ -330,48 +421,201 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
                   color: '#6FBF73',
                 }}
               >
-                <Sparkles size={13} /> {geoClusters.length} DBSCAN Clusters
+                <Sparkles size={13} /> {geoClusters.length} AI Clusters
               </div>
             )}
           </div>
         </div>
 
-        {/* City Quick-Fly Pills Bar */}
+        {/* ── NEW HELPFUL TOOLBAR: Search Bar + Urgency Filter Chips + Style Switcher ───── */}
         {!loading && !error && data.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '1.1rem', overflowX: 'auto', paddingBottom: 2 }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em', marginRight: 4 }}>
-              Region Fly:
-            </span>
-            {CITY_PRESETS.map((preset) => {
-              const active = selectedCity === preset.city;
-              return (
-                <button
-                  key={preset.city}
-                  onClick={() => handleCitySelect(preset)}
+          <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {/* Top Toolbar Row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+              {/* Search Box */}
+              <div style={{ position: 'relative', flex: '1 1 240px', maxWidth: 360 }}>
+                <Search size={15} color="rgba(255,255,255,0.6)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  type="text"
+                  placeholder="Search Ward or City (e.g. Ward 14, Jaipur)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
-                    fontSize: '0.75rem',
+                    width: '100%',
+                    padding: '0.42rem 0.85rem 0.42rem 2.2rem',
+                    borderRadius: 100,
+                    background: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    color: '#FFFFFF',
+                    fontSize: '0.8rem',
+                    outline: 'none',
+                  }}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)' }}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Urgency Filter Chips */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', marginRight: 2 }}>
+                  Filter:
+                </span>
+                {[
+                  { key: 'ALL', label: `All (${data.length})` },
+                  { key: 'CRITICAL', label: `🚨 Critical (${criticalCount})` },
+                  { key: 'MEDIUM', label: `⚠️ Medium (${mediumCount})` },
+                  { key: 'LOW', label: `🟢 Low (${lowCount})` },
+                ].map((chip) => {
+                  const active = urgencyFilter === chip.key;
+                  return (
+                    <button
+                      key={chip.key}
+                      onClick={() => { playTick(); setUrgencyFilter(chip.key as any); }}
+                      style={{
+                        fontSize: '0.73rem',
+                        fontWeight: 700,
+                        padding: '0.3rem 0.7rem',
+                        borderRadius: 100,
+                        border: active ? '1.5px solid #25D366' : '1px solid rgba(255,255,255,0.18)',
+                        background: active ? '#25D366' : 'rgba(255,255,255,0.08)',
+                        color: active ? '#123524' : '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 150ms ease',
+                      }}
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Map View Style Selector Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(0,0,0,0.2)', padding: 3, borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)' }}>
+                <button
+                  onClick={() => { playTick(); setMapStyle('voyager'); }}
+                  title="Light Voyager Map"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    fontSize: '0.72rem',
                     fontWeight: 700,
-                    padding: '0.3rem 0.8rem',
-                    borderRadius: 20,
-                    border: active ? '1.5px solid #25D366' : '1px solid rgba(255, 255, 255, 0.18)',
-                    background: active ? '#25D366' : 'rgba(255, 255, 255, 0.08)',
-                    color: active ? '#123524' : '#FFFFFF',
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: 100,
+                    border: 'none',
+                    background: mapStyle === 'voyager' ? '#FFFFFF' : 'transparent',
+                    color: mapStyle === 'voyager' ? '#123524' : '#FFFFFF',
                     cursor: 'pointer',
-                    transition: 'all 160ms ease',
-                    whiteSpace: 'nowrap',
-                    boxShadow: active ? '0 2px 10px rgba(37, 211, 102, 0.35)' : 'none',
                   }}
                 >
-                  {preset.label}
+                  <Sun size={12} /> Light
                 </button>
-              );
-            })}
+
+                <button
+                  onClick={() => { playTick(); setMapStyle('dark'); }}
+                  title="Dark Command Map"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: 100,
+                    border: 'none',
+                    background: mapStyle === 'dark' ? '#FFFFFF' : 'transparent',
+                    color: mapStyle === 'dark' ? '#123524' : '#FFFFFF',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Moon size={12} /> Dark Radar
+                </button>
+
+                <button
+                  onClick={() => { playTick(); setMapStyle('satellite'); }}
+                  title="Satellite Terrain Map"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: 100,
+                    border: 'none',
+                    background: mapStyle === 'satellite' ? '#FFFFFF' : 'transparent',
+                    color: mapStyle === 'satellite' ? '#123524' : '#FFFFFF',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Globe size={12} /> Satellite
+                </button>
+              </div>
+            </div>
+
+            {/* City Presets Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflowX: 'auto', paddingBottom: 2 }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em', marginRight: 4 }}>
+                Fly To City:
+              </span>
+              {CITY_PRESETS.map((preset) => {
+                const active = selectedCity === preset.city;
+                return (
+                  <button
+                    key={preset.city}
+                    onClick={() => handleCitySelect(preset)}
+                    style={{
+                      fontSize: '0.73rem',
+                      fontWeight: 700,
+                      padding: '0.25rem 0.7rem',
+                      borderRadius: 100,
+                      border: active ? '1.5px solid #25D366' : '1px solid rgba(255, 255, 255, 0.18)',
+                      background: active ? '#25D366' : 'rgba(255, 255, 255, 0.08)',
+                      color: active ? '#123524' : '#FFFFFF',
+                      cursor: 'pointer',
+                      transition: 'all 160ms ease',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={handleResetMap}
+                title="Reset Map View & Filters"
+                style={{
+                  fontSize: '0.73rem',
+                  fontWeight: 700,
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: 100,
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  background: 'rgba(255,255,255,0.12)',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 3,
+                  whiteSpace: 'nowrap',
+                  marginLeft: 'auto',
+                }}
+              >
+                <RotateCcw size={12} /> Reset
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Map Content */}
-      {loading && <Skeleton height={480} style={{ borderRadius: 0 }} />}
+      {/* Map Content Container */}
+      {loading && <Skeleton height={500} style={{ borderRadius: 0 }} />}
       {error && (
         <div style={{ padding: '2.5rem' }}>
           <ErrorState message={error} onRetry={onRetry} />
@@ -405,12 +649,67 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
               animation: pulseMarker 2s infinite ease-in-out;
             }
           `}</style>
-          
+
           <div
             ref={mapRef}
-            style={{ height: 480, width: '100%', zIndex: 1 }}
+            style={{ height: 500, width: '100%', zIndex: 1 }}
             aria-label="Interactive Pan-India Hotspot Map"
           />
+
+          {/* ── NEW FEATURE: Selected Ward Intelligence Card (Bottom Left Floating Overlay) ───── */}
+          {selectedWardDetails && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 20,
+                left: 20,
+                zIndex: 1000,
+                background: mapStyle === 'dark' ? 'rgba(15, 23, 42, 0.94)' : 'rgba(255, 255, 255, 0.96)',
+                backdropFilter: 'blur(16px)',
+                borderRadius: 20,
+                padding: '1.25rem',
+                border: mapStyle === 'dark' ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid rgba(18, 53, 36, 0.15)',
+                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.22)',
+                maxWidth: 310,
+                width: 'calc(100% - 40px)',
+                color: mapStyle === 'dark' ? '#F8FAFC' : '#123524',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#2563EB', background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '2px 8px', borderRadius: 100, textTransform: 'uppercase' }}>
+                  WARD INTELLIGENCE
+                </span>
+                <button onClick={() => setSelectedWardDetails(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: mapStyle === 'dark' ? '#94A3B8' : '#64748B' }}>
+                  <X size={16} />
+                </button>
+              </div>
+
+              <h4 style={{ fontWeight: 800, fontSize: '1.15rem', margin: '0 0 6px' }}>{selectedWardDetails.name}</h4>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, margin: '10px 0' }}>
+                <div style={{ background: mapStyle === 'dark' ? 'rgba(255,255,255,0.06)' : '#F8FAFC', padding: '8px 10px', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: '0.68rem', color: mapStyle === 'dark' ? '#94A3B8' : '#64748B', fontWeight: 600 }}>Complaints</div>
+                  <div style={{ fontWeight: 800, fontSize: '1.05rem', marginTop: 2 }}>{selectedWardDetails.complaint_count}</div>
+                </div>
+                <div style={{ background: mapStyle === 'dark' ? 'rgba(255,255,255,0.06)' : '#F8FAFC', padding: '8px 10px', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: '0.68rem', color: mapStyle === 'dark' ? '#94A3B8' : '#64748B', fontWeight: 600 }}>Urgency Index</div>
+                  <div style={{ fontWeight: 800, fontSize: '1.05rem', color: urgencyColor(selectedWardDetails.avg_urgency), marginTop: 2 }}>
+                    {selectedWardDetails.avg_urgency.toFixed(0)}/100
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '0.74rem', color: mapStyle === 'dark' ? '#CBD5E1' : '#475569', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <MapPin size={12} color="#25D366" /> GPS: {selectedWardDetails.lat?.toFixed(4)}, {selectedWardDetails.lng?.toFixed(4)}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: selectedWardDetails.avg_urgency >= 75 ? '#DC2626' : '#059669', background: selectedWardDetails.avg_urgency >= 75 ? '#FEF2F2' : '#ECFDF5', padding: '3px 8px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.08)' }}>
+                  {selectedWardDetails.avg_urgency >= 75 ? '🚨 High Priority Dispatch' : '🟢 Normal Monitoring'}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Floating Glassmorphism Map Legend at Bottom Right */}
           <div
@@ -419,28 +718,29 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
               bottom: 16,
               right: 16,
               zIndex: 1000,
-              background: 'rgba(255, 255, 255, 0.92)',
+              background: mapStyle === 'dark' ? 'rgba(15, 23, 42, 0.92)' : 'rgba(255, 255, 255, 0.92)',
               backdropFilter: 'blur(12px)',
               padding: '0.65rem 1rem',
               borderRadius: 16,
-              border: '1px solid rgba(18, 53, 36, 0.12)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+              border: mapStyle === 'dark' ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid rgba(18, 53, 36, 0.12)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
+              color: mapStyle === 'dark' ? '#F8FAFC' : '#1F3A24',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#EF4444', boxShadow: '0 0 8px rgba(239,68,68,0.6)' }} />
-              <span style={{ fontSize: '0.75rem', color: '#1F3A24', fontWeight: 750 }}>High (≥75)</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 750 }}>High (≥75)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#F59E0B' }} />
-              <span style={{ fontSize: '0.75rem', color: '#1F3A24', fontWeight: 750 }}>Medium (50-74)</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 750 }}>Medium (50-74)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#10B981' }} />
-              <span style={{ fontSize: '0.75rem', color: '#1F3A24', fontWeight: 750 }}>Low (&lt;50)</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 750 }}>Low (&lt;50)</span>
             </div>
           </div>
         </div>
@@ -448,4 +748,3 @@ export function HotspotMap({ data, geoClusters = [], loading, error, onRetry }: 
     </div>
   );
 }
-

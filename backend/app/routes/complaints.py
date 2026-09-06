@@ -2,7 +2,9 @@
 Complaint API routes.
 Handles complaint submission, listing, and tracking.
 """
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request, status
+import httpx
+from app.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from typing import List, Optional
@@ -22,11 +24,25 @@ limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/complaints", tags=["Complaints"])
 
 
+async def trigger_viasocket_webhook(payload: dict):
+    """Send complaint payload to ViaSocket Webhook for automated Google Sheet sync."""
+    webhook_url = getattr(settings, "viasocket_webhook_url", None) or "https://flow.sokt.io/func/scri2qdtXavo"
+    if not webhook_url:
+        return
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(webhook_url, json=payload, timeout=8.0)
+            logger.info(f"ViaSocket Webhook Triggered for complaint {payload.get('id')}: Status {resp.status_code}")
+    except Exception as e:
+        logger.error(f"Failed to trigger ViaSocket Webhook: {e}")
+
+
 @router.post("", response_model=ComplaintResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("10/minute")
 async def submit_complaint(
     request: Request,
     complaint_data: ComplaintCreate,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -126,6 +142,28 @@ async def submit_complaint(
     
     logger.info(f"Complaint created: {tracking_id}, ward_id={complaint_data.ward_id}, category={classification['category']}")
     
+    # Trigger ViaSocket Webhook (Sync to Google Sheets / Automation)
+    try:
+        ward_name = ward.name if ward else "Pan-India General Region"
+        channel_str = complaint.channel.value if hasattr(complaint.channel, "value") else str(complaint.channel)
+        status_str = complaint.status.value if hasattr(complaint.status, "value") else str(complaint.status)
+        created_str = complaint.created_at.strftime("%Y-%m-%d %H:%M:%S") if complaint.created_at else ""
+        
+        payload = {
+            "id": complaint.id,
+            "tracking_id": complaint.tracking_id,
+            "created_at": created_str,
+            "category": complaint.category,
+            "city_ward": ward_name,
+            "urgency": complaint.urgency,
+            "channel": channel_str,
+            "status": status_str,
+            "raw_text": complaint.raw_text
+        }
+        background_tasks.add_task(trigger_viasocket_webhook, payload)
+    except Exception as err:
+        logger.error(f"Error preparing ViaSocket payload: {err}")
+
     return complaint
 
 

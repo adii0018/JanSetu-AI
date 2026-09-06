@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MessageSquare, BarChart3, MessageCircle, Sparkles, ShieldCheck, Cpu, MapPin, Layers, ExternalLink, Landmark, ShipWheel, Code2 } from 'lucide-react';
+import { MessageSquare, BarChart3, MessageCircle, Sparkles, ShieldCheck, Cpu, MapPin, Layers, ExternalLink, Landmark, ShipWheel, Code2, FileSpreadsheet } from 'lucide-react';
 import { playNav } from '../../utils/sounds';
 
 export function Footer() {
@@ -181,6 +181,16 @@ export function Footer() {
                 >
                   <BarChart3 size={14} color="var(--moss)" /> Policymaker Dashboard
                 </NavLink>
+              </li>
+              <li>
+                <a
+                  href="https://docs.google.com/spreadsheets/d/1cC8YMVKnjgc5Gq9h4T_dvx4u1PFgfqXvUTMi_gc9Rn0/edit?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#0F9D58', textDecoration: 'none', fontSize: '0.86rem', fontWeight: 650, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                >
+                  <FileSpreadsheet size={14} color="#0F9D58" /> Live Govt Google Sheet <ExternalLink size={11} opacity={0.7} />
+                </a>
               </li>
               <li>
                 <a

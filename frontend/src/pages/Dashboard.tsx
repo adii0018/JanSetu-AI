@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshCw, FileText, MapPin, AlertTriangle, TrendingUp, RotateCcw } from 'lucide-react';
+import { RefreshCw, FileText, MapPin, AlertTriangle, TrendingUp, RotateCcw, FileSpreadsheet } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PageContainer } from '../components/layout/PageContainer';
 import { StatCard } from '../components/dashboard/StatCard';
@@ -279,8 +279,26 @@ export function Dashboard() {
               </div>
             </div>
 
-            {/* Refresh & Reset Controls */}
+            {/* Refresh, Live Sheet & Reset Controls */}
             <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, flexWrap: 'wrap' }}>
+              <a
+                href="https://docs.google.com/spreadsheets/d/1cC8YMVKnjgc5Gq9h4T_dvx4u1PFgfqXvUTMi_gc9Rn0/edit?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+                style={{
+                  color: '#FFD700',
+                  borderColor: 'rgba(255, 215, 0, 0.4)',
+                  background: 'rgba(255, 215, 0, 0.12)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                  backdropFilter: 'blur(6px)',
+                  textDecoration: 'none',
+                }}
+              >
+                <FileSpreadsheet size={15} />
+                Live Govt Sheet
+              </a>
+
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}

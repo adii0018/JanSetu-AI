@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { MessageSquare, BarChart3, Sparkles, MessageCircle, FilePlus, ShieldCheck, Activity } from 'lucide-react';
+import { MessageSquare, BarChart3, Sparkles, MessageCircle, FilePlus, ShieldCheck, Activity, FileSpreadsheet, ExternalLink } from 'lucide-react';
 import { playNav } from '../../utils/sounds';
 
 export function TopNav() {
@@ -204,6 +204,33 @@ export function TopNav() {
             />
             AI Engine Online
           </div>
+
+          {/* Live Govt Google Sheet Link Button */}
+          <a
+            href="https://docs.google.com/spreadsheets/d/1cC8YMVKnjgc5Gq9h4T_dvx4u1PFgfqXvUTMi_gc9Rn0/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={playNav}
+            title="Open Live Updating Govt Google Sheet"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.45rem 0.85rem',
+              borderRadius: 'var(--radius-pill)',
+              background: '#0F9D58',
+              color: '#FFFFFF',
+              textDecoration: 'none',
+              fontWeight: 700,
+              fontSize: '0.8125rem',
+              boxShadow: '0 2px 10px rgba(15, 157, 88, 0.3)',
+              transition: 'transform 160ms ease, boxShadow 160ms ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <FileSpreadsheet size={15} /> Govt Google Sheet
+          </a>
 
           {/* Official WhatsApp Bot Link Button */}
           <a

@@ -12,11 +12,12 @@ class Settings(BaseSettings):
     # Database
     database_url: str
     
-    # API Keys
+    # API Keys & Webhooks
     nvidia_api_key: Optional[str] = None
     nvidia_asr_api_key: Optional[str] = None
     nvidia_tts_api_key: Optional[str] = None
     dashboard_api_key: Optional[str] = None
+    viasocket_webhook_url: Optional[str] = "https://flow.sokt.io/func/scri2qdtXavo"
     
     # CORS
     allowed_origins: str = "http://localhost:5173"

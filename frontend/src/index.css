@@ -330,12 +330,12 @@ p { margin: 0; }
 /* ── Glowing Sun Animation ─────────────────────────────────── */
 .sun-container {
   position: absolute;
-  top: -30px;
-  right: 6%;
-  width: 220px;
-  height: 220px;
+  top: 15px;
+  right: 4%;
+  width: 180px;
+  height: 180px;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 .sun-rays {
@@ -448,3 +448,43 @@ p { margin: 0; }
 
   .card { padding: 1.25rem; border-radius: 18px; }
 }
+
+/* ── Google Translate Clean UI Overrides (No Top Banner Slide) ── */
+body {
+  top: 0px !important;
+  position: static !important;
+  margin-top: 0px !important;
+}
+
+body > .skiptranslate,
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-spinner-pos,
+.VIpgJd-yD051d-Lg4t2b,
+.VIpgJd-yD051d-Lg4t2b-s25p1e,
+.VIpgJd-yD051d-Lg4t2b-aria-expanded,
+iframe[id^=":"],
+iframe[src*="translate"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  max-height: 0 !important;
+}
+
+#google_translate_element {
+  display: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+

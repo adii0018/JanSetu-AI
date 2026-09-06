@@ -194,6 +194,14 @@ export const AuthModal: React.FC = () => {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     playClick();
+
+    // ── Admin shortcut: check BEFORE setting loading ─────────
+    if (email.trim().toLowerCase() === 'admin@jansetu.in' && password === 'admin@123') {
+      closeAuthModal();
+      window.location.assign('/admin');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch('http://localhost:8000/api/auth/login', {

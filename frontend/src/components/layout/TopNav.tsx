@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { MessageSquare, BarChart3, Sparkles, MessageCircle, FilePlus, ShieldCheck, Activity, ExternalLink, User as UserIcon, LogIn, LogOut, ChevronDown } from 'lucide-react';
 import { playNav, playClick } from '../../utils/sounds';
 import { useAuth } from '../../context/AuthContext';
+import { LanguageSelector } from './LanguageSelector';
 
 export function TopNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -144,36 +145,13 @@ export function TopNav() {
             <MessageSquare size={14} aria-hidden="true" />
             Citizen Intake
           </NavLink>
-
-          <NavLink
-            to="/dashboard"
-            onClick={playNav}
-            style={({ isActive }) => ({
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              padding: '0.45rem 1.15rem',
-              borderRadius: 24,
-              textDecoration: 'none',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 700,
-              fontSize: '0.8125rem',
-              background: isActive
-                ? 'linear-gradient(135deg, #123524 0%, #2E6B3E 100%)'
-                : 'transparent',
-              color: isActive ? '#FFFFFF' : 'var(--ink-soft)',
-              boxShadow: isActive ? '0 4px 14px rgba(18, 53, 36, 0.22)' : 'none',
-              transition: 'all 220ms cubic-bezier(0.16, 1, 0.3, 1)',
-              whiteSpace: 'nowrap',
-            })}
-          >
-            <BarChart3 size={14} aria-hidden="true" />
-            Open Analytics
-          </NavLink>
         </nav>
 
         {/* ── Status Indicator & Actions ───────────────────────── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          {/* Language Selector Dropdown */}
+          <LanguageSelector />
+
           {/* Official WhatsApp Bot Link Button */}
           <a
             href="https://wa.me/918800001915?text=Hi%20JanSetu%20AI%20I%20want%20to%20file%20a%20complaint"

@@ -13,7 +13,7 @@ from slowapi.errors import RateLimitExceeded
 import logging
 from app.database import init_db, close_db, AsyncSessionLocal
 from app.seed_data import seed_wards, seed_complaints
-from app.routes import complaints, dashboard, wards, tts, whatsapp, ml_cluster, auth
+from app.routes import complaints, dashboard, wards, tts, whatsapp, ml_cluster, auth, admin
 from app.config import settings
 
 # Configure logging
@@ -130,6 +130,7 @@ app.include_router(tts.router)
 app.include_router(whatsapp.router)
 app.include_router(ml_cluster.router)
 app.include_router(auth.router)
+app.include_router(admin.router)
 
 
 if __name__ == "__main__":

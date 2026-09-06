@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Sparkles, Mic, Cpu, Send, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Mic, Cpu, Send, ShieldCheck, MapPin } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { ComplaintForm } from '../components/citizen/ComplaintForm';
 import { AiConsole } from '../components/citizen/AiConsole';
 import { TrackComplaint } from '../components/citizen/TrackComplaint';
+import { HotspotMap } from '../components/dashboard/HotspotMap';
+import { getMapData, getGeoClusters } from '../services/api';
+import type { MapWard, GeoClustersResponse } from '../services/types';
 import type { ConsoleState } from '../components/citizen/AiConsole';
 
 const INITIAL_CONSOLE: ConsoleState = {
@@ -13,9 +17,48 @@ const INITIAL_CONSOLE: ConsoleState = {
   errorMsg: null,
 };
 
+const DYNAMIC_PHRASES = [
+  'in Any Local Dialect',
+  'in 22 Indian Languages',
+  'via Voice, Photo or Text',
+  'with Instant AI Parsing',
+  'for Direct Ward Action',
+];
+
+type LoadState<T> = { data: T | null; loading: boolean; error: string | null };
+function init<T>(): LoadState<T> { return { data: null, loading: true, error: null }; }
+
 export function CitizenPortal() {
   const [consoleState, setConsoleState] = useState<ConsoleState>(INITIAL_CONSOLE);
   const [activeTab, setActiveTab] = useState<'submit' | 'track'>('submit');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  const [mapData, setMapData] = useState<LoadState<MapWard[]>>(init());
+  const [geoClusters, setGeoClusters] = useState<LoadState<GeoClustersResponse>>(init());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % DYNAMIC_PHRASES.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
+
+  const fetchMapData = useCallback(async () => {
+    setMapData((s) => ({ ...s, loading: true, error: null }));
+    setGeoClusters((s) => ({ ...s, loading: true, error: null }));
+    await Promise.allSettled([
+      getMapData()
+        .then((data) => setMapData({ data, loading: false, error: null }))
+        .catch((e) => setMapData({ data: null, loading: false, error: e.message })),
+      getGeoClusters()
+        .then((data) => setGeoClusters({ data, loading: false, error: null }))
+        .catch((e) => setGeoClusters({ data: null, loading: false, error: e.message })),
+    ]);
+  }, []);
+
+  useEffect(() => {
+    fetchMapData();
+  }, [fetchMapData]);
 
   const tabStyle = (active: boolean): React.CSSProperties => ({
     flex: 1,
@@ -85,9 +128,8 @@ export function CitizenPortal() {
                 <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
               </radialGradient>
             </defs>
-            {/* Sun Outer Aura */}
             <circle cx="100" cy="100" r="92" fill="url(#sunAura)" />
-            {/* Rotating Sun Rays */}
+            <circle cx="100" cy="100" r="46" fill="url(#sunGlow)" className="sun-core" />
             <g className="sun-rays" stroke="#F0862E" strokeWidth="3.5" strokeLinecap="round" opacity="0.8">
               <line x1="100" y1="22" x2="100" y2="34" />
               <line x1="100" y1="166" x2="100" y2="178" />
@@ -98,139 +140,151 @@ export function CitizenPortal() {
               <line x1="45" y1="155" x2="54" y2="146" />
               <line x1="146" y1="54" x2="155" y2="45" />
             </g>
-            {/* Pulsating Sun Core */}
-            <circle className="sun-core" cx="100" cy="100" r="42" fill="url(#sunGlow)" />
           </svg>
         </div>
 
-        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
-          {/* Eyebrow & Live Status Chips */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.1rem', flexWrap: 'wrap' }}>
-            <span
+        <PageContainer style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ maxWidth: 840, margin: '0 auto', textAlign: 'center' }}>
+            <div
               style={{
-                fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: 'var(--moss)',
-                background: 'rgba(31, 58, 36, 0.08)',
-                border: '1px solid rgba(31, 58, 36, 0.2)',
-                padding: '0.28rem 0.75rem',
-                borderRadius: 100,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                backdropFilter: 'blur(4px)',
-              }}
-            >
-              <Sparkles size={13} color="var(--moss)" />
-              AI Citizen Portal
-            </span>
-
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                background: 'rgba(37, 211, 102, 0.14)',
-                color: '#075E54',
+                gap: '0.45rem',
+                padding: '0.35rem 0.95rem',
+                borderRadius: 100,
+                background: 'rgba(37, 211, 102, 0.12)',
                 border: '1px solid rgba(37, 211, 102, 0.35)',
-                padding: '0.28rem 0.75rem',
-                borderRadius: 100,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                backdropFilter: 'blur(4px)',
-                boxShadow: '0 0 12px rgba(37, 211, 102, 0.2)',
+                color: '#123524',
+                fontSize: '0.78125rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                marginBottom: '1.1rem',
               }}
             >
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#25D366', boxShadow: '0 0 8px #25D366', animation: 'pulse 1.5s infinite' }} />
-              PAN-INDIA MULTILINGUAL INTAKE (28 STATES & 8 UTs)
-            </span>
-          </div>
+              <Sparkles size={14} color="#25D366" />
+              AI-POWERED CITIZEN INTAKE PORTAL
+            </div>
 
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              fontSize: 'clamp(2.1rem, 4.5vw, 3.2rem)',
-              color: 'var(--ink)',
-              lineHeight: 1.14,
-              letterSpacing: '-0.03em',
-              maxWidth: 680,
-              marginBottom: '0.85rem',
-            }}
-          >
-            Voice & Text Civic Complaint Intake{' '}
-            <span style={{ background: 'linear-gradient(90deg, #132417 0%, #2E6B3E 45%, #25D366 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>
-              Powered by Multilingual AI
-            </span>
-          </h1>
+            <h1
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
+                fontWeight: 800,
+                color: 'var(--ink)',
+                lineHeight: 1.18,
+                letterSpacing: '-0.03em',
+                margin: 0,
+              }}
+            >
+              Speak or Type Your Civic Voice{' '}
+              <span style={{ display: 'inline-block', position: 'relative' }}>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={DYNAMIC_PHRASES[phraseIndex]}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -16 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    style={{
+                      display: 'inline-block',
+                      background: 'linear-gradient(135deg, #123524 0%, #25D366 50%, #2E6B3E 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 2px 10px rgba(37, 211, 102, 0.2))',
+                    }}
+                  >
+                    {DYNAMIC_PHRASES[phraseIndex]}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </h1>
 
-          <p style={{ color: 'var(--ink-soft)', fontSize: '1.02rem', maxWidth: 620, lineHeight: 1.62, fontWeight: 450 }}>
-            Describe any civic issue in your native language via voice dictation or text. AI instantly extracts location, urgency, and routes it directly to municipal officers.
-          </p>
+            <p
+              style={{
+                fontSize: '1.05rem',
+                color: 'var(--ink-soft)',
+                marginTop: '0.95rem',
+                maxWidth: 680,
+                marginInline: 'auto',
+                lineHeight: 1.6,
+                fontWeight: 450,
+              }}
+            >
+              JanSetu AI accepts voice notes, photos, and free-form text in 22 Indian languages. It automatically classifies urgency, tags the municipality ward, and triggers immediate action.
+            </p>
 
-          {/* Enhanced Micro Step Pills */}
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-            {[
-              { n: '01', label: 'Voice or Text Intake', desc: 'Dictate in your local dialect', Icon: Mic, color: '#10B981' },
-              { n: '02', label: 'AI NER Parsing', desc: 'Extracts location & category', Icon: Cpu, color: '#8B5CF6' },
-              { n: '03', label: 'Direct Priority Queue', desc: 'Instant ward officer routing', Icon: Send, color: '#F59E0B' },
-            ].map(({ n, label, desc, Icon, color }) => (
-              <div
-                key={n}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  background: 'rgba(255, 255, 255, 0.85)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(31, 58, 36, 0.15)',
-                  borderRadius: 16,
-                  padding: '0.65rem 1.1rem',
-                  fontSize: '0.8125rem',
-                  fontFamily: 'var(--font-body)',
-                  fontWeight: 600,
-                  boxShadow: '0 6px 20px rgba(31, 58, 36, 0.06)',
-                  transition: 'all 200ms ease',
-                  cursor: 'default',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(37, 211, 102, 0.4)';
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 10px 25px rgba(37, 211, 102, 0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
-                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(31, 58, 36, 0.15)';
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 6px 20px rgba(31, 58, 36, 0.06)';
-                }}
-              >
+            {/* Feature Pills under Subtitle */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '1rem',
+                marginTop: '1.75rem',
+                flexWrap: 'wrap',
+              }}
+            >
+              {[
+                { n: '01', label: 'Voice or Text Intake', desc: 'Dictate in your local dialect', Icon: Mic, color: '#10B981' },
+                { n: '02', label: 'AI NER Parsing', desc: 'Extracts location & category', Icon: Cpu, color: '#8B5CF6' },
+                { n: '03', label: 'Direct Priority Queue', desc: 'Instant ward officer routing', Icon: Send, color: '#F59E0B' },
+              ].map(({ n, label, desc, Icon, color }) => (
                 <div
+                  key={n}
                   style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 10,
-                    background: `color-mix(in srgb, ${color} 15%, #FFFFFF)`,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
+                    gap: '0.75rem',
+                    background: 'rgba(255, 255, 255, 0.85)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(31, 58, 36, 0.15)',
+                    borderRadius: 16,
+                    padding: '0.65rem 1.1rem',
+                    fontSize: '0.8125rem',
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 600,
+                    boxShadow: '0 6px 20px rgba(31, 58, 36, 0.06)',
+                    transition: 'all 200ms ease',
+                    cursor: 'default',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+                    (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(37, 211, 102, 0.4)';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 10px 25px rgba(37, 211, 102, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
+                    (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(31, 58, 36, 0.15)';
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 6px 20px rgba(31, 58, 36, 0.06)';
                   }}
                 >
-                  <Icon size={17} color={color} />
-                </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'var(--moss)', fontSize: '0.72rem' }}>{n}.</span>
-                    <span style={{ color: 'var(--ink)', fontWeight: 700, fontSize: '0.84rem' }}>{label}</span>
+                  <div
+                    style={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: 10,
+                      background: `color-mix(in srgb, ${color} 15%, #FFFFFF)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Icon size={17} color={color} />
                   </div>
-                  <div style={{ fontSize: '0.73rem', color: 'var(--ink-soft)', fontWeight: 450 }}>{desc}</div>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: '#25D366', fontSize: '0.72rem' }}>{n}.</span>
+                      <span style={{ color: 'var(--ink)', fontWeight: 700, fontSize: '0.84rem' }}>{label}</span>
+                    </div>
+                    <div style={{ fontSize: '0.73rem', color: 'var(--ink-soft)', fontWeight: 450 }}>{desc}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </PageContainer>
 
         {/* Dynamic Flowing Wavy Bottom Divider */}
         <div
@@ -246,7 +300,6 @@ export function CitizenPortal() {
             zIndex: 2,
           }}
         >
-          {/* Layer 1: Soft Ambient Glow Wave */}
           <div
             style={{
               position: 'absolute',
@@ -255,7 +308,6 @@ export function CitizenPortal() {
               width: '200%',
               height: '100%',
               animation: 'waveFlowRight 16s linear infinite',
-              willChange: 'transform',
             }}
           >
             <svg
@@ -270,7 +322,6 @@ export function CitizenPortal() {
             </svg>
           </div>
 
-          {/* Layer 2: Main Page Background Wave */}
           <div
             style={{
               position: 'absolute',
@@ -279,7 +330,6 @@ export function CitizenPortal() {
               width: '200%',
               height: '100%',
               animation: 'waveFlowLeft 10s linear infinite',
-              willChange: 'transform',
             }}
           >
             <svg
@@ -289,7 +339,7 @@ export function CitizenPortal() {
             >
               <path
                 d="M 0,45 Q 300,100 600,45 T 1200,45 T 1800,45 T 2400,45 L 2400,120 L 0,120 Z"
-                fill="var(--bg-page, #F9FAFC)"
+                fill="var(--paper, #F9FAFC)"
               />
             </svg>
           </div>
@@ -339,6 +389,17 @@ export function CitizenPortal() {
             </div>
             <TrackComplaint />
           </div>
+        </div>
+
+        {/* ── Pan-India Ward Hotspot Map Section on Landing Page ───── */}
+        <div style={{ marginTop: '3rem' }}>
+          <HotspotMap
+            data={mapData.data ?? []}
+            geoClusters={geoClusters.data?.clusters ?? []}
+            loading={mapData.loading}
+            error={mapData.error}
+            onRetry={fetchMapData}
+          />
         </div>
       </PageContainer>
 

@@ -184,6 +184,7 @@ async def google_auth(data: GoogleAuthRequest, db: AsyncSession = Depends(get_db
 
 
 @router.get("/me", response_model=UserResponse)
+@router.get("/profile", response_model=UserResponse)
 async def get_my_profile(current_user: User = Depends(get_current_user)):
     """Fetch current logged-in user profile."""
     return UserResponse.model_validate(current_user)

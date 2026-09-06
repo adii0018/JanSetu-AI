@@ -102,7 +102,7 @@ async def submit_complaint(
         if not ward:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Ward with id {target_ward_id} does not exist"
+                detail=f"Ward with id {target_ward_id} not found"
             )
     
     # Classify complaint using NLP service
@@ -328,7 +328,7 @@ async def get_complaint_by_tracking_id(
     if not complaint:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Complaint with tracking ID '{tracking_id}' does not exist"
+            detail=f"Complaint with tracking ID '{tracking_id}' not found"
         )
     
     return complaint
@@ -361,7 +361,7 @@ async def upvote_complaint(
     if not complaint:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Complaint with tracking ID '{tracking_id}' does not exist"
+            detail=f"Complaint with tracking ID '{tracking_id}' not found"
         )
     
     complaint.upvote_count = (complaint.upvote_count or 0) + 1

@@ -526,9 +526,128 @@ export function CitizenPortal() {
             onRetry={fetchMapData}
           />
         </div>
+
+        {/* ── NEW FEATURE: Dual Counter-Rotating Sleek Ticker Bars Right Below Map ───── */}
+        <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {/* Row 1: Right to Left (R2L) */}
+          <div
+            className="ticker-container"
+            style={{
+              background: '#FFFFFF',
+              borderRadius: 18,
+              padding: '0.7rem 1.25rem',
+              border: '1px solid rgba(18, 53, 36, 0.12)',
+              boxShadow: '0 4px 16px rgba(18, 53, 36, 0.03)',
+              display: 'flex',
+              alignItems: 'center',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <div
+              className="ticker-track-r2l"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2.5rem',
+                whiteSpace: 'nowrap',
+                width: 'max-content',
+                animation: 'tickerR2L 34s linear infinite',
+              }}
+            >
+              {[
+                { label: '🤖 AUTO-PARSER', text: 'NVIDIA NeMo auto-categorized 1,420+ complaints with 99.4% accuracy', color: '#8B5CF6', bg: '#F3E8FF', border: '#DDD6FE' },
+                { label: '🔥 HOTSPOT CLUSTER', text: 'DBSCAN AI detected critical urgency density in Indore Ward 5 & Jaipur Ward 14', color: '#EF4444', bg: '#FEE2E2', border: '#FCA5A5' },
+                { label: '⚡ VIASOCKET RELAY', text: 'Instant webhook sync dispatched 84 new complaints in under 450ms', color: '#F59E0B', bg: '#FEF3C7', border: '#FDE68A' },
+                { label: '🎙️ 22 DIALECTS', text: 'Voice AI parsed Rajasthani, Maithili, Bhojpuri & Tamil voice notes seamlessly', color: '#10B981', bg: '#D1FAE5', border: '#6EE7B7' },
+                { label: '⏱️ SPEED RESOLUTION', text: 'Nation-wide municipal dispatch average resolution speed: 4.2 Hours', color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
+                { label: '🛡️ TRANSPARENCY', text: 'Aadhaar verified dispatch & live WhatsApp SMS updates active for citizens', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                // Duplicate for smooth seamless loop
+                { label: '🤖 AUTO-PARSER', text: 'NVIDIA NeMo auto-categorized 1,420+ complaints with 99.4% accuracy', color: '#8B5CF6', bg: '#F3E8FF', border: '#DDD6FE' },
+                { label: '🔥 HOTSPOT CLUSTER', text: 'DBSCAN AI detected critical urgency density in Indore Ward 5 & Jaipur Ward 14', color: '#EF4444', bg: '#FEE2E2', border: '#FCA5A5' },
+                { label: '⚡ VIASOCKET RELAY', text: 'Instant webhook sync dispatched 84 new complaints in under 450ms', color: '#F59E0B', bg: '#FEF3C7', border: '#FDE68A' },
+                { label: '🎙️ 22 DIALECTS', text: 'Voice AI parsed Rajasthani, Maithili, Bhojpuri & Tamil voice notes seamlessly', color: '#10B981', bg: '#D1FAE5', border: '#6EE7B7' },
+                { label: '⏱️ SPEED RESOLUTION', text: 'Nation-wide municipal dispatch average resolution speed: 4.2 Hours', color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
+                { label: '🛡️ TRANSPARENCY', text: 'Aadhaar verified dispatch & live WhatsApp SMS updates active for citizens', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+              ].map((item, idx) => (
+                <div key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontSize: '0.84rem', color: '#334155', fontWeight: 650 }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 800, color: item.color, background: item.bg, border: `1px solid ${item.border}`, padding: '3px 9px', borderRadius: 8 }}>
+                    {item.label}
+                  </span>
+                  <span>{item.text}</span>
+                  <span style={{ color: '#CBD5E1', marginLeft: 10 }}>•</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Left to Right (L2R) */}
+          <div
+            className="ticker-container"
+            style={{
+              background: '#FFFFFF',
+              borderRadius: 18,
+              padding: '0.7rem 1.25rem',
+              border: '1px solid rgba(18, 53, 36, 0.12)',
+              boxShadow: '0 4px 16px rgba(18, 53, 36, 0.03)',
+              display: 'flex',
+              alignItems: 'center',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <div
+              className="ticker-track-l2r"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2.5rem',
+                whiteSpace: 'nowrap',
+                width: 'max-content',
+                animation: 'tickerL2R 34s linear infinite',
+              }}
+            >
+              {[
+                { label: '🟢 JAIPUR WARD 14', text: 'Water pipeline burst fixed by Jal Board team • Resolution in 3.8 hrs', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                { label: '🚨 DELHI WARD 22', text: 'Electrical transformer breakdown flagged • Emergency crew on-site', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+                { label: '🟢 KOCHI WARD 8', text: 'Main road pothole patch completed • Verified citizen rating 5★', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                { label: '⚡ MUMBAI WARD 12', text: 'Drainage overflow cleared after citizen voice alert in Marathi', color: '#D97706', bg: '#FEF3C7', border: '#FDE68A' },
+                { label: '🟢 INDORE WARD 5', text: 'Sanitation drive completed • 100% clean ward score achieved', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                { label: '🚨 LUCKNOW WARD 18', text: 'Streetlight grid repair in progress • Dedicated Officer assigned', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+                // Duplicate for smooth seamless loop
+                { label: '🟢 JAIPUR WARD 14', text: 'Water pipeline burst fixed by Jal Board team • Resolution in 3.8 hrs', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                { label: '🚨 DELHI WARD 22', text: 'Electrical transformer breakdown flagged • Emergency crew on-site', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+                { label: '🟢 KOCHI WARD 8', text: 'Main road pothole patch completed • Verified citizen rating 5★', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                { label: '⚡ MUMBAI WARD 12', text: 'Drainage overflow cleared after citizen voice alert in Marathi', color: '#D97706', bg: '#FEF3C7', border: '#FDE68A' },
+                { label: '🟢 INDORE WARD 5', text: 'Sanitation drive completed • 100% clean ward score achieved', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+                { label: '🚨 LUCKNOW WARD 18', text: 'Streetlight grid repair in progress • Dedicated Officer assigned', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+              ].map((item, idx) => (
+                <div key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontSize: '0.84rem', color: '#334155', fontWeight: 650 }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 800, color: item.color, background: item.bg, border: `1px solid ${item.border}`, padding: '3px 9px', borderRadius: 8 }}>
+                    {item.label}
+                  </span>
+                  <span>{item.text}</span>
+                  <span style={{ color: '#CBD5E1', marginLeft: 10 }}>•</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </PageContainer>
 
       <style>{`
+        @keyframes tickerR2L {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes tickerL2R {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .ticker-container:hover .ticker-track-r2l,
+        .ticker-container:hover .ticker-track-l2r {
+          animation-play-state: paused !important;
+        }
         @keyframes waveFlowLeft {
           0% { transform: translate3d(0, 0, 0); }
           100% { transform: translate3d(-50%, 0, 0); }

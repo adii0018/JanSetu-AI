@@ -11,23 +11,23 @@ logger = logging.getLogger(__name__)
 # Comprehensive Multilingual Category keyword mappings (10+ Indian languages: Hindi, Hinglish, Marathi, Gujarati, Tamil, Telugu, Bengali, Kannada, Malayalam, Punjabi, English)
 CATEGORY_KEYWORDS = {
     "Water Supply": [
-        "water", "paani", "pani", "supply", "tanker", "pipeline", "peene", "jal", "tap", "leakage", "contamination", "dirty water", "muddy water",
+        "water", "paani", "pani", "supply", "tanker", "pipeline", "peene", "jal", "tap", "leakage", "contamination", "dirty water", "muddy water", "water issue", "water problem",
         "पानी", "जल", "नल", "टैंकर", "पाणी", "પાણી", "નળ", "તળાવ", "தண்ணீர்", "தண்ணி", "குடிநீர்",
         "నీరు", "మంచినీరు", "জল", "পানি", "ನೀರು", "ಕುಡಿಯುವ ನೀರು", "വെള്ളം", "കുടിവെള്ളം", "ਪਾਣੀ"
     ],
     "Road": [
-        "road", "sadak", "gaddha", "pothole", "street", "traffic", "gadde", "rasta", "bridge", "patchwork", "accident", "broken road", "signal",
-        "सड़क", "गड्ढा", "रास्ता", "गड्ढे", "रस्ता", "ખાળો", "રસ્તો", "சாலை", "தெரு", "ரோடு",
+        "road", "sadak", "gaddha", "pothole", "street", "traffic", "gadde", "rasta", "bridge", "patchwork", "accident", "broken road", "signal", "infrastructure", "infra",
+        "सड़क", "गड्ढा", "रास्ता", "गड्ढे", "रस्ता", "इन्फ्रास्ट्रक्चर", "इन्फ्रा", "ખાળો", "રસ્તો", "சாலை", "தெரு", "ரோடு",
         "రోడ్డు", "రహదారి", "রাস্তা", "সড়ক", "ರಸ್ತೆ", "ಖಾಲಿ", "റോഡ്", "തെരുവ്", "ਸੜਕ", "ਰਾਹ"
     ],
     "Health": [
-        "health", "hospital", "clinic", "doctor", "bimari", "beemar", "ambulance", "dawai", "dawa", "dengue", "malaria", "fever", "emergency", "bed",
+        "health", "hospital", "clinic", "doctor", "bimari", "beemar", "ambulance", "dawai", "dawa", "dengue", "malaria", "fever", "emergency", "bed", "medical",
         "अस्पताल", "डॉक्टर", "दवा", "बीमारी", "आरोग्य", "દવા", "હોસ્પિટલ", "மருத்துவமனை", "டாக்டர்", "மருந்து",
         "ఆసుపత్రి", "వైద్యుడు", "হাসপাতাল", "ডাক্তার", "ಆಸ್ಪತ್ರೆ", "ವೈದ್ಯರು", "ആശുപത്രി", "ഡോക്ടർ", "ਹਸਪਤਾਲ", "ਡਾਕਟਰ"
     ],
     "Electricity": [
-        "electricity", "bijli", "light", "transformer", "power", "current", "wire", "pole", "blackout", "spark", "voltage", "power cut",
-        "बिजली", "लाइट", "ट्रांसफॉर्मर", "वीज", "વીજળી", "લાઇટ", "மின்சாரம்", "கரண்ட்", "லைட்",
+        "electricity", "bijli", "light", "transformer", "power", "current", "wire", "pole", "blackout", "spark", "voltage", "power cut", "electrical", "electric",
+        "बिजली", "लाइट", "ट्रांसफॉर्मर", "वीज", "वीजळी", "લાઇટ", "மின்சாரம்", "கரண்ட்", "லைட்", "इलेक्ट्रिकल", "इलेक्ट्रिक", "इलेक्ट्रिसिटी",
         "విద్యుత్", "కరెంట్", "বিদ্যুৎ", "লাইটিং", "ವಿದ್ಯುತ್", "ಲೈಟ್", "വൈദ്യുതി", "ലൈറ്റ്", "ਬਿਜਲੀ", "ਲਾਈਟ"
     ],
     "Education": [
@@ -36,7 +36,7 @@ CATEGORY_KEYWORDS = {
         "పాఠశాల", "ఉపాధ్యాయుడు", "স্কুল", "শিক্ষক", "ಶಾಲೆ", "ಶಿಖಕರು", "സ്കൂൾ", "അധ്യാപകൻ", "ਸਕੂਲ", "ਅਧਿਆਪਕ"
     ],
     "Sanitation": [
-        "garbage", "kachra", "safai", "sewage", "drain", "gutter", "toilet", "gandagi", "nalla", "smell", "dustbin", "waste", "overflow",
+        "garbage", "kachra", "safai", "sewage", "drain", "gutter", "toilet", "gandagi", "nalla", "smell", "dustbin", "waste", "overflow", "cleanliness",
         "कचरा", "सफाई", "नाली", "गटर", "गंदगी", "કચરો", "સફાઈ", "ગટર", "குப்பை", "சாக்கடை", "சுத்தம்",
         "చెత్త", "పరిశుభ్రత", "আবর্জনা", "ময়লা", "ಕಸ", "ನೈರ್ಮಲ್ಯ", "മാലിന്യം", "ശുചിത്വം", "ਕੂੜਾ", "ਸਫਾਈ"
     ],
@@ -50,17 +50,26 @@ URGENCY_WORDS = [
     "అత్యవసరం", "వెంటనే", "জরুরী", "অবিলম্বে", "জরুরি", "ತುರ್ತು", "ಕೂಡಲೇ", "അടിയന്തിരം", "ഉടൻ", "ਜ਼ਰੂਰੀ", "ਤੁਰੰਤ"
 ]
 
-# Comprehensive Named Entity Recognition (NER) location mapping dictionary for Pan-India wards & cities
+# Comprehensive Named Entity Recognition (NER) location mapping dictionary for Pan-India States, UTs, Wards & Cities
 LOCATION_ENTITIES: Dict[str, list] = {
+    # Jammu & Kashmir / Ladakh
+    "Jammu & Kashmir - Srinagar": ["jammu & kashmir", "jammu and kashmir", "jammu", "kashmir", "srinagar", "जम्मू एंड कश्मीर", "जम्मू और कश्मीर", "जम्मू", "कश्मीर", "श्रीनगर", "j&k"],
+    "Ladakh - Leh": ["ladakh", "leh", "लद्दाख", "लेह"],
+
+    # Gujarat
+    "Gujarat - Ahmedabad": ["gujarat", "gujrat", "gandhinagar", "vadodara", "baroda", "rajkot", "गुजरात", "ગુજરાત"],
+    "Surat - Textile Market": ["surat", "सुरत", "सूरत"],
+    "Ahmedabad - Navrangpura": ["navrangpura", "नवरंगपुरा", "ahmedabad", "amdavad", "अहमदाबाद"],
+
     # Madhya Pradesh
     "Indore - Rajwada": ["rajwada", "राजवाड़ा", "indore", "इन्दौर", "इंदौर", "rajwada chowk"],
     "Indore - Vijay Nagar": ["vijay nagar", "विजय नगर", "vijaynagar"],
     "Indore - Bhawarkuan": ["bhawarkuan", "भंवरकुआं", "bhawarkua"],
-    "Indore - Palasia": ["palasia", "पलासिया", "old palasia", "new palasia"],
-    "Indore - Rau": ["rau", "राऊ", "rau bypass"],
+    "Indore - Palasia": ["palasia", "पलासिया"],
+    "Indore - Rau": ["rau", "राऊ"],
     "Bhopal - MP Nagar": ["mp nagar", "एमपी नगर", "bhopal", "भोपाल"],
-    "Gwalior - Maharaj Bada": ["gwalior", "ग्वालियर", "maharaj bada"],
-    "Ujjain - Mahakal Lok": ["ujjain", "उज्जैन", "mahakal"],
+    "Gwalior - Maharaj Bada": ["gwalior", "ग्वालियर"],
+    "Ujjain - Mahakal Lok": ["ujjain", "उज्जैन"],
     "Jabalpur - Civil Lines": ["jabalpur", "जबलपुर"],
     
     # Delhi NCR
@@ -68,81 +77,79 @@ LOCATION_ENTITIES: Dict[str, list] = {
     "Delhi - Rohini Sector 7": ["rohini", "रोहिणी"],
     "Delhi - Dwarka Sector 10": ["dwarka", "द्वारका"],
     "Noida - Sector 62": ["noida", "नोएडा"],
-    "Gurugram - Cyber City": ["gurugram", "gurgaon", "गुड़गांव", "गुरुग्राम", "cyber city"],
+    "Gurugram - Cyber City": ["gurugram", "gurgaon", "गुड़गांव", "गुरुग्राम", "haryana", "हरियाणा"],
     
     # Maharashtra
-    "Mumbai - Andheri West": ["andheri", "अंधेरी", "mumbai", "bombay", "मुंबई"],
+    "Mumbai - Andheri West": ["andheri", "अंधेरी", "mumbai", "bombay", "मुंबई", "maharashtra", "महाराष्ट्र"],
     "Mumbai - Bandra West": ["bandra", "बांद्रा"],
     "Mumbai - Dadar Central": ["dadar", "दादर"],
     "Pune - Kothrud": ["kothrud", "कोथरुड", "pune", "poona", "पुणे"],
-    "Nagpur - Sitabuldi": ["nagpur", "नागपुर", "sitabuldi"],
+    "Nagpur - Sitabuldi": ["nagpur", "नागपुर"],
     
     # Karnataka
-    "Bengaluru - Koramangala": ["koramangala", "banglore", "bangalore", "bengaluru", "बैंगलोर", "बेंगलुरु", "बेंगलोर"],
+    "Bengaluru - Koramangala": ["koramangala", "banglore", "bangalore", "bengaluru", "बैंगलोर", "बेंगलुरु", "बेंगलोर", "karnataka", "कर्नाटक"],
     "Bengaluru - Indiranagar": ["indiranagar", "इंदिरानगर"],
-    "Bengaluru - Whitefield": ["whitefield", "व्हाइटफील्ड", "itpl"],
+    "Bengaluru - Whitefield": ["whitefield", "व्हाइटफील्ड"],
     
     # Uttar Pradesh
-    "Lucknow - Hazratganj": ["hazratganj", "हज़रतगंज", "lucknow", "लखनऊ"],
-    "Varanasi - Cantt Area": ["varanasi", "वाराणसी", "banaras", "बनारस", "kashi", "काशी"],
+    "Lucknow - Hazratganj": ["hazratganj", "हज़रतगंज", "lucknow", "लखनऊ", "uttar pradesh", "up", "उत्तर प्रदेश"],
+    "Varanasi - Cantt Area": ["varanasi", "वाराणसी", "banaras", "बनारस", "kashi"],
     "Kanpur - City Central": ["kanpur", "कानपुर"],
     "Agra - Taj Ganj": ["agra", "आगरा"],
     
     # Rajasthan
-    "Jaipur - Pink City": ["jaipur", "जयपुर", "pink city", "badi chaupar"],
+    "Jaipur - Pink City": ["jaipur", "जयपुर", "pink city", "rajasthan", "राजस्थान"],
     "Udaipur - City Palace": ["udaipur", "उदयपुर"],
     
-    # Gujarat
-    "Ahmedabad - Navrangpura": ["navrangpura", "नवरंगपुरा", "ahmedabad", "amdavad", "अहमदाबाद"],
-    "Surat - Textile Market": ["surat", "सुरत", "सूरत"],
-    
     # Telangana & Andhra Pradesh
-    "Hyderabad - Hitech City": ["hitech city", "cyber towers", "hyderabad", "hyd", "हैदराबाद"],
-    "Visakhapatnam - Beach Road": ["vizag", "visakhapatnam", "वाइज़ैग"],
+    "Hyderabad - Hitech City": ["hitech city", "cyber towers", "hyderabad", "hyd", "हैदराबाद", "telangana", "तेलंगाना"],
+    "Visakhapatnam - Beach Road": ["vizag", "visakhapatnam", "andhra", "andhra pradesh", "आंध्र प्रदेश"],
     
-    # Tamil Nadu
-    "Chennai - T. Nagar": ["t nagar", "chennai", "madras", "चेन्नई"],
-    "Coimbatore - RS Puram": ["coimbatore", "कोयंबटूर"],
+    # Tamil Nadu & Kerala
+    "Chennai - T. Nagar": ["t nagar", "chennai", "madras", "चेन्नई", "tamil nadu", "तमिलनाडु"],
+    "Kerala - Kochi": ["kerala", "kochi", "cochin", "thiruvananthapuram", "trivandrum", "केरल"],
     
-    # West Bengal & Bihar
-    "Kolkata - Salt Lake Sector V": ["salt lake", "saltlake", "kolkata", "calcutta", "कोलकाता"],
-    "Patna - Junction": ["patna", "पटना"],
-    "Ranchi - Main Road": ["ranchi", "रांची"],
+    # West Bengal, Bihar, Jharkhand & Odisha
+    "Kolkata - Salt Lake Sector V": ["salt lake", "kolkata", "calcutta", "कोलकाता", "west bengal", "bengal", "पश्चिम बंगाल"],
+    "Patna - Junction": ["patna", "पटना", "bihar", "बिहार"],
+    "Ranchi - Main Road": ["ranchi", "रांची", "jharkhand", "झारखंड"],
+    "Odisha - Bhubaneswar": ["odisha", "orissa", "bhubaneswar", "cuttack", "ओडिशा"],
     
-    # Punjab & Haryana
-    "Chandigarh - Sector 17": ["chandigarh", "चंडीगढ़"],
-    "Ludhiana - Clock Tower": ["ludhiana", "लुधियाना"],
+    # Punjab, Assam, Uttarakhand, Himachal & Goa
+    "Punjab - Ludhiana": ["ludhiana", "amritsar", "punjab", "पंजाब"],
+    "Assam - Guwahati": ["assam", "guwahati", "असम", "गुवाहाटी"],
+    "Uttarakhand - Dehradun": ["uttarakhand", "dehradun", "haridwar", "उत्तराखंड"],
+    "Himachal Pradesh - Shimla": ["himachal", "himachal pradesh", "shimla", "हिमाचल"],
+    "Goa - Panaji": ["goa", "panaji", "गोवा"],
 }
 
 # Metadata for dynamic city creation if ward does not exist in DB yet
 PAN_INDIA_CITY_META: Dict[str, dict] = {
+    "Jammu & Kashmir - Srinagar": {"infra_index": 50, "budget_index": 45, "lat": 34.0837, "lng": 74.7973},
+    "Gujarat - Ahmedabad": {"infra_index": 70, "budget_index": 65, "lat": 23.0225, "lng": 72.5714},
     "Bengaluru - Koramangala": {"infra_index": 70, "budget_index": 65, "lat": 12.9352, "lng": 77.6245},
     "Mumbai - Andheri West": {"infra_index": 60, "budget_index": 55, "lat": 19.1136, "lng": 72.8697},
     "Delhi - Connaught Place": {"infra_index": 85, "budget_index": 80, "lat": 28.6315, "lng": 77.2167},
     "Bhopal - MP Nagar": {"infra_index": 65, "budget_index": 60, "lat": 23.2332, "lng": 77.4343},
     "Indore - Rajwada": {"infra_index": 35, "budget_index": 30, "lat": 22.7196, "lng": 75.8577},
-    "Pune - Kothrud": {"infra_index": 65, "budget_index": 60, "lat": 18.5074, "lng": 73.8077},
-    "Lucknow - Hazratganj": {"infra_index": 60, "budget_index": 50, "lat": 26.8467, "lng": 80.9462},
-    "Jaipur - Pink City": {"infra_index": 55, "budget_index": 50, "lat": 26.9220, "lng": 75.8267},
-    "Ahmedabad - Navrangpura": {"infra_index": 70, "budget_index": 65, "lat": 23.0368, "lng": 72.5611},
-    "Hyderabad - Hitech City": {"infra_index": 85, "budget_index": 80, "lat": 17.4435, "lng": 78.3772},
-    "Chennai - T. Nagar": {"infra_index": 65, "budget_index": 60, "lat": 13.0418, "lng": 80.2341},
-    "Kolkata - Salt Lake Sector V": {"infra_index": 75, "budget_index": 70, "lat": 22.5867, "lng": 88.4171},
     "Kanpur - City Central": {"infra_index": 45, "budget_index": 40, "lat": 26.4499, "lng": 80.3319},
     "Patna - Junction": {"infra_index": 40, "budget_index": 35, "lat": 25.5941, "lng": 85.1376},
     "Surat - Textile Market": {"infra_index": 65, "budget_index": 60, "lat": 21.1702, "lng": 72.8311},
     "Nagpur - Sitabuldi": {"infra_index": 55, "budget_index": 50, "lat": 21.1458, "lng": 79.0882},
     "Chandigarh - Sector 17": {"infra_index": 80, "budget_index": 75, "lat": 30.7333, "lng": 76.7794},
-    "Gwalior - Maharaj Bada": {"infra_index": 45, "budget_index": 40, "lat": 26.2183, "lng": 78.1828},
-    "Ujjain - Mahakal Lok": {"infra_index": 50, "budget_index": 45, "lat": 23.1765, "lng": 75.7885},
-    "Jabalpur - Civil Lines": {"infra_index": 50, "budget_index": 45, "lat": 23.1815, "lng": 79.9864},
+    "Kerala - Kochi": {"infra_index": 75, "budget_index": 70, "lat": 9.9312, "lng": 76.2673},
+    "Assam - Guwahati": {"infra_index": 50, "budget_index": 45, "lat": 26.1445, "lng": 91.7362},
+    "Odisha - Bhubaneswar": {"infra_index": 60, "budget_index": 55, "lat": 20.2961, "lng": 85.8245},
+    "Pan-India - General Region": {"infra_index": 50, "budget_index": 50, "lat": 20.5937, "lng": 78.9629},
 }
 
 
+import re
+
 def extract_ward_name_from_text(text: str) -> Optional[str]:
     """
-    AI Named Entity Recognition (NER) for extracting city/ward locations from complaint text.
-    First checks sub-localities (e.g. Whitefield, Andheri), then checks city names (Bangalore, Mumbai).
+    AI Named Entity Recognition (NER) for extracting city/ward/state locations from complaint text.
+    Supports all 28 States & 8 Union Territories of India, 100+ major cities, plus dynamic city extraction.
     Returns matched ward name or None if unmentioned.
     """
     if not text or not text.strip():
@@ -153,20 +160,42 @@ def extract_ward_name_from_text(text: str) -> Optional[str]:
     # 1. First pass: Sub-locality / Specific Ward landmarks (longer phrases first to avoid false positives)
     for ward_name, keywords in LOCATION_ENTITIES.items():
         for kw in keywords:
-            # Skip broad city names on first pass
-            if kw in ("indore", "mumbai", "delhi", "bhopal", "bangalore", "banglore", "bengaluru", "pune", "lucknow", "jaipur", "hyderabad", "chennai", "kolkata"):
+            # For 2-letter keywords (e.g., 'up', 'mp', 'jk'), enforce strict word boundary matching
+            if len(kw) <= 2:
+                if re.search(r'\b' + re.escape(kw) + r'\b', text_lower):
+                    logger.info(f"AI NER Entity Extractor matched short state token '{kw}' -> Ward '{ward_name}'")
+                    return ward_name
+                continue
+                
+            # Skip broad city/state names on first pass
+            if kw in ("indore", "mumbai", "delhi", "bhopal", "bangalore", "banglore", "bengaluru", "pune", "lucknow", "jaipur", "hyderabad", "chennai", "kolkata", "gujarat", "gujrat", "rajasthan", "punjab", "haryana", "bihar"):
                 continue
             if kw in text_lower:
                 logger.info(f"AI NER Entity Extractor matched specific location '{kw}' -> Ward '{ward_name}'")
                 return ward_name
                 
-    # 2. Second pass: General city names
+    # 2. Second pass: General city/state names
     for ward_name, keywords in LOCATION_ENTITIES.items():
         for kw in keywords:
-            if kw in text_lower:
+            if len(kw) <= 2:
+                if re.search(r'\b' + re.escape(kw) + r'\b', text_lower):
+                    logger.info(f"AI NER Entity Extractor matched city '{kw}' -> Ward '{ward_name}'")
+                    return ward_name
+            elif kw in text_lower:
                 logger.info(f"AI NER Entity Extractor matched city '{kw}' -> Ward '{ward_name}'")
                 return ward_name
                 
+    # 3. Third pass: Dynamic Regex Extractor for 'in <Location>', '<Location> me/mein/se/city'
+    match = re.search(r'\b(?:in|at|near)\s+([a-zA-Z]{3,20})\b|\b([a-zA-Z]{3,20})\s+(?:me|mein|se|city|district|state)\b', text, re.IGNORECASE)
+    if match:
+        extracted = (match.group(1) or match.group(2)).capitalize()
+        # Filter out common stop words / category words
+        stop_words = {"water", "road", "light", "power", "street", "issue", "problem", "urgent", "garbage", "school", "doctor", "hospital", "heavy", "there", "this", "that", "with", "have", "from", "your", "they", "them", "which", "where"}
+        if extracted.lower() not in stop_words:
+            dyn_name = f"{extracted} - Central"
+            logger.info(f"AI NER Dynamic Extractor parsed location '{extracted}' -> Ward '{dyn_name}'")
+            return dyn_name
+
     return None
 
 

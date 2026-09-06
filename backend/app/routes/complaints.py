@@ -61,16 +61,22 @@ async def submit_complaint(
                 logger.info(f"Dynamically created new Pan-India ward: '{detected_name}' (ID: {target_ward_id})")
 
     if not target_ward_id or target_ward_id == 0:
-        # Fallback to first available ward in database
-        fallback_result = await db.execute(select(Ward).limit(1))
-        ward = fallback_result.scalar_one_or_none()
-        if ward:
-            target_ward_id = ward.id
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail={"error": "Ward not found", "detail": "No wards available in database"}
+        # Fallback to Pan-India General Region ward (NEVER default to Indore)
+        general_ward_name = "Pan-India - General Region"
+        gen_result = await db.execute(select(Ward).where(Ward.name == general_ward_name))
+        ward = gen_result.scalar_one_or_none()
+        if not ward:
+            meta = PAN_INDIA_CITY_META.get(general_ward_name, {"infra_index": 50, "budget_index": 50, "lat": 20.5937, "lng": 78.9629})
+            ward = Ward(
+                name=general_ward_name,
+                infra_index=meta["infra_index"],
+                budget_index=meta["budget_index"],
+                lat=meta["lat"],
+                lng=meta["lng"],
             )
+            db.add(ward)
+            await db.flush()
+        target_ward_id = ward.id
     else:
         ward_result = await db.execute(
             select(Ward).where(Ward.id == target_ward_id)

@@ -14,6 +14,7 @@ from app.models.complaint import Complaint
 from app.models.ward import Ward
 from app.schemas.complaint import ComplaintCreate, ComplaintResponse, WardMapData
 from app.services.nlp_service import classify_complaint, extract_ward_name_from_text, PAN_INDIA_CITY_META
+from app.services.breeth_service import save_citizen_memory, recall_citizen_memory
 from app.seed_data import generate_tracking_id
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -101,7 +102,7 @@ async def submit_complaint(
         if not ward:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail={"error": "Ward not found", "detail": f"Ward with id {target_ward_id} does not exist"}
+                detail=f"Ward with id {target_ward_id} does not exist"
             )
     
     # Classify complaint using NLP service
@@ -121,12 +122,14 @@ async def submit_complaint(
             logger.error(f"Failed to generate unique tracking ID after {max_retries} attempts")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail={"error": "Internal server error", "detail": "Unable to generate tracking ID. Please try again."}
+                detail="Unable to generate tracking ID. Please try again."
             )
     
     # Create complaint
     complaint = Complaint(
         tracking_id=tracking_id,
+        user_id=complaint_data.user_id,
+        user_email=complaint_data.user_email.lower().strip() if complaint_data.user_email else None,
         ward_id=target_ward_id,
         raw_text=complaint_data.raw_text,
         language=complaint_data.language,
@@ -164,7 +167,36 @@ async def submit_complaint(
     except Exception as err:
         logger.error(f"Error preparing ViaSocket payload: {err}")
 
+    # Trigger Breeth AI Intent Memory Save (thebreeth.com)
+    try:
+        session_id = request.headers.get("x-session-id") or "citizen_session_10"
+        background_tasks.add_task(
+            save_citizen_memory,
+            session_id,
+            complaint.raw_text,
+            complaint.tracking_id,
+            ward_name,
+            complaint.category,
+            complaint.urgency
+        )
+    except Exception as err:
+        logger.error(f"Error preparing Breeth memory task: {err}")
+
     return complaint
+
+
+@router.post("/memory-search")
+async def search_citizen_memory(
+    request: Request,
+    payload: dict
+):
+    """
+    Search Breeth AI Long-Term Memory graph (thebreeth.com) for past citizen complaints & intent context.
+    """
+    session_id = payload.get("session_id") or request.headers.get("x-session-id", "citizen_session_10")
+    query = payload.get("query", "complaint status history")
+    result = await recall_citizen_memory(session_id, query)
+    return {"status": "success", "session_id": session_id, "memory": result}
 
 
 @router.get("", response_model=List[ComplaintResponse])
@@ -202,6 +234,28 @@ async def list_complaints(
     result = await db.execute(query)
     complaints = result.scalars().all()
     
+    return complaints
+
+
+@router.get("/user/my", response_model=List[ComplaintResponse])
+async def get_my_user_complaints(
+    email: Optional[str] = Query(None),
+    user_id: Optional[int] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    """Fetch complaints submitted by a specific logged in user or email."""
+    if not email and not user_id:
+        return []
+
+    query = select(Complaint)
+    if user_id:
+        query = query.where(Complaint.user_id == user_id)
+    elif email:
+        query = query.where(Complaint.user_email == email.lower().strip())
+
+    query = query.order_by(desc(Complaint.created_at)).limit(50)
+    result = await db.execute(query)
+    complaints = result.scalars().all()
     return complaints
 
 
@@ -274,7 +328,7 @@ async def get_complaint_by_tracking_id(
     if not complaint:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "Complaint not found", "detail": f"Complaint with tracking ID '{tracking_id}' does not exist"}
+            detail=f"Complaint with tracking ID '{tracking_id}' does not exist"
         )
     
     return complaint
@@ -307,7 +361,7 @@ async def upvote_complaint(
     if not complaint:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "Complaint not found", "detail": f"Complaint with tracking ID '{tracking_id}' does not exist"}
+            detail=f"Complaint with tracking ID '{tracking_id}' does not exist"
         )
     
     complaint.upvote_count = (complaint.upvote_count or 0) + 1

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshCw, FileText, MapPin, AlertTriangle, TrendingUp, RotateCcw, FileSpreadsheet } from 'lucide-react';
+import { RefreshCw, FileText, MapPin, AlertTriangle, TrendingUp, RotateCcw, FileSpreadsheet, Sparkles, ShieldCheck, Activity, Cpu, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PageContainer } from '../components/layout/PageContainer';
 import { StatCard } from '../components/dashboard/StatCard';
@@ -119,10 +119,9 @@ export function Dashboard() {
       <div
         style={{
           background: 'linear-gradient(135deg, #132417 0%, #1F3A24 50%, #16241A 100%)',
-          padding: '3.5rem 0 4.25rem',
+          padding: '3.5rem 0 5.25rem',
           position: 'relative',
           overflow: 'hidden',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
         {/* Animated Twinkling Stars Backdrop */}
@@ -218,153 +217,374 @@ export function Dashboard() {
           }}
         />
 
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem' }}>
-            <div>
-              {/* Eyebrow & Live Operational Status */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.85rem', flexWrap: 'wrap' }}>
-                <div className="eyebrow" style={{ color: 'var(--leaf)' }}>
-                  Policymaker Intelligence Dashboard
-                </div>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 700, background: 'rgba(111, 191, 115, 0.15)', color: '#C9EAC7', border: '1px solid rgba(111, 191, 115, 0.3)', padding: '0.15rem 0.6rem', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6FBF73', animation: 'pulse 1.5s infinite' }} />
-                  LIVE DEMAND AGGREGATOR • PAN-INDIA 28 STATES & 8 UTs
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2rem' }}>
+            <div style={{ flex: '1 1 560px', maxWidth: 720 }}>
+              {/* Eyebrow & Live Operational Status Badges */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.1rem', flexWrap: 'wrap' }}>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: '#6FBF73',
+                    background: 'rgba(111, 191, 115, 0.12)',
+                    border: '1px solid rgba(111, 191, 115, 0.35)',
+                    padding: '0.28rem 0.75rem',
+                    borderRadius: 100,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    backdropFilter: 'blur(4px)',
+                  }}
+                >
+                  <Sparkles size={13} color="#6FBF73" />
+                  Policy Intelligence
+                </span>
+
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    background: 'rgba(37, 211, 102, 0.12)',
+                    color: '#C9EAC7',
+                    border: '1px solid rgba(37, 211, 102, 0.35)',
+                    padding: '0.28rem 0.75rem',
+                    borderRadius: 100,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    backdropFilter: 'blur(4px)',
+                    boxShadow: '0 0 12px rgba(37, 211, 102, 0.25)',
+                  }}
+                >
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#25D366', boxShadow: '0 0 8px #25D366', animation: 'pulse 1.5s infinite' }} />
+                  LIVE • PAN-INDIA DEMAND AGGREGATOR
                 </span>
               </div>
 
+              {/* Precise Glowing Hero Title */}
               <h1
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontWeight: 340,
-                  fontSize: 'clamp(2.1rem, 4.5vw, 3rem)',
-                  color: '#fff',
-                  lineHeight: 1.12,
+                  fontWeight: 700,
+                  fontSize: 'clamp(2.1rem, 4.2vw, 3.1rem)',
+                  color: '#FFFFFF',
+                  lineHeight: 1.14,
                   letterSpacing: '-0.03em',
-                  maxWidth: 620,
+                  margin: 0,
+                  textShadow: '0 4px 24px rgba(0, 0, 0, 0.7)',
                 }}
               >
-                AI-ranked investment{' '}
-                <em style={{ fontStyle: 'italic', fontWeight: 480, color: 'var(--leaf-light)', background: 'linear-gradient(90deg, #C9EAC7, #6FBF73, #F0862E)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  priorities & clusters
-                </em>
+                AI Civic Investment Priorities{' '}
+                <span
+                  style={{
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #C9EAC7 30%, #6FBF73 70%, #F0862E 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'drop-shadow(0 0 16px rgba(111, 191, 115, 0.45))',
+                    fontStyle: 'normal',
+                  }}
+                >
+                  & Spatial Clusters
+                </span>
               </h1>
 
-              <p style={{ color: 'rgba(201,234,199,0.82)', fontSize: '1rem', marginTop: '0.85rem', maxWidth: 540, lineHeight: 1.6 }}>
-                Real-time civic demand signals extracted by AI entity recognition, grouped into spatial clusters and weighted by infrastructure gaps.
+              {/* Precise Subtitle */}
+              <p
+                style={{
+                  color: 'rgba(201, 234, 199, 0.92)',
+                  fontSize: '1rem',
+                  marginTop: '0.85rem',
+                  maxWidth: 600,
+                  lineHeight: 1.6,
+                  fontWeight: 400,
+                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.6)',
+                }}
+              >
+                Real-time civic demand signals parsed by AI, spatially clustered, and weighted by infrastructure gaps for smart budget allocation.
               </p>
 
-              {/* Feature highlight pills */}
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
+              {/* Floating Feature Highlight Pills */}
+              <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
                 {[
-                  { label: '🤖 Geo-Spatial Clustering' },
-                  { label: '📊 Dynamic Priority Scoring' },
-                  { label: '⚡ Real-time Ward Feed' },
-                ].map(({ label }) => (
+                  { label: 'Geo-Spatial Clusters', Icon: MapPin, color: '#6FBF73' },
+                  { label: 'Priority Engine', Icon: TrendingUp, color: '#F0862E' },
+                  { label: 'Live Ward Feed', Icon: Activity, color: '#60A5FA' },
+                  { label: 'AI Recognition', Icon: Cpu, color: '#A78BFA' },
+                ].map(({ label, Icon, color }) => (
                   <span
                     key={label}
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 500,
+                      fontSize: '0.78125rem',
+                      fontWeight: 600,
                       background: 'rgba(255, 255, 255, 0.07)',
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                      padding: '0.25rem 0.75rem',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      padding: '0.35rem 0.8rem',
                       borderRadius: 100,
-                      backdropFilter: 'blur(4px)',
+                      backdropFilter: 'blur(6px)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      transition: 'all 200ms ease',
+                      cursor: 'default',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLSpanElement).style.transform = 'translateY(-2px)';
+                      (e.currentTarget as HTMLSpanElement).style.background = 'rgba(255, 255, 255, 0.15)';
+                      (e.currentTarget as HTMLSpanElement).style.borderColor = 'rgba(255, 255, 255, 0.35)';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLSpanElement).style.transform = 'translateY(0)';
+                      (e.currentTarget as HTMLSpanElement).style.background = 'rgba(255, 255, 255, 0.07)';
+                      (e.currentTarget as HTMLSpanElement).style.borderColor = 'rgba(255, 255, 255, 0.2)';
                     }}
                   >
+                    <Icon size={14} color={color} />
                     {label}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Refresh, Live Sheet & Reset Controls */}
-            <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, flexWrap: 'wrap' }}>
+            {/* Right Side Open Floating Action Controls */}
+            <div style={{ display: 'flex', gap: '0.75rem', flexShrink: 0, flexWrap: 'wrap', alignItems: 'center' }}>
+              {/* Govt Google Sheet Link Button */}
               <a
                 href="https://docs.google.com/spreadsheets/d/1cC8YMVKnjgc5Gq9h4T_dvx4u1PFgfqXvUTMi_gc9Rn0/edit?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-ghost"
                 style={{
-                  color: '#FFD700',
-                  borderColor: 'rgba(255, 215, 0, 0.4)',
-                  background: 'rgba(255, 215, 0, 0.12)',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(6px)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.6rem 1.1rem',
+                  borderRadius: 100,
+                  background: 'linear-gradient(135deg, rgba(15, 157, 88, 0.35) 0%, rgba(15, 157, 88, 0.55) 100%)',
+                  color: '#FFFFFF',
+                  border: '1px solid rgba(37, 211, 102, 0.6)',
+                  fontWeight: 700,
+                  fontSize: '0.84rem',
                   textDecoration: 'none',
+                  boxShadow: '0 4px 16px rgba(15, 157, 88, 0.3)',
+                  backdropFilter: 'blur(8px)',
+                  transition: 'all 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px) scale(1.02)';
+                  (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 22px rgba(37, 211, 102, 0.45)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0) scale(1)';
+                  (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 16px rgba(15, 157, 88, 0.3)';
                 }}
               >
-                <FileSpreadsheet size={15} />
+                <FileSpreadsheet size={16} color="#25D366" />
                 Live Govt Sheet
               </a>
 
+              {/* Refresh Data Button */}
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="btn-ghost"
-                aria-label="Refresh dashboard data"
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.6rem 1.1rem',
+                  borderRadius: 100,
+                  background: 'rgba(255, 255, 255, 0.12)',
                   color: '#FFFFFF',
-                  borderColor: 'rgba(111,191,115,0.4)',
-                  background: 'rgba(111,191,115,0.15)',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(6px)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  fontWeight: 700,
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  backdropFilter: 'blur(8px)',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)',
+                  transition: 'all 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px) scale(1.02)';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.22)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0) scale(1)';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.12)';
                 }}
               >
                 <RefreshCw
                   size={15}
-                  aria-hidden="true"
+                  color="#6FBF73"
                   style={refreshing ? { animation: 'spin 0.8s linear infinite' } : undefined}
                 />
-                {refreshing ? 'Refreshing…' : 'Refresh Data'}
+                {refreshing ? 'Refreshing…' : 'Refresh Telemetry'}
               </button>
+
+              {/* Reset Demo Button */}
               <button
                 onClick={handleReset}
                 disabled={resetting}
-                className="btn-ghost"
-                aria-label="Reset demo data"
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.6rem 1.1rem',
+                  borderRadius: 100,
+                  background: 'rgba(255, 120, 100, 0.15)',
                   color: '#FFB8B8',
-                  borderColor: 'rgba(255,120,100,0.4)',
-                  background: 'rgba(255,120,100,0.12)',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(6px)',
+                  border: '1px solid rgba(255, 120, 100, 0.4)',
+                  fontWeight: 650,
+                  fontSize: '0.8125rem',
+                  cursor: 'pointer',
+                  backdropFilter: 'blur(8px)',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)',
+                  transition: 'all 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px) scale(1.02)';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 120, 100, 0.28)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0) scale(1)';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 120, 100, 0.15)';
                 }}
               >
                 <RotateCcw
-                  size={15}
-                  aria-hidden="true"
+                  size={14}
                   style={resetting ? { animation: 'spin 0.8s linear infinite' } : undefined}
                 />
-                {resetting ? 'Resetting…' : 'Reset Demo'}
+                {resetting ? 'Resetting…' : 'Reset Demo Data'}
               </button>
             </div>
+          </div>
+
+          {/* Dynamic Telemetry Stat Cards inside Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut', delay: 0.15 }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '1rem',
+              marginTop: '2.75rem',
+            }}
+          >
+            <StatCard label="Total Requests" value={s?.total_requests ?? 0} Icon={FileText} color="#6FBF73" loading={summary.loading} dark />
+            <StatCard label="Areas Covered" value={s?.wards_covered ?? 0} Icon={MapPin} color="#6FBF73" loading={summary.loading} dark />
+            <StatCard label="High Urgency" value={s?.high_urgency_count ?? 0} Icon={AlertTriangle} color="#FF6B6B" loading={summary.loading} dark />
+            <StatCard label="Top Category" value={s?.top_category ?? '—'} Icon={TrendingUp} color="#F0862E" loading={summary.loading} dark />
+          </motion.div>
+        </div>
+
+        {/* Dynamic Animated Flowing Wavy Bottom Divider */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            bottom: -1,
+            left: 0,
+            width: '100%',
+            height: '52px',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+          {/* Layer 1: Ambient Glowing Translucent Back Wave */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '200%',
+              height: '100%',
+              animation: 'waveFlowRight 18s linear infinite',
+              willChange: 'transform',
+            }}
+          >
+            <svg
+              viewBox="0 0 2400 120"
+              preserveAspectRatio="none"
+              style={{ width: '100%', height: '100%', display: 'block' }}
+            >
+              <path
+                d="M 0,30 Q 300,90 600,30 T 1200,30 T 1800,30 T 2400,30 L 2400,120 L 0,120 Z"
+                fill="rgba(111, 191, 115, 0.2)"
+              />
+            </svg>
+          </div>
+
+          {/* Layer 2: Glowing Neon Green Accent Curve Line Wave */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '200%',
+              height: '100%',
+              animation: 'waveFlowLeft 14s linear infinite',
+              willChange: 'transform',
+            }}
+          >
+            <svg
+              viewBox="0 0 2400 120"
+              preserveAspectRatio="none"
+              style={{ width: '100%', height: '100%', display: 'block' }}
+            >
+              <path
+                d="M 0,40 Q 300,10 600,40 T 1200,40 T 1800,40 T 2400,40"
+                fill="none"
+                stroke="#6FBF73"
+                strokeWidth="3.5"
+                strokeOpacity="0.65"
+                style={{ filter: 'drop-shadow(0 0 10px rgba(111, 191, 115, 0.8))' }}
+              />
+            </svg>
+          </div>
+
+          {/* Layer 3: Main Page Background Wavy Fluid Transition */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '200%',
+              height: '100%',
+              animation: 'waveFlowLeft 10s linear infinite',
+              willChange: 'transform',
+            }}
+          >
+            <svg
+              viewBox="0 0 2400 120"
+              preserveAspectRatio="none"
+              style={{ width: '100%', height: '100%', display: 'block' }}
+            >
+              <path
+                d="M 0,45 Q 300,100 600,45 T 1200,45 T 1800,45 T 2400,45 L 2400,120 L 0,120 Z"
+                fill="var(--bg-page, #F9FAFC)"
+              />
+            </svg>
           </div>
         </div>
       </div>
 
-      {/* ── Stat cards (overlap the dark section) ─────────────── */}
-      <div style={{ maxWidth: 1200, margin: '-2.25rem auto 0', padding: '0 2rem', position: 'relative', zIndex: 10 }}>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-            gap: '1rem',
-          }}
-        >
-          <StatCard label="Total Requests" value={s?.total_requests ?? 0} Icon={FileText} color="var(--moss)" loading={summary.loading} />
-          <StatCard label="Areas Covered" value={s?.wards_covered ?? 0} Icon={MapPin} color="var(--leaf)" loading={summary.loading} />
-          <StatCard label="High Urgency" value={s?.high_urgency_count ?? 0} Icon={AlertTriangle} color="#C0392B" loading={summary.loading} />
-          <StatCard label="Top Category" value={s?.top_category ?? '—'} Icon={TrendingUp} color="var(--moss)" loading={summary.loading} />
-        </motion.div>
-      </div>
-
       {/* ── Main content ──────────────────────────────────────── */}
       <PageContainer>
+        {/* Hotspot Map — full width at top */}
+        <div style={{ marginTop: '2rem' }}>
+          <HotspotMap
+            data={mapData.data ?? []}
+            geoClusters={geoClusters.data?.clusters ?? []}
+            loading={mapData.loading}
+            error={mapData.error}
+            onRetry={fetchAll}
+          />
+        </div>
+
         {/* Two-column grid */}
         <div
           className="dash-grid"
@@ -373,7 +593,7 @@ export function Dashboard() {
             gridTemplateColumns: '1.5fr 1fr',
             gap: '1.5rem',
             alignItems: 'start',
-            marginTop: '2rem',
+            marginTop: '1.75rem',
           }}
         >
           <PriorityList
@@ -407,20 +627,17 @@ export function Dashboard() {
             loading={semanticClusters.loading}
           />
         </div>
-
-        {/* Hotspot Map — full width */}
-        <div style={{ marginTop: '1.75rem' }}>
-          <HotspotMap
-            data={mapData.data ?? []}
-            geoClusters={geoClusters.data?.clusters ?? []}
-            loading={mapData.loading}
-            error={mapData.error}
-            onRetry={fetchAll}
-          />
-        </div>
       </PageContainer>
 
       <style>{`
+        @keyframes waveFlowLeft {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        @keyframes waveFlowRight {
+          0% { transform: translate3d(-50%, 0, 0); }
+          100% { transform: translate3d(0, 0, 0); }
+        }
         @media (max-width: 900px) {
           .dash-grid { grid-template-columns: 1fr !important; }
         }

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
-type ToastType = 'success' | 'error';
+type ToastType = 'success' | 'error' | 'info';
 
 interface Toast {
   id: string;
@@ -27,6 +27,18 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
     return () => clearTimeout(t);
   }, [toast.id, onDismiss]);
 
+  const getBg = () => {
+    if (toast.type === 'success') return 'var(--deep-moss)';
+    if (toast.type === 'info') return '#1E293B';
+    return '#C0392B';
+  };
+
+  const formattedMessage = typeof toast.message === 'string' 
+    ? toast.message 
+    : (Array.isArray(toast.message) 
+        ? (toast.message as any[]).map((e: any) => e.msg || JSON.stringify(e)).join(', ')
+        : JSON.stringify(toast.message));
+
   return (
     <div
       role="alert"
@@ -36,7 +48,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
         alignItems: 'flex-start',
         gap: '0.75rem',
         padding: '0.875rem 1.125rem',
-        background: toast.type === 'success' ? 'var(--deep-moss)' : '#C0392B',
+        background: getBg(),
         color: '#fff',
         borderRadius: 'var(--radius-pill)',
         boxShadow: '0 8px 28px rgba(31,58,36,0.32)',
@@ -50,10 +62,12 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
     >
       {toast.type === 'success' ? (
         <CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
+      ) : toast.type === 'info' ? (
+        <Info size={18} style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
       ) : (
         <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
       )}
-      <span style={{ flex: 1 }}>{toast.message}</span>
+      <span style={{ flex: 1 }}>{formattedMessage}</span>
       <button
         onClick={() => onDismiss(toast.id)}
         aria-label="Dismiss notification"

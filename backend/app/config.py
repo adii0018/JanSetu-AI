@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     nvidia_tts_api_key: Optional[str] = None
     dashboard_api_key: Optional[str] = None
     viasocket_webhook_url: Optional[str] = "https://flow.sokt.io/func/scri2qdtXavo"
+    breeth_api_key: Optional[str] = "ck_live_nQb1WlsPt8wssvC_QqEfYYPG_M1ucU09UcJXMrlTFUE"
     
     # CORS
     allowed_origins: str = "http://localhost:5173"

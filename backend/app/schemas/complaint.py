@@ -16,7 +16,9 @@ class ComplaintCreate(BaseModel):
     raw_text: str = Field(..., min_length=3, max_length=2000, description="Complaint text from citizen")
     language: str = Field(default="Hindi + English", min_length=1, max_length=50, description="Language of complaint")
     channel: Any = Field(default=ComplaintChannel.TEXT, description="Submission channel (text, voice, whatsapp)")
-    
+    user_id: Optional[int] = Field(default=None, description="Optional associated User ID")
+    user_email: Optional[str] = Field(default=None, description="Optional associated User Email")
+
     @field_validator('ward_id', mode='before')
     @classmethod
     def parse_ward_id(cls, v: Any) -> Optional[int]:
@@ -56,6 +58,8 @@ class ComplaintResponse(BaseModel):
     """Schema for complaint response."""
     id: int
     tracking_id: str
+    user_id: Optional[int] = None
+    user_email: Optional[str] = None
     ward_id: int
     raw_text: str
     language: str

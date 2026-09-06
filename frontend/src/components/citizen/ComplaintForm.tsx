@@ -6,6 +6,7 @@ import type { Ward, Complaint, Channel } from '../../services/types';
 import type { ConsoleState } from './AiConsole';
 import { ErrorState } from '../ui/ErrorState';
 import { playClick, playSubmit, playSuccess, playError } from '../../utils/sounds';
+import { useAuth } from '../../context/AuthContext';
 
 interface ComplaintFormProps {
   onConsoleUpdate: (state: ConsoleState) => void;
@@ -39,6 +40,7 @@ function SkeletonLine({ width = '100%', height = 42 }: { width?: string; height?
 }
 
 export function ComplaintForm({ onConsoleUpdate }: ComplaintFormProps) {
+  const { user } = useAuth();
   const [language, setLanguage] = useState('Hindi + English');
   const [wardId, setWardId] = useState<number | ''>('');
   const [text, setText] = useState('');
@@ -137,6 +139,8 @@ export function ComplaintForm({ onConsoleUpdate }: ComplaintFormProps) {
         raw_text: text.trim(),
         language,
         channel,
+        user_id: user?.id,
+        user_email: user?.email,
       });
       playSuccess();
       onConsoleUpdate({ phase: 'done', lines: [], result, errorMsg: null });

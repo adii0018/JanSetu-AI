@@ -15,6 +15,8 @@ export type ComplaintStatus = 'submitted' | 'under_review' | 'approved' | 'resol
 export interface Complaint {
   id: number;
   tracking_id: string;
+  user_id?: number;
+  user_email?: string;
   ward_id: number;
   raw_text: string;
   language: string;
@@ -43,6 +45,8 @@ export interface SubmitComplaintBody {
   raw_text: string;
   language: string;
   channel: Channel;
+  user_id?: number;
+  user_email?: string;
 }
 
 export interface DashboardSummary {

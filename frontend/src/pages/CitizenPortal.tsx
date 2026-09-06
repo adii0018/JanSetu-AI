@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Sparkles, Mic, Cpu, Send, ShieldCheck } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { ComplaintForm } from '../components/citizen/ComplaintForm';
 import { AiConsole } from '../components/citizen/AiConsole';
@@ -37,9 +38,8 @@ export function CitizenPortal() {
         style={{
           position: 'relative',
           overflow: 'hidden',
-          padding: '4rem 0 4.5rem',
+          padding: '4rem 0 5.25rem',
           background: 'linear-gradient(180deg, #EFF9EE 0%, #FFFFFF 100%)',
-          borderBottom: '1px solid rgba(31, 58, 36, 0.08)',
         }}
       >
         {/* Animated Floating Clouds Overlay */}
@@ -64,7 +64,7 @@ export function CitizenPortal() {
             right: '10%',
             width: '500px',
             height: '400px',
-            background: 'radial-gradient(circle, rgba(255, 200, 60, 0.3) 0%, rgba(111, 191, 115, 0.15) 45%, rgba(255,255,255,0) 70%)',
+            background: 'radial-gradient(circle, rgba(255, 200, 60, 0.35) 0%, rgba(111, 191, 115, 0.18) 45%, rgba(255,255,255,0) 70%)',
             pointerEvents: 'none',
           }}
         />
@@ -103,67 +103,195 @@ export function CitizenPortal() {
           </svg>
         </div>
 
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 1.5rem', position: 'relative', zIndex: 1 }}>
           {/* Eyebrow & Live Status Chips */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <div className="eyebrow" style={{ color: 'var(--moss)' }}>
-              Citizen Portal Intake
-            </div>
-            <span style={{ fontSize: '0.6875rem', fontWeight: 700, background: 'rgba(37, 211, 102, 0.12)', color: '#075E54', border: '1px solid rgba(37, 211, 102, 0.3)', padding: '0.15rem 0.55rem', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#25D366', animation: 'pulse 1.5s infinite' }} />
-              🇮🇳 28 States & 8 UTs Active
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.1rem', flexWrap: 'wrap' }}>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'var(--moss)',
+                background: 'rgba(31, 58, 36, 0.08)',
+                border: '1px solid rgba(31, 58, 36, 0.2)',
+                padding: '0.28rem 0.75rem',
+                borderRadius: 100,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              <Sparkles size={13} color="var(--moss)" />
+              AI Citizen Portal
+            </span>
+
+            <span
+              style={{
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                background: 'rgba(37, 211, 102, 0.14)',
+                color: '#075E54',
+                border: '1px solid rgba(37, 211, 102, 0.35)',
+                padding: '0.28rem 0.75rem',
+                borderRadius: 100,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 0 12px rgba(37, 211, 102, 0.2)',
+              }}
+            >
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#25D366', boxShadow: '0 0 8px #25D366', animation: 'pulse 1.5s infinite' }} />
+              PAN-INDIA MULTILINGUAL INTAKE (28 STATES & 8 UTs)
             </span>
           </div>
 
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontWeight: 340,
-              fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
+              fontWeight: 700,
+              fontSize: 'clamp(2.1rem, 4.5vw, 3.2rem)',
               color: 'var(--ink)',
-              lineHeight: 1.1,
+              lineHeight: 1.14,
               letterSpacing: '-0.03em',
-              maxWidth: 640,
-              marginBottom: '1rem',
+              maxWidth: 680,
+              marginBottom: '0.85rem',
             }}
           >
-            What needs attention{' '}
-            <em style={{ fontStyle: 'italic', fontWeight: 480, color: 'var(--moss)', background: 'linear-gradient(90deg, #1F3A24, #2E6B3E, #6FBF73)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              in your area?
-            </em>
+            Voice & Text Civic Complaint Intake{' '}
+            <span style={{ background: 'linear-gradient(90deg, #132417 0%, #2E6B3E 45%, #25D366 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>
+              Powered by Multilingual AI
+            </span>
           </h1>
 
-          <p style={{ color: 'var(--ink-soft)', fontSize: '1.0625rem', maxWidth: 540, lineHeight: 1.65 }}>
-            Speak, type, or send it exactly how you'd tell a neighbour. Your complaint is automatically processed by AI entity recognition (NER) across India.
+          <p style={{ color: 'var(--ink-soft)', fontSize: '1.02rem', maxWidth: 620, lineHeight: 1.62, fontWeight: 450 }}>
+            Describe any civic issue in your native language via voice dictation or text. AI instantly extracts location, urgency, and routes it directly to municipal officers.
           </p>
 
-          {/* Step pills */}
-          <div style={{ display: 'flex', gap: '0.625rem', marginTop: '1.75rem', flexWrap: 'wrap' }}>
+          {/* Enhanced Micro Step Pills */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
             {[
-              { n: '01', label: 'Choose language & dictation' },
-              { n: '02', label: 'Describe civic problem' },
-              { n: '03', label: 'AI extracts location & queues priority' },
-            ].map(({ n, label }) => (
+              { n: '01', label: 'Voice or Text Intake', desc: 'Dictate in your local dialect', Icon: Mic, color: '#10B981' },
+              { n: '02', label: 'AI NER Parsing', desc: 'Extracts location & category', Icon: Cpu, color: '#8B5CF6' },
+              { n: '03', label: 'Direct Priority Queue', desc: 'Instant ward officer routing', Icon: Send, color: '#F59E0B' },
+            ].map(({ n, label, desc, Icon, color }) => (
               <div
                 key={n}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  background: 'var(--surface-card)',
+                  gap: '0.75rem',
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  backdropFilter: 'blur(10px)',
                   border: '1px solid rgba(31, 58, 36, 0.15)',
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '0.4rem 0.95rem',
+                  borderRadius: 16,
+                  padding: '0.65rem 1.1rem',
                   fontSize: '0.8125rem',
                   fontFamily: 'var(--font-body)',
                   fontWeight: 600,
-                  boxShadow: '0 4px 12px rgba(31, 58, 36, 0.05)',
+                  boxShadow: '0 6px 20px rgba(31, 58, 36, 0.06)',
+                  transition: 'all 200ms ease',
+                  cursor: 'default',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(37, 211, 102, 0.4)';
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 10px 25px rgba(37, 211, 102, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
+                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(31, 58, 36, 0.15)';
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 6px 20px rgba(31, 58, 36, 0.06)';
                 }}
               >
-                <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--moss)', fontSize: '0.75rem' }}>{n}</span>
-                <span style={{ color: 'var(--ink)' }}>{label}</span>
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    background: `color-mix(in srgb, ${color} 15%, #FFFFFF)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon size={17} color={color} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'var(--moss)', fontSize: '0.72rem' }}>{n}.</span>
+                    <span style={{ color: 'var(--ink)', fontWeight: 700, fontSize: '0.84rem' }}>{label}</span>
+                  </div>
+                  <div style={{ fontSize: '0.73rem', color: 'var(--ink-soft)', fontWeight: 450 }}>{desc}</div>
+                </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Dynamic Flowing Wavy Bottom Divider */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            bottom: -1,
+            left: 0,
+            width: '100%',
+            height: '46px',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+          {/* Layer 1: Soft Ambient Glow Wave */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '200%',
+              height: '100%',
+              animation: 'waveFlowRight 16s linear infinite',
+              willChange: 'transform',
+            }}
+          >
+            <svg
+              viewBox="0 0 2400 120"
+              preserveAspectRatio="none"
+              style={{ width: '100%', height: '100%', display: 'block' }}
+            >
+              <path
+                d="M 0,30 Q 300,90 600,30 T 1200,30 T 1800,30 T 2400,30 L 2400,120 L 0,120 Z"
+                fill="rgba(37, 211, 102, 0.15)"
+              />
+            </svg>
+          </div>
+
+          {/* Layer 2: Main Page Background Wave */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '200%',
+              height: '100%',
+              animation: 'waveFlowLeft 10s linear infinite',
+              willChange: 'transform',
+            }}
+          >
+            <svg
+              viewBox="0 0 2400 120"
+              preserveAspectRatio="none"
+              style={{ width: '100%', height: '100%', display: 'block' }}
+            >
+              <path
+                d="M 0,45 Q 300,100 600,45 T 1200,45 T 1800,45 T 2400,45 L 2400,120 L 0,120 Z"
+                fill="var(--bg-page, #F9FAFC)"
+              />
+            </svg>
           </div>
         </div>
       </div>
@@ -215,6 +343,14 @@ export function CitizenPortal() {
       </PageContainer>
 
       <style>{`
+        @keyframes waveFlowLeft {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        @keyframes waveFlowRight {
+          0% { transform: translate3d(-50%, 0, 0); }
+          100% { transform: translate3d(0, 0, 0); }
+        }
         @media (max-width: 720px) {
           .mobile-tabs { display: flex !important; }
           .citizen-grid { grid-template-columns: 1fr !important; gap: 0 !important; }

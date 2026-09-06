@@ -44,6 +44,8 @@ class Complaint(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     tracking_id = Column(String(20), unique=True, nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    user_email = Column(String(150), nullable=True, index=True)
     ward_id = Column(Integer, ForeignKey("wards.id"), nullable=False, index=True)
     raw_text = Column(Text, nullable=False)
     language = Column(String(50), nullable=False, default="Hindi + English")

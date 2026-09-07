@@ -11,6 +11,8 @@ declare global {
   }
 }
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, closeAuthModal, authModalTab, login } = useAuth();
   const { showToast } = useToast();
@@ -29,7 +31,7 @@ export const AuthModal: React.FC = () => {
   const handleGoogleTokenResponse = async (credential: string) => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/google', {
+      const res = await fetch(`${BASE_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential }),
@@ -96,7 +98,7 @@ export const AuthModal: React.FC = () => {
         full_name: nameClean,
         avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(nameClean)}`,
       };
-      const response = await fetch('http://localhost:8000/api/auth/google', {
+      const response = await fetch(`${BASE_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(googleUser),
@@ -204,7 +206,7 @@ export const AuthModal: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login', {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -227,7 +229,7 @@ export const AuthModal: React.FC = () => {
     playClick();
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/auth/register', {
+      const response = await fetch(`${BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

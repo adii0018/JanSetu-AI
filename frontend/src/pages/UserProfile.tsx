@@ -7,6 +7,8 @@ import { playClick } from '../utils/sounds';
 import { useToast } from '../components/ui/Toast';
 import { NavLink } from 'react-router-dom';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 export function UserProfile() {
   const { user, updateUser, logout, isAuthenticated, openAuthModal } = useAuth();
   const { showToast } = useToast();
@@ -43,7 +45,7 @@ export function UserProfile() {
     if (!user) return;
     setLoadingComplaints(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/complaints/user/my?email=${encodeURIComponent(user.email)}&user_id=${user.id}`);
+      const response = await fetch(`${BASE_URL}/api/complaints/user/my?email=${encodeURIComponent(user.email)}&user_id=${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setUserComplaints(data);
@@ -61,7 +63,7 @@ export function UserProfile() {
     setSaving(true);
     try {
       const token = localStorage.getItem('jansetu_token');
-      const response = await fetch('http://localhost:8000/api/auth/profile', {
+      const response = await fetch(`${BASE_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

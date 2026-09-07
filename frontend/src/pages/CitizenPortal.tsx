@@ -10,6 +10,7 @@ import { getMapData, getGeoClusters } from '../services/api';
 import type { MapWard, GeoClustersResponse } from '../services/types';
 import type { ConsoleState } from '../components/citizen/AiConsole';
 import { playClick } from '../utils/sounds';
+import { useAuth } from '../context/AuthContext';
 
 const INITIAL_CONSOLE: ConsoleState = {
   phase: 'idle',
@@ -30,12 +31,20 @@ type LoadState<T> = { data: T | null; loading: boolean; error: string | null };
 function init<T>(): LoadState<T> { return { data: null, loading: true, error: null }; }
 
 export function CitizenPortal() {
+  const { openAuthModal } = useAuth();
   const [consoleState, setConsoleState] = useState<ConsoleState>(INITIAL_CONSOLE);
   const [activeTab, setActiveTab] = useState<'submit' | 'track'>('submit');
   const [phraseIndex, setPhraseIndex] = useState(0);
 
   const [mapData, setMapData] = useState<LoadState<MapWard[]>>(init());
   const [geoClusters, setGeoClusters] = useState<LoadState<GeoClustersResponse>>(init());
+
+  useEffect(() => {
+    if (window.location.search.includes('login=required')) {
+      openAuthModal('login');
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [openAuthModal]);
 
   useEffect(() => {
     const timer = setInterval(() => {

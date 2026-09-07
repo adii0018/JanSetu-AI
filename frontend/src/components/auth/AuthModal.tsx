@@ -164,6 +164,7 @@ export const AuthModal: React.FC = () => {
 
     // ── Admin shortcut: check BEFORE setting loading ─────────
     if (email.trim().toLowerCase() === 'admin@jansetu.in' && password === 'admin@123') {
+      localStorage.setItem('jansetu_admin_auth', 'true');
       closeAuthModal();
       window.location.assign('/admin');
       return;

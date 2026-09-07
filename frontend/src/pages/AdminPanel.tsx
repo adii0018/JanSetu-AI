@@ -99,6 +99,17 @@ export function AdminPanel() {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'analytics' | 'complaints' | 'users'>('analytics');
 
+  // Admin Authorization Guard State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    () => localStorage.getItem('jansetu_admin_auth') === 'true'
+  );
+
+  // Admin Login Form State
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
   // Open Analytics State
   const [refreshing, setRefreshing] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -190,10 +201,43 @@ export function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    fetchAnalytics();
-    fetchAdminComplaints();
-    fetchAdminUsers();
-  }, [fetchAnalytics, fetchAdminComplaints, fetchAdminUsers]);
+    if (isAuthenticated) {
+      fetchAnalytics();
+      fetchAdminComplaints();
+      fetchAdminUsers();
+    }
+  }, [isAuthenticated, fetchAnalytics, fetchAdminComplaints, fetchAdminUsers]);
+
+  const handleAdminLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    playClick();
+    setLoginError('');
+    setLoginLoading(true);
+
+    setTimeout(() => {
+      const emailClean = adminEmail.trim().toLowerCase();
+      const emailMatch = emailClean === 'admin@jansetu.in' || emailClean === 'admin';
+      const passMatch = adminPassword === 'admin@123' || adminPassword === ADMIN_KEY;
+
+      if (emailMatch && passMatch) {
+        localStorage.setItem('jansetu_admin_auth', 'true');
+        setIsAuthenticated(true);
+        showToast('Admin Officer Session Authenticated', 'success');
+      } else {
+        setLoginError('Access Denied: Invalid Admin Email or Security Key');
+        showToast('Access Denied: Invalid Admin Credentials', 'error');
+      }
+      setLoginLoading(false);
+    }, 300);
+  };
+
+  const handleAdminLogout = () => {
+    playClick();
+    localStorage.removeItem('jansetu_admin_auth');
+    setIsAuthenticated(false);
+    showToast('Logged out of JanSetu Admin Portal', 'info');
+    window.location.href = '/';
+  };
 
   const handleRefresh = async () => {
     playClick();
@@ -253,6 +297,163 @@ export function AdminPanel() {
       u.email.toLowerCase().includes(search.toLowerCase()) ||
       u.city_ward.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0F1E14 0%, #172D1E 50%, #0F1E14 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem 1rem',
+        fontFamily: 'var(--font-body)',
+        color: '#FFFFFF',
+      }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            maxWidth: 440,
+            width: '100%',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            borderRadius: 24,
+            padding: '2.5rem 2rem',
+            boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
+          }}
+        >
+          {/* Header Badge */}
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #25D366 0%, #16A34A 100%)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+              boxShadow: '0 8px 24px rgba(37, 211, 102, 0.3)',
+            }}>
+              <ShieldCheck size={28} color="#FFFFFF" />
+            </div>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.65rem', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
+              Officer Access Required
+            </h1>
+            <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '0.5rem', lineHeight: 1.4 }}>
+              JanSetu AI Government Administration & Governance Console. Authorized officer login required.
+            </p>
+          </div>
+
+          {loginError && (
+            <div style={{
+              background: 'rgba(220, 38, 38, 0.15)',
+              border: '1px solid rgba(220, 38, 38, 0.4)',
+              borderRadius: 12,
+              padding: '0.75rem 1rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.82rem',
+              color: '#FCA5A5',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+            }}>
+              <AlertTriangle size={16} />
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleAdminLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 650, color: 'rgba(255, 255, 255, 0.8)', marginBottom: 6 }}>
+                Admin Email ID
+              </label>
+              <input
+                type="email"
+                required
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                placeholder="admin@jansetu.in"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 12,
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 650, color: 'rgba(255, 255, 255, 0.8)', marginBottom: 6 }}>
+                Security Password / Admin Key
+              </label>
+              <input
+                type="password"
+                required
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 12,
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              style={{
+                width: '100%',
+                padding: '0.85rem',
+                borderRadius: 100,
+                border: 'none',
+                background: 'linear-gradient(135deg, #25D366 0%, #16A34A 100%)',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                boxShadow: '0 10px 25px rgba(37, 211, 102, 0.25)',
+                marginTop: '0.5rem',
+                transition: 'all 200ms ease',
+              }}
+            >
+              {loginLoading ? 'Authenticating Session…' : 'Authenticate Admin Access'}
+            </button>
+          </form>
+
+          <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
+            <button
+              onClick={() => { window.location.href = '/'; }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              }}
+            >
+              ← Return to Citizen Portal
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const s = summary.data;
 
@@ -430,7 +631,7 @@ export function AdminPanel() {
               {refreshing ? 'Refreshing…' : 'Refresh'}
             </button>
             <button
-              onClick={() => { window.location.href = '/'; }}
+              onClick={handleAdminLogout}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

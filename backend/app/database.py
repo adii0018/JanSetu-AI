@@ -4,15 +4,14 @@ Uses SQLAlchemy 2.0 async API with asyncpg (PostgreSQL) or aiosqlite (dev/test).
 """
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.engine.url import make_url
 from app.config import settings
 import logging
 
-import urllib.parse
-
 logger = logging.getLogger(__name__)
 
-db_url = settings.database_url
-_is_sqlite = db_url.startswith("sqlite")
+raw_db_url = settings.database_url
+_is_sqlite = raw_db_url.startswith("sqlite")
 
 engine_kwargs = {
     "echo": False,
@@ -20,31 +19,20 @@ engine_kwargs = {
 }
 
 if not _is_sqlite:
-    # Fix scheme for asyncpg
-    if db_url.startswith("postgresql://") and not db_url.startswith("postgresql+asyncpg://"):
-        db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
-    elif db_url.startswith("postgres://") and not db_url.startswith("postgresql+asyncpg://"):
-        db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
-
-    # Strip query parameters that asyncpg driver doesn't accept
-    parsed = urllib.parse.urlparse(db_url)
-    query_dict = urllib.parse.parse_qs(parsed.query)
+    # Use SQLAlchemy native URL parser
+    url_obj = make_url(raw_db_url)
+    query_dict = dict(url_obj.query)
     query_dict.pop("sslmode", None)
     query_dict.pop("channel_binding", None)
     query_dict.pop("ssl", None)
 
-    clean_query = urllib.parse.urlencode(query_dict, doseq=True)
-    db_url = urllib.parse.urlunparse((
-        parsed.scheme,
-        parsed.netloc,
-        parsed.path,
-        parsed.params,
-        clean_query,
-        parsed.fragment
-    ))
+    url_obj = url_obj._replace(drivername="postgresql+asyncpg", query=query_dict)
+    db_url = url_obj.render_as_string(hide_password=False)
 
     engine_kwargs["pool_pre_ping"] = True
     engine_kwargs["connect_args"] = {"ssl": "require"}
+else:
+    db_url = raw_db_url
 
 engine = create_async_engine(db_url, **engine_kwargs)
 

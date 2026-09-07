@@ -26,7 +26,12 @@ if not _is_sqlite:
     query_dict.pop("channel_binding", None)
     query_dict.pop("ssl", None)
 
-    url_obj = url_obj._replace(drivername="postgresql+asyncpg", query=query_dict)
+    # Neon PostgreSQL default database name is 'neondb'
+    db_name = url_obj.database
+    if not db_name or "%20" in db_name or " " in db_name:
+        db_name = "neondb"
+
+    url_obj = url_obj._replace(drivername="postgresql+asyncpg", database=db_name, query=query_dict)
     db_url = url_obj.render_as_string(hide_password=False)
 
     engine_kwargs["pool_pre_ping"] = True

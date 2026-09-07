@@ -360,38 +360,10 @@ export const AuthModal: React.FC = () => {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginBottom: '0.85rem',
+                marginBottom: '1.25rem',
                 minHeight: 44,
               }}
             />
-
-            {/* Custom 1-Click Backup Button */}
-            <button
-              type="button"
-              onClick={handleGoogleAuth}
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.65rem 1rem',
-                borderRadius: 100,
-                border: '1px solid #E2E8F0',
-                background: '#F8FAFC',
-                color: '#334155',
-                fontFamily: 'var(--font-body)',
-                fontWeight: 650,
-                fontSize: '0.84rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.65rem',
-                cursor: 'pointer',
-                marginBottom: '1.25rem',
-                transition: 'all 160ms ease',
-              }}
-            >
-              <Sparkles size={16} color="#25D366" />
-              1-Click Citizen Google Login
-            </button>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
               <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />

@@ -9,8 +9,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Detect driver to set engine options appropriately
-_is_sqlite = settings.database_url.startswith("sqlite")
+# Format database URL for asyncpg if standard postgresql/postgres URL is provided
+db_url = settings.database_url
+if db_url.startswith("postgresql://") and not db_url.startswith("postgresql+asyncpg://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif db_url.startswith("postgres://") and not db_url.startswith("postgresql+asyncpg://"):
+    db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+
+_is_sqlite = db_url.startswith("sqlite")
 
 engine_kwargs = {
     "echo": False,
@@ -21,7 +27,7 @@ engine_kwargs = {
 if not _is_sqlite:
     engine_kwargs["pool_pre_ping"] = True
 
-engine = create_async_engine(settings.database_url, **engine_kwargs)
+engine = create_async_engine(db_url, **engine_kwargs)
 
 # Create async session factory
 AsyncSessionLocal = async_sessionmaker(

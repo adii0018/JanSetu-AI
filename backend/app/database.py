@@ -16,6 +16,10 @@ if db_url.startswith("postgresql://") and not db_url.startswith("postgresql+asyn
 elif db_url.startswith("postgres://") and not db_url.startswith("postgresql+asyncpg://"):
     db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
 
+# asyncpg expects 'ssl' parameter instead of 'sslmode'
+if "sslmode=" in db_url:
+    db_url = db_url.replace("sslmode=", "ssl=")
+
 _is_sqlite = db_url.startswith("sqlite")
 
 engine_kwargs = {

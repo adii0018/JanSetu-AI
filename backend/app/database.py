@@ -7,19 +7,11 @@ from sqlalchemy.orm import declarative_base
 from app.config import settings
 import logging
 
+import urllib.parse
+
 logger = logging.getLogger(__name__)
 
-# Format database URL for asyncpg if standard postgresql/postgres URL is provided
 db_url = settings.database_url
-if db_url.startswith("postgresql://") and not db_url.startswith("postgresql+asyncpg://"):
-    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
-elif db_url.startswith("postgres://") and not db_url.startswith("postgresql+asyncpg://"):
-    db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
-
-# asyncpg expects 'ssl' parameter instead of 'sslmode'
-if "sslmode=" in db_url:
-    db_url = db_url.replace("sslmode=", "ssl=")
-
 _is_sqlite = db_url.startswith("sqlite")
 
 engine_kwargs = {
@@ -27,9 +19,32 @@ engine_kwargs = {
     "future": True,
 }
 
-# pool_pre_ping is not supported by aiosqlite
 if not _is_sqlite:
+    # Fix scheme for asyncpg
+    if db_url.startswith("postgresql://") and not db_url.startswith("postgresql+asyncpg://"):
+        db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    elif db_url.startswith("postgres://") and not db_url.startswith("postgresql+asyncpg://"):
+        db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    # Strip query parameters that asyncpg driver doesn't accept
+    parsed = urllib.parse.urlparse(db_url)
+    query_dict = urllib.parse.parse_qs(parsed.query)
+    query_dict.pop("sslmode", None)
+    query_dict.pop("channel_binding", None)
+    query_dict.pop("ssl", None)
+
+    clean_query = urllib.parse.urlencode(query_dict, doseq=True)
+    db_url = urllib.parse.urlunparse((
+        parsed.scheme,
+        parsed.netloc,
+        parsed.path,
+        parsed.params,
+        clean_query,
+        parsed.fragment
+    ))
+
     engine_kwargs["pool_pre_ping"] = True
+    engine_kwargs["connect_args"] = {"ssl": "require"}
 
 engine = create_async_engine(db_url, **engine_kwargs)
 

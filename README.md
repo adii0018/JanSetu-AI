@@ -17,7 +17,7 @@
 [How It Works](#-how-it-works) •
 [Tech Stack](#-tech-stack) •
 [Getting Started](#-getting-started) •
-[Roadmap](#-roadmap)
+[Roadmapp](#-roadmap)
 
 </div>
 

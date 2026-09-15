@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏛️ JanSetu
+# 🏛️ JanSetu ai
 
 ### AI for Digital Public Infrastructure & Governance
 

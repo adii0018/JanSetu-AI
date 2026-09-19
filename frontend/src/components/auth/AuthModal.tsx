@@ -12,20 +12,19 @@ declare global {
 }
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase();
+const ADMIN_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD || '').trim();
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, closeAuthModal, authModalTab, login } = useAuth();
   const { showToast } = useToast();
   const [tab, setTab] = useState<'login' | 'register'>(authModalTab);
   const [loading, setLoading] = useState(false);
-
-  // Form states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [cityWard, setCityWard] = useState('');
   const [aadhaarNumber, setAadhaarNumber] = useState('');
-
   const gsiInitializedRef = React.useRef(false);
   const googleBtnRef = React.useRef<HTMLDivElement>(null);
 
@@ -42,8 +41,7 @@ export const AuthModal: React.FC = () => {
         login(data.access_token, data.user);
         showToast(`Signed in with Google as ${data.user.full_name}`, 'success');
       } else {
-        const errMsg = typeof data.detail === 'string' ? data.detail : 'Google Sign-In failed';
-        showToast(errMsg, 'error');
+        showToast(typeof data.detail === 'string' ? data.detail : 'Google Sign-In failed', 'error');
       }
     } catch (err: any) {
       showToast(err.message || 'Google Auth error', 'error');
@@ -52,7 +50,6 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // Check URL hash for OAuth redirect
   React.useEffect(() => {
     if (window.location.hash.includes('id_token=')) {
       const params = new URLSearchParams(window.location.hash.substring(1));
@@ -64,45 +61,43 @@ export const AuthModal: React.FC = () => {
     }
   }, []);
 
-  // Initialize Google GSI SDK & render native button
   React.useEffect(() => {
-    if (isAuthModalOpen && window.google?.accounts?.id) {
-      try {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '638891147252-42r3rqpa5bcl4m0ulrk4ljvkomiihspf.apps.googleusercontent.com';
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          auto_select: false,
-          callback: async (response: any) => {
-            if (response.credential) {
-              handleGoogleTokenResponse(response.credential);
-            }
-          },
-        });
+    if (!isAuthModalOpen || !window.google?.accounts?.id) return;
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    if (!clientId || gsiInitializedRef.current) return;
 
-        if (googleBtnRef.current) {
-          googleBtnRef.current.innerHTML = '';
-          window.google.accounts.id.renderButton(googleBtnRef.current, {
-            type: 'standard',
-            theme: 'outline',
-            size: 'large',
-            text: 'continue_with',
-            width: 390,
-            shape: 'pill',
-          });
-        }
-      } catch (err) {
-        console.warn('Google GSI init/render warning:', err);
+    try {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        auto_select: false,
+        callback: async (response: any) => {
+          if (response.credential) {
+            handleGoogleTokenResponse(response.credential);
+          }
+        },
+      });
+      if (googleBtnRef.current) {
+        googleBtnRef.current.innerHTML = '';
+        window.google.accounts.id.renderButton(googleBtnRef.current, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          width: 390,
+          shape: 'pill',
+        });
       }
+      gsiInitializedRef.current = true;
+    } catch (err) {
+      console.warn('Google GSI init/render warning:', err);
     }
   }, [isAuthModalOpen]);
 
   const triggerGoogleFallback = async () => {
-    const userName = window.prompt("Google Sign-In: Enter your Full Name:", fullName || "Aditya Singh");
+    const userName = window.prompt('Google Sign-In: Enter your Full Name:', fullName || 'Citizen');
     if (!userName || !userName.trim()) return;
-
     const nameClean = userName.trim();
     const generatedEmail = `${nameClean.toLowerCase().replace(/[^a-z0-9]/g, '.')}@gmail.com`;
-
     setLoading(true);
     try {
       const googleUser = {
@@ -117,8 +112,7 @@ export const AuthModal: React.FC = () => {
       });
       const data = await response.json();
       if (!response.ok) {
-        const errMsg = typeof data.detail === 'string' ? data.detail : 'Google sign-in failed';
-        throw new Error(errMsg);
+        throw new Error(typeof data.detail === 'string' ? data.detail : 'Google sign-in failed');
       }
       login(data.access_token, data.user);
       showToast(`Signed in with Google as ${data.user.full_name} (${data.user.email})`, 'success');
@@ -146,7 +140,6 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // Sync tab with authModalTab
   React.useEffect(() => {
     setTab(authModalTab);
   }, [authModalTab]);
@@ -162,8 +155,7 @@ export const AuthModal: React.FC = () => {
     e.preventDefault();
     playClick();
 
-    // ── Admin shortcut: check BEFORE setting loading ─────────
-    if (email.trim().toLowerCase() === 'admin@jansetu.in' && password === 'admin@123') {
+    if (ADMIN_EMAIL && ADMIN_PASSWORD && email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       localStorage.setItem('jansetu_admin_auth', 'true');
       closeAuthModal();
       window.location.assign('/admin');
@@ -223,212 +215,51 @@ export const AuthModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(15, 30, 20, 0.65)',
-          backdropFilter: 'blur(10px)',
-          padding: '1.25rem',
-        }}
-        onClick={closeAuthModal}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: 15 }}
-          transition={{ duration: 0.24, ease: 'easeOut' }}
-          style={{
-            background: '#FFFFFF',
-            borderRadius: 24,
-            width: '100%',
-            maxWidth: 460,
-            overflow: 'hidden',
-            boxShadow: '0 25px 70px rgba(0, 0, 0, 0.28)',
-            border: '1px solid rgba(31, 58, 36, 0.12)',
-            position: 'relative',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Top Banner Accent */}
-          <div
-            style={{
-              background: 'linear-gradient(135deg, #1F3A24 0%, #2E6B3E 100%)',
-              padding: '1.75rem 2rem 1.25rem',
-              color: '#FFFFFF',
-              position: 'relative',
-            }}
-          >
-            <button
-              onClick={() => { playClick(); closeAuthModal(); }}
-              style={{
-                position: 'absolute',
-                top: '1.25rem',
-                right: '1.25rem',
-                background: 'rgba(255, 255, 255, 0.15)',
-                border: 'none',
-                color: '#FFFFFF',
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'background 160ms ease',
-              }}
-            >
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15, 30, 20, 0.65)', backdropFilter: 'blur(10px)', padding: '1.25rem' }} onClick={closeAuthModal}>
+        <motion.div initial={{ opacity: 0, scale: 0.94, y: 15 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: 15 }} transition={{ duration: 0.24, ease: 'easeOut' }} style={{ background: '#FFFFFF', borderRadius: 24, width: '100%', maxWidth: 460, overflow: 'hidden', boxShadow: '0 25px 70px rgba(0, 0, 0, 0.28)', border: '1px solid rgba(31, 58, 36, 0.12)', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+          <div style={{ background: 'linear-gradient(135deg, #1F3A24 0%, #2E6B3E 100%)', padding: '1.75rem 2rem 1.25rem', color: '#FFFFFF', position: 'relative' }}>
+            <button onClick={() => { playClick(); closeAuthModal(); }} style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: 'rgba(255, 255, 255, 0.15)', border: 'none', color: '#FFFFFF', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <X size={18} />
             </button>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
               <Sparkles size={16} color="#6FBF73" />
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#C9EAC7' }}>
-                JanSetu AI Citizen Auth
-              </span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#C9EAC7' }}>JanSetu AI Citizen Auth</span>
             </div>
-
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>
               {tab === 'login' ? 'Welcome Back, Citizen' : 'Create Citizen Account'}
             </h2>
             <p style={{ fontSize: '0.84rem', color: 'rgba(201, 234, 199, 0.82)', marginTop: 4 }}>
               {tab === 'login' ? 'Access your complaints, tracking status, and ward history.' : 'Register with Aadhaar for a Verified Citizen Badge.'}
             </p>
-
-            {/* Tab Switcher */}
-            <div
-              style={{
-                display: 'flex',
-                background: 'rgba(0, 0, 0, 0.22)',
-                borderRadius: 100,
-                padding: 4,
-                marginTop: '1.25rem',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => handleTabSwitch('login')}
-                style={{
-                  flex: 1,
-                  padding: '0.4rem',
-                  borderRadius: 100,
-                  border: 'none',
-                  background: tab === 'login' ? '#FFFFFF' : 'transparent',
-                  color: tab === 'login' ? '#1F3A24' : '#FFFFFF',
-                  fontWeight: 700,
-                  fontSize: '0.8125rem',
-                  cursor: 'pointer',
-                  transition: 'all 200ms ease',
-                }}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTabSwitch('register')}
-                style={{
-                  flex: 1,
-                  padding: '0.4rem',
-                  borderRadius: 100,
-                  border: 'none',
-                  background: tab === 'register' ? '#FFFFFF' : 'transparent',
-                  color: tab === 'register' ? '#1F3A24' : '#FFFFFF',
-                  fontWeight: 700,
-                  fontSize: '0.8125rem',
-                  cursor: 'pointer',
-                  transition: 'all 200ms ease',
-                }}
-              >
-                Register
-              </button>
+            <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.22)', borderRadius: 100, padding: 4, marginTop: '1.25rem', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+              <button type="button" onClick={() => handleTabSwitch('login')} style={{ flex: 1, padding: '0.4rem', borderRadius: 100, border: 'none', background: tab === 'login' ? '#FFFFFF' : 'transparent', color: tab === 'login' ? '#1F3A24' : '#FFFFFF', fontWeight: 700, cursor: 'pointer' }}>Sign In</button>
+              <button type="button" onClick={() => handleTabSwitch('register')} style={{ flex: 1, padding: '0.4rem', borderRadius: 100, border: 'none', background: tab === 'register' ? '#FFFFFF' : 'transparent', color: tab === 'register' ? '#1F3A24' : '#FFFFFF', fontWeight: 700, cursor: 'pointer' }}>Register</button>
             </div>
           </div>
-
-          {/* Form Body */}
           <div style={{ padding: '1.75rem 2rem' }}>
-            {/* Native GIS Google Sign-In Button */}
-            <div
-              ref={googleBtnRef}
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '1.25rem',
-                minHeight: 44,
-              }}
-            />
-
+            <div ref={googleBtnRef} style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem', minHeight: 44 }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
               <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
               <span style={{ fontSize: '0.75rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>or email</span>
               <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
             </div>
-
             {tab === 'login' ? (
               <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 650, color: '#334155', display: 'block', marginBottom: 4 }}>
-                    Email Address
-                  </label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '0.78rem', fontWeight: 650, color: '#334155' }}>Email Address</label>
                   <div style={{ position: 'relative' }}>
                     <Mail size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="citizen@gmail.com"
-                      style={{
-                        width: '100%',
-                        padding: '0.65rem 0.75rem 0.65rem 2.25rem',
-                        borderRadius: 12,
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.875rem',
-                        fontFamily: 'var(--font-body)',
-                        outline: 'none',
-                      }}
-                    />
+                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="citizen@gmail.com" style={{ width: '100%', padding: '0.65rem 0.75rem 0.65rem 2.25rem', borderRadius: 12, border: '1px solid #CBD5E1', fontSize: '0.875rem', outline: 'none' }} />
                   </div>
                 </div>
-
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 650, color: '#334155', display: 'block', marginBottom: 4 }}>
-                    Password
-                  </label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '0.78rem', fontWeight: 650, color: '#334155' }}>Password</label>
                   <div style={{ position: 'relative' }}>
                     <Lock size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      style={{
-                        width: '100%',
-                        padding: '0.65rem 0.75rem 0.65rem 2.25rem',
-                        borderRadius: 12,
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.875rem',
-                        fontFamily: 'var(--font-body)',
-                        outline: 'none',
-                      }}
-                    />
+                    <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '0.65rem 0.75rem 0.65rem 2.25rem', borderRadius: 12, border: '1px solid #CBD5E1', fontSize: '0.875rem', outline: 'none' }} />
                   </div>
                 </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary"
-                  style={{ width: '100%', marginTop: '0.5rem', borderRadius: 100 }}
-                >
+                <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem', borderRadius: 100 }}>
                   {loading ? 'Signing In…' : 'Sign In to Portal'}
                   <ArrowRight size={16} />
                 </button>
@@ -436,116 +267,37 @@ export const AuthModal: React.FC = () => {
             ) : (
               <form onSubmit={handleRegisterSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 650, color: '#334155', display: 'block', marginBottom: 4 }}>
-                    Full Name
-                  </label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '0.78rem', fontWeight: 650, color: '#334155' }}>Full Name</label>
                   <div style={{ position: 'relative' }}>
                     <UserIcon size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                    <input
-                      type="text"
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Aditya Singh Rajput"
-                      style={{
-                        width: '100%',
-                        padding: '0.6rem 0.75rem 0.6rem 2.25rem',
-                        borderRadius: 12,
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.85rem',
-                        fontFamily: 'var(--font-body)',
-                        outline: 'none',
-                      }}
-                    />
+                    <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Aditya Singh Rajput" style={{ width: '100%', padding: '0.6rem 0.75rem 0.6rem 2.25rem', borderRadius: 12, border: '1px solid #CBD5E1', fontSize: '0.85rem', outline: 'none' }} />
                   </div>
                 </div>
-
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 650, color: '#334155', display: 'block', marginBottom: 4 }}>
-                    Gmail / Email Address
-                  </label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '0.78rem', fontWeight: 650, color: '#334155' }}>Gmail / Email Address</label>
                   <div style={{ position: 'relative' }}>
                     <Mail size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="aditya@gmail.com"
-                      style={{
-                        width: '100%',
-                        padding: '0.6rem 0.75rem 0.6rem 2.25rem',
-                        borderRadius: 12,
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.85rem',
-                        fontFamily: 'var(--font-body)',
-                        outline: 'none',
-                      }}
-                    />
+                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="aditya@gmail.com" style={{ width: '100%', padding: '0.6rem 0.75rem 0.6rem 2.25rem', borderRadius: 12, border: '1px solid #CBD5E1', fontSize: '0.85rem', outline: 'none' }} />
                   </div>
                 </div>
-
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 650, color: '#334155', display: 'block', marginBottom: 4 }}>
-                    Password
-                  </label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '0.78rem', fontWeight: 650, color: '#334155' }}>Password</label>
                   <div style={{ position: 'relative' }}>
                     <Lock size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      style={{
-                        width: '100%',
-                        padding: '0.6rem 0.75rem 0.6rem 2.25rem',
-                        borderRadius: 12,
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.85rem',
-                        fontFamily: 'var(--font-body)',
-                        outline: 'none',
-                      }}
-                    />
+                    <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '0.6rem 0.75rem 0.6rem 2.25rem', borderRadius: 12, border: '1px solid #CBD5E1', fontSize: '0.85rem', outline: 'none' }} />
                   </div>
                 </div>
-
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 650, color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, fontSize: '0.78rem', fontWeight: 650, color: '#334155' }}>
                     <span>Aadhaar Number (Optional)</span>
-                    {isAadhaarValid && (
-                      <span style={{ color: '#059669', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                        <CheckCircle2 size={12} /> Verified Badge Unlocked
-                      </span>
-                    )}
+                    {isAadhaarValid && <span style={{ color: '#059669', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: 3 }}><CheckCircle2 size={12} /> Verified Badge Unlocked</span>}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <ShieldCheck size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: isAadhaarValid ? '#059669' : '#94A3B8' }} />
-                    <input
-                      type="text"
-                      maxLength={14}
-                      value={aadhaarNumber}
-                      onChange={(e) => setAadhaarNumber(e.target.value)}
-                      placeholder="1234 5678 9012"
-                      style={{
-                        width: '100%',
-                        padding: '0.6rem 0.75rem 0.6rem 2.25rem',
-                        borderRadius: 12,
-                        border: `1px solid ${isAadhaarValid ? '#10B981' : '#CBD5E1'}`,
-                        fontSize: '0.85rem',
-                        fontFamily: 'var(--font-body)',
-                        outline: 'none',
-                      }}
-                    />
+                    <input type="text" maxLength={14} value={aadhaarNumber} onChange={(e) => setAadhaarNumber(e.target.value)} placeholder="1234 5678 9012" style={{ width: '100%', padding: '0.6rem 0.75rem 0.6rem 2.25rem', borderRadius: 12, border: `1px solid ${isAadhaarValid ? '#10B981' : '#CBD5E1'}`, fontSize: '0.85rem', outline: 'none' }} />
                   </div>
                 </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary"
-                  style={{ width: '100%', marginTop: '0.5rem', borderRadius: 100 }}
-                >
+                <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem', borderRadius: 100 }}>
                   {loading ? 'Creating Account…' : 'Complete Registration'}
                   <ArrowRight size={16} />
                 </button>

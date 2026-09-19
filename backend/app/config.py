@@ -1,40 +1,29 @@
-"""
-Configuration module for JanSetu backend.
-Loads settings from environment variables using pydantic-settings.
-"""
-from pydantic_settings import BaseSettings
-from typing import Optional, List
+"""Configuration loaded from environment variables."""
+from typing import List, Optional
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables."""
-    
-    # Database
     database_url: str
-    
-    # API Keys & Webhooks
+    jwt_secret: str
+    admin_secret: str
+    dashboard_api_key: str
+    google_client_id: Optional[str] = None
+    whatsapp_verify_token: str
+    whatsapp_app_secret: Optional[str] = None
     nvidia_api_key: Optional[str] = None
     nvidia_asr_api_key: Optional[str] = None
     nvidia_tts_api_key: Optional[str] = None
-    dashboard_api_key: Optional[str] = None
-    viasocket_webhook_url: Optional[str] = "https://flow.sokt.io/func/scri2qdtXavo"
-    breeth_api_key: Optional[str] = "ck_live_nQb1WlsPt8wssvC_QqEfYYPG_M1ucU09UcJXMrlTFUE"
-    
-    # CORS
+    viasocket_webhook_url: Optional[str] = None
+    breeth_api_key: Optional[str] = None
     allowed_origins: str = "http://localhost:5173"
-    
-    # Application
     environment: str = "development"
-    debug: bool = True
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-    
+    debug: bool = False
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
+
     def get_allowed_origins(self) -> List[str]:
-        """Parse comma-separated allowed origins."""
-        return [origin.strip() for origin in self.allowed_origins.split(",")]
+        return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
 
 
-# Global settings instance
 settings = Settings()

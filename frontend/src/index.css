@@ -56,6 +56,8 @@ html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* Prevent horizontal scroll in standalone PWA mode */
+  overflow-x: hidden;
 }
 
 body {
@@ -66,6 +68,13 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal overflow on mobile/tablet */
+  overflow-x: hidden;
+  /* Respect safe-area insets on notched devices (iOS, Android) */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  /* Prevent pull-to-refresh triggering the browser's native gesture */
+  overscroll-behavior-y: contain;
 }
 
 :focus-visible {
@@ -487,4 +496,61 @@ iframe[src*="translate"] {
   box-shadow: none !important;
 }
 
+/* ── PWA: Safe-area & mobile enhancements ────────────────────── */
 
+/* Bottom safe area — for home indicator on iPhone X+ */
+footer {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
+}
+
+/* Ensure interactive elements meet 44×44px touch target minimum */
+button, [role="button"], a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-saffron,
+.btn-ghost {
+  min-height: 44px;
+}
+
+/* Standalone PWA: hide address bar-related UI hints */
+@media (display-mode: standalone) {
+  /* Add top padding for status bar on Android in standalone mode */
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Prevent text selection on tap on interactive elements (app-like feel) */
+button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Skeleton animation (referenced in .skeleton class) */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Utility keyframes used in index.css class names */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.2); opacity: 0.7; }
+}
+
+@keyframes stamp-reveal {
+  from { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}

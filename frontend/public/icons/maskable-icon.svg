@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Maskable: safe zone is inner 80% (409x409). Logo fills the safe zone. -->
+  <!-- Background fills full canvas -->
+  <rect width="512" height="512" fill="#EFF9EE"/>
+  <!-- Bridge arch — contained in safe zone -->
+  <path d="M106 296 Q256 136 406 296"
+        stroke="#1F3A24" stroke-width="32" stroke-linecap="round" fill="none"/>
+  <!-- Left pillar -->
+  <circle cx="126" cy="296" r="17" fill="#1F3A24"/>
+  <line x1="126" y1="312" x2="126" y2="358" stroke="#2E6B3E" stroke-width="24" stroke-linecap="round"/>
+  <!-- Right pillar -->
+  <circle cx="386" cy="296" r="17" fill="#1F3A24"/>
+  <line x1="386" y1="312" x2="386" y2="358" stroke="#2E6B3E" stroke-width="24" stroke-linecap="round"/>
+  <!-- Road / base line -->
+  <line x1="96" y1="358" x2="416" y2="358" stroke="#6FBF73" stroke-width="22" stroke-linecap="round"/>
+</svg>

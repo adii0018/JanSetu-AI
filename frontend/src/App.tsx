@@ -11,6 +11,7 @@ import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { PageLoader } from './components/ui/PageLoader';
 import { AuthProvider } from './context/AuthContext';
 import { AuthModal } from './components/auth/AuthModal';
+import { PWAUpdatePrompt } from './components/ui/PWAUpdatePrompt';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <AuthProvider>
         <PageLoader />
         <ToastProvider>
+          <PWAUpdatePrompt />
           <AuthModal />
           <Routes>
             {/* Admin Panel / Open Analytics — full page */}

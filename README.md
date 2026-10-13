@@ -92,7 +92,7 @@ Every recommendation shown to a policymaker includes this breakdown — prioriti
 
 ## 🛠️ Tech Stack
 
-Designed to be deployable at **zero cost**, so any state or city government can adopt it — not just run it as a demo.
+Designed to be deployable at **zero cost**, so any state or city government can adopt it — not just run it as a demo..
 
 <details open>
 <summary><b>Frontend — Web Application</b></summary><br>

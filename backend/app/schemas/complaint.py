@@ -13,7 +13,7 @@ from typing import Optional, Union, Any
 class ComplaintCreate(BaseModel):
     """Schema for creating a new complaint."""
     ward_id: Optional[Any] = Field(default=0, description="ID of the ward (0 or None = AI auto-detects from text)")
-    raw_text: str = Field(..., min_length=3, max_length=2000, description="Complaint text from citizen")
+    raw_text: str = Field(..., min_length=10, max_length=2000, description="Complaint text from citizen")
     language: str = Field(default="Hindi + English", min_length=1, max_length=50, description="Language of complaint")
     channel: Any = Field(default=ComplaintChannel.TEXT, description="Submission channel (text, voice, whatsapp)")
     user_id: Optional[int] = Field(default=None, description="Optional associated User ID")
@@ -22,19 +22,21 @@ class ComplaintCreate(BaseModel):
     @field_validator('ward_id', mode='before')
     @classmethod
     def parse_ward_id(cls, v: Any) -> Optional[int]:
-        """Safely convert ward_id to int or 0."""
-        if v is None or v == "" or v == "0":
+        """Safely convert ward_id to int or 0, rejecting negative values."""
+        if v is None or v == "":
             return 0
         try:
             val = int(v)
-            return val if val >= 0 else 0
-        except (ValueError, TypeError):
-            return 0
+            if val < 0:
+                raise ValueError("ward_id must be non-negative")
+            return val
+        except (ValueError, TypeError) as e:
+            raise ValueError("ward_id must be a non-negative integer") from e
 
     @field_validator('channel', mode='before')
     @classmethod
     def parse_channel(cls, v: Any) -> ComplaintChannel:
-        """Safely parse channel case-insensitively."""
+        """Safely parse channel case-insensitively, rejecting unknown values."""
         if isinstance(v, ComplaintChannel):
             return v
         if isinstance(v, str):
@@ -43,6 +45,10 @@ class ComplaintCreate(BaseModel):
                 return ComplaintChannel.VOICE
             elif clean_v in ("whatsapp", "wa"):
                 return ComplaintChannel.WHATSAPP
+            elif clean_v == "text":
+                return ComplaintChannel.TEXT
+            else:
+                raise ValueError(f"Invalid channel: {v}")
         return ComplaintChannel.TEXT
 
     @field_validator('raw_text', 'language', mode='before')

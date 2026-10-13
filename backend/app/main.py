@@ -96,16 +96,26 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
+from fastapi.encoders import jsonable_encoder
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """
     Handle Pydantic validation errors with consistent format.
+    Ensures any internal Python exceptions in ctx are converted to strings before JSON serialization.
     """
+    clean_errors = []
+    for err in exc.errors():
+        clean_err = dict(err)
+        if "ctx" in clean_err and isinstance(clean_err["ctx"], dict):
+            clean_err["ctx"] = {k: str(v) for k, v in clean_err["ctx"].items()}
+        clean_errors.append(clean_err)
+
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "error": "Validation error",
-            "detail": exc.errors()
+            "detail": jsonable_encoder(clean_errors)
         }
     )
 

@@ -50,6 +50,8 @@ async def test_db():
     await engine.dispose()
 
 
+from app.config import settings
+
 @pytest_asyncio.fixture(scope="function")
 async def client(test_db):
     """Create test client with test database."""
@@ -61,7 +63,8 @@ async def client(test_db):
     
     async with AsyncClient(
         transport=ASGITransport(app=app),
-        base_url="http://test"
+        base_url="http://test",
+        headers={"X-API-Key": settings.dashboard_api_key}
     ) as ac:
         yield ac
     

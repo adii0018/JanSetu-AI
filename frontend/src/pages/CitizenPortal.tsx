@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Mic, Cpu, Send, ShieldCheck, MapPin, CheckCircle2, Clock, TrendingUp, Bot, Zap, Award, Users, MessageCircle, FileSpreadsheet, ArrowRight, Star } from 'lucide-react';
+import { Sparkles, Mic, Cpu, Send, MapPin, CheckCircle2, Clock, Award, FileSpreadsheet, AlertOctagon, ThumbsUp } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { ComplaintForm } from '../components/citizen/ComplaintForm';
 import { AiConsole } from '../components/citizen/AiConsole';
 import { TrackComplaint } from '../components/citizen/TrackComplaint';
+import { CommunityVoice } from '../components/citizen/CommunityVoice';
+import { QuickSOSModal } from '../components/citizen/QuickSOSModal';
 import { HotspotMap } from '../components/dashboard/HotspotMap';
 import { getMapData, getGeoClusters } from '../services/api';
 import type { MapWard, GeoClustersResponse } from '../services/types';
@@ -33,7 +35,8 @@ function init<T>(): LoadState<T> { return { data: null, loading: true, error: nu
 export function CitizenPortal() {
   const { openAuthModal } = useAuth();
   const [consoleState, setConsoleState] = useState<ConsoleState>(INITIAL_CONSOLE);
-  const [activeTab, setActiveTab] = useState<'submit' | 'track'>('submit');
+  const [activeTab, setActiveTab] = useState<'submit' | 'community' | 'track'>('submit');
+  const [isSosOpen, setIsSosOpen] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
 
   const [mapData, setMapData] = useState<LoadState<MapWard[]>>(init());
@@ -69,20 +72,6 @@ export function CitizenPortal() {
   useEffect(() => {
     fetchMapData();
   }, [fetchMapData]);
-
-  const tabStyle = (active: boolean): React.CSSProperties => ({
-    flex: 1,
-    padding: '0.625rem 1rem',
-    border: 'none',
-    borderBottom: `2px solid ${active ? 'var(--deep-moss)' : 'transparent'}`,
-    background: 'transparent',
-    fontFamily: 'var(--font-body)',
-    fontWeight: active ? 600 : 500,
-    fontSize: '0.9375rem',
-    color: active ? 'var(--deep-moss)' : 'var(--ink-soft)',
-    cursor: 'pointer',
-    transition: 'all 160ms ease',
-  });
 
   return (
     <>
@@ -293,6 +282,43 @@ export function CitizenPortal() {
                 </div>
               ))}
             </div>
+
+            {/* Quick 1-Tap Emergency Civic SOS Alert Banner */}
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  playClick();
+                  setIsSosOpen(true);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.55rem',
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: 100,
+                  background: 'rgba(220, 38, 38, 0.09)',
+                  border: '1.5px solid rgba(220, 38, 38, 0.35)',
+                  color: '#B91C1C',
+                  fontSize: '0.82rem',
+                  fontWeight: 750,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(220, 38, 38, 0.12)',
+                  transition: 'all 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(220, 38, 38, 0.16)';
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(220, 38, 38, 0.09)';
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+                }}
+              >
+                <AlertOctagon size={15} color="#DC2626" />
+                <span>Critical Public Hazard (Live wire, open manhole)? <strong>1-Tap Emergency Civic SOS →</strong></span>
+              </button>
+            </div>
           </div>
         </PageContainer>
 
@@ -380,50 +406,172 @@ export function CitizenPortal() {
         </PageContainer>
       </div>
 
-      {/* ── Mobile tab switcher ────────────────────────────────── */}
-      <div
-        className="mobile-tabs"
-        style={{
-          display: 'none',
-          borderBottom: '1px solid var(--border)',
-          background: '#fff',
-        }}
-      >
-        <button style={tabStyle(activeTab === 'submit')} onClick={() => setActiveTab('submit')}>
-          📝 Submit complaint
-        </button>
-        <button style={tabStyle(activeTab === 'track')} onClick={() => setActiveTab('track')}>
-          🔍 Track &amp; Upvote
-        </button>
+      {/* ── Universal Mode Tab Switcher ────────────────────────── */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid rgba(18, 53, 36, 0.08)', position: 'sticky', top: 78, zIndex: 90, backdropFilter: 'blur(10px)' }}>
+        <PageContainer>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', overflowX: 'auto', padding: '0.5rem 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  playClick();
+                  setActiveTab('submit');
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.6rem 1.15rem',
+                  borderRadius: 100,
+                  border: activeTab === 'submit' ? '1.5px solid #123524' : '1px solid #E2E8F0',
+                  background: activeTab === 'submit' ? '#123524' : '#FFFFFF',
+                  color: activeTab === 'submit' ? '#FFFFFF' : '#475569',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  boxShadow: activeTab === 'submit' ? '0 4px 14px rgba(18, 53, 36, 0.2)' : 'none',
+                  transition: 'all 160ms ease',
+                }}
+              >
+                <span>📝 Lodge Grievance</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playClick();
+                  setActiveTab('community');
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.6rem 1.15rem',
+                  borderRadius: 100,
+                  border: activeTab === 'community' ? '1.5px solid #123524' : '1px solid #E2E8F0',
+                  background: activeTab === 'community' ? '#123524' : '#FFFFFF',
+                  color: activeTab === 'community' ? '#FFFFFF' : '#475569',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  boxShadow: activeTab === 'community' ? '0 4px 14px rgba(18, 53, 36, 0.2)' : 'none',
+                  transition: 'all 160ms ease',
+                }}
+              >
+                <ThumbsUp size={15} color={activeTab === 'community' ? '#25D366' : '#64748B'} />
+                <span>🗳️ Jan Awaz (Community Feed)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playClick();
+                  setActiveTab('track');
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.6rem 1.15rem',
+                  borderRadius: 100,
+                  border: activeTab === 'track' ? '1.5px solid #123524' : '1px solid #E2E8F0',
+                  background: activeTab === 'track' ? '#123524' : '#FFFFFF',
+                  color: activeTab === 'track' ? '#FFFFFF' : '#475569',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  boxShadow: activeTab === 'track' ? '0 4px 14px rgba(18, 53, 36, 0.2)' : 'none',
+                  transition: 'all 160ms ease',
+                }}
+              >
+                <span>🔍 Track Status</span>
+              </button>
+            </div>
+
+            {/* Quick Civic SOS Trigger Button */}
+            <button
+              type="button"
+              onClick={() => {
+                playClick();
+                setIsSosOpen(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.55rem 1.15rem',
+                borderRadius: 100,
+                border: '1.5px solid #EF4444',
+                background: '#FEF2F2',
+                color: '#DC2626',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 2px 10px rgba(239, 68, 68, 0.2)',
+                transition: 'all 160ms ease',
+              }}
+            >
+              <AlertOctagon size={15} color="#DC2626" />
+              <span>🚨 1-Tap Civic SOS</span>
+            </button>
+          </div>
+        </PageContainer>
       </div>
 
       {/* ── Main content ──────────────────────────────────────── */}
       <PageContainer style={{ marginTop: '2.5rem' }}>
-        <div
-          className="citizen-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr)',
-            gap: '1.75rem',
-            alignItems: 'start',
-          }}
-        >
-          {/* Left — Complaint Form */}
-          <div className={`citizen-panel ${activeTab === 'submit' ? 'panel-visible' : 'panel-hidden'}`}>
-            <ComplaintForm onConsoleUpdate={setConsoleState} />
-          </div>
-
-          {/* Right — AI Console + Track */}
+        {activeTab === 'community' ? (
+          <CommunityVoice />
+        ) : (
           <div
-            className={`citizen-panel ${activeTab === 'track' ? 'panel-visible' : 'panel-hidden'}`}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+            className="citizen-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: activeTab === 'track' ? '1fr' : 'minmax(0, 1.15fr) minmax(0, 1fr)',
+              gap: '1.75rem',
+              alignItems: 'start',
+            }}
           >
-            <div>
-              <AiConsole state={consoleState} />
+            {/* Left — Complaint Form (shown when submit) */}
+            {activeTab === 'submit' && (
+              <div className="citizen-panel">
+                <ComplaintForm onConsoleUpdate={setConsoleState} />
+              </div>
+            )}
+
+            {/* Right — AI Console + Track */}
+            <div
+              className="citizen-panel"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.5rem',
+                maxWidth: activeTab === 'track' ? 760 : undefined,
+                marginInline: activeTab === 'track' ? 'auto' : undefined,
+                width: '100%',
+              }}
+            >
+              <div>
+                <AiConsole state={consoleState} />
+              </div>
+              <TrackComplaint />
             </div>
-            <TrackComplaint />
           </div>
-        </div>
+        )}
+
+        {/* Emergency Civic SOS Modal */}
+        <QuickSOSModal
+          isOpen={isSosOpen}
+          onClose={() => setIsSosOpen(false)}
+        />
 
         {/* ── NEW FEATURE 2: How JanSetu AI Works (Interactive 4-Step Pipeline) ───── */}
         <div style={{ marginTop: '4rem', background: '#FFFFFF', borderRadius: 28, border: '1px solid rgba(18, 53, 36, 0.1)', padding: '2.5rem 2rem', boxShadow: '0 10px 35px rgba(0,0,0,0.03)' }}>

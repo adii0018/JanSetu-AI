@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ShieldCheck, Users, FileText, CheckCircle, Clock, AlertTriangle,
-  RefreshCw, LogOut, ChevronDown, Search, BarChart3, Eye, X, MapPin,
-  TrendingUp, RotateCcw, FileSpreadsheet, Sparkles, Activity, Cpu, Layers
+  ShieldCheck, Users, FileText, AlertTriangle,
+  RefreshCw, LogOut, Search, BarChart3, MapPin,
+  TrendingUp, RotateCcw, FileSpreadsheet, Sparkles, Activity, Cpu
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PageContainer } from '../components/layout/PageContainer';

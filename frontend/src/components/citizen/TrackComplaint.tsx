@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Search, ThumbsUp, CheckCircle, AlertCircle, Loader2, Copy, Check } from 'lucide-react';
+import { Search, ThumbsUp, CheckCircle, AlertCircle, Loader2, Copy, Check, FileText } from 'lucide-react';
 import { getComplaintByTrackingId, upvoteComplaint } from '../../services/api';
 import type { Complaint } from '../../services/types';
 import { playClick, playTick } from '../../utils/sounds';
+import { GrievanceReceiptModal } from './GrievanceReceiptModal';
 
 const CATEGORY_EMOJI: Record<string, string> = {
   'Water Supply': '💧',
@@ -37,6 +38,7 @@ export function TrackComplaint() {
   const [upvoted, setUpvoted] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(0);
   const [idCopied, setIdCopied] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const handleCopyId = () => {
     if (!complaint?.tracking_id) return;
@@ -326,7 +328,45 @@ export function TrackComplaint() {
               ? 'Saving…'
               : `👍 I have this problem too (${upvoteCount} already)`}
           </button>
+
+          {/* Official Printable Slip Button */}
+          <button
+            type="button"
+            onClick={() => {
+              playClick();
+              setShowReceipt(true);
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.6rem 1.125rem',
+              borderRadius: 'var(--radius-pill)',
+              border: '1.5px solid rgba(18, 53, 36, 0.15)',
+              background: '#FFFFFF',
+              color: 'var(--ink)',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              width: '100%',
+              justifyContent: 'center',
+              transition: 'all 160ms ease',
+            }}
+          >
+            <FileText size={15} color="var(--moss)" />
+            <span>View / Print Official Acknowledgment Slip</span>
+          </button>
         </div>
+      )}
+
+      {/* Official Grievance Receipt Modal */}
+      {complaint && (
+        <GrievanceReceiptModal
+          complaint={complaint}
+          isOpen={showReceipt}
+          onClose={() => setShowReceipt(false)}
+        />
       )}
     </div>
   );

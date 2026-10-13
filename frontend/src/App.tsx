@@ -12,6 +12,7 @@ import { PageLoader } from './components/ui/PageLoader';
 import { AuthProvider } from './context/AuthContext';
 import { AuthModal } from './components/auth/AuthModal';
 import { PWAUpdatePrompt } from './components/ui/PWAUpdatePrompt';
+import { JanSetuSahayak } from './components/citizen/JanSetuSahayak';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <PageLoader />
         <ToastProvider>
           <PWAUpdatePrompt />
+          <JanSetuSahayak />
           <AuthModal />
           <Routes>
             {/* Admin Panel / Open Analytics — full page */}

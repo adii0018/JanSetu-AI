@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Terminal, Copy, Check } from 'lucide-react';
+import { Terminal, Copy, Check, FileText } from 'lucide-react';
 import { Badge, urgencyVariant } from '../ui/Badge';
 import { ResultStamp } from './ResultStamp';
 import { TTSReader } from '../ui/TTSReader';
 import type { Complaint } from '../../services/types';
 import { playClick } from '../../utils/sounds';
+import { GrievanceReceiptModal } from './GrievanceReceiptModal';
 
 interface ConsoleState {
   phase: 'idle' | 'thinking' | 'done' | 'error';
@@ -85,6 +86,7 @@ export function AiConsole({ state }: AiConsoleProps) {
   const visibleLines = useTypingLines(phase, result);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -287,27 +289,54 @@ export function AiConsole({ state }: AiConsoleProps) {
               </div>
             </div>
 
-            <button
-              onClick={handleCopyId}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                padding: '0.35rem 0.75rem',
-                borderRadius: 'var(--radius-pill)',
-                background: copied ? 'var(--moss)' : 'rgba(255,255,255,0.1)',
-                border: 'none',
-                color: '#fff',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                fontFamily: 'var(--font-body)',
-                cursor: 'pointer',
-                transition: 'all 150ms ease',
-              }}
-            >
-              {copied ? <Check size={13} /> : <Copy size={13} />}
-              <span>{copied ? 'Copied!' : 'Copy ID'}</span>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <button
+                onClick={handleCopyId}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: 'var(--radius-pill)',
+                  background: copied ? 'var(--moss)' : 'rgba(255,255,255,0.1)',
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  fontFamily: 'var(--font-body)',
+                  cursor: 'pointer',
+                  transition: 'all 150ms ease',
+                }}
+              >
+                {copied ? <Check size={13} /> : <Copy size={13} />}
+                <span>{copied ? 'Copied!' : 'Copy ID'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  playClick();
+                  setShowReceipt(true);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.35rem 0.85rem',
+                  borderRadius: 'var(--radius-pill)',
+                  background: '#25D366',
+                  border: 'none',
+                  color: '#123524',
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  fontFamily: 'var(--font-body)',
+                  cursor: 'pointer',
+                  transition: 'all 150ms ease',
+                }}
+              >
+                <FileText size={13} />
+                <span>Print Slip</span>
+              </button>
+            </div>
           </div>
 
           {/* AI Voice Reader */}
@@ -326,6 +355,15 @@ export function AiConsole({ state }: AiConsoleProps) {
             })()}
           </div>
         </div>
+      )}
+
+      {/* Official Printable Grievance Receipt Slip */}
+      {result && (
+        <GrievanceReceiptModal
+          complaint={result}
+          isOpen={showReceipt}
+          onClose={() => setShowReceipt(false)}
+        />
       )}
     </div>
   );

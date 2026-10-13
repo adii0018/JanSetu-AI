@@ -143,7 +143,33 @@ export function TopNav() {
             })}
           >
             <MessageSquare size={14} aria-hidden="true" />
-            Citizen Intake
+            Citizen Portal
+          </NavLink>
+
+          <NavLink
+            to="/dashboard"
+            onClick={playNav}
+            style={({ isActive }) => ({
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.45rem 1.15rem',
+              borderRadius: 24,
+              textDecoration: 'none',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 700,
+              fontSize: '0.8125rem',
+              background: isActive
+                ? 'linear-gradient(135deg, #123524 0%, #2E6B3E 100%)'
+                : 'transparent',
+              color: isActive ? '#FFFFFF' : 'var(--ink-soft)',
+              boxShadow: isActive ? '0 4px 14px rgba(18, 53, 36, 0.22)' : 'none',
+              transition: 'all 220ms cubic-bezier(0.16, 1, 0.3, 1)',
+              whiteSpace: 'nowrap',
+            })}
+          >
+            <BarChart3 size={14} aria-hidden="true" />
+            Open Analytics
           </NavLink>
         </nav>
 

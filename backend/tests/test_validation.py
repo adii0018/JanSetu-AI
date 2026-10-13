@@ -85,17 +85,17 @@ async def test_submit_complaint_negative_ward_id(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_submit_complaint_zero_ward_id(client: AsyncClient):
-    """Test submitting complaint with zero ward_id."""
+    """Test submitting complaint with invalid string ward_id."""
     complaint_data = {
-        "ward_id": 0,
-        "raw_text": "Test complaint",
+        "ward_id": "invalid_ward",
+        "raw_text": "Test complaint for validation",
         "language": "English",
         "channel": "text"
     }
     
     response = await client.post("/api/complaints", json=complaint_data)
     
-    # Should fail validation (must be gt=0)
+    # Should fail validation
     assert response.status_code == 422
 
 

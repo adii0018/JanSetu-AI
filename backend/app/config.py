@@ -4,12 +4,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    database_url: str
-    jwt_secret: str
-    admin_secret: str
-    dashboard_api_key: str
+    database_url: str = "sqlite+aiosqlite:///./jansetu_dev.db"
+    jwt_secret: str = "jansetu-secret-jwt-key-2026"
+    admin_secret: str = "jansetu-admin-2026"
+    dashboard_api_key: str = "jansetu_dev_key_2026"
     google_client_id: Optional[str] = None
-    whatsapp_verify_token: str
+    whatsapp_verify_token: str = "jansetu_whatsapp_verify_token_2026"
     whatsapp_app_secret: Optional[str] = None
     nvidia_api_key: Optional[str] = None
     nvidia_asr_api_key: Optional[str] = None
